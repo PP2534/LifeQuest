@@ -15,7 +15,7 @@ new class extends Component
         $this->redirect('/', navigate: true);
     }
 }; ?>
-
+{{--
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -108,3 +108,44 @@ new class extends Component
         </div>
     </div>
 </nav>
+--}}
+<header class="bg-white shadow sticky top-0 z-50" role="banner">
+    <nav class="container mx-auto flex items-center justify-between p-4" aria-label="Primary Navigation">
+      <a href="{{ route('homepage') }}" wire:navigate class="text-2xl font-extrabold text-teal-600" aria-label="LifeQuest logo">
+        LifeQuest
+      </a>
+      <button id="nav-toggle" aria-controls="primary-menu" aria-expanded="false" aria-label="Toggle navigation menu" class="md:hidden text-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <ul id="primary-menu" class="hidden md:flex md:items-center md:space-x-8" role="menu" aria-label="Main menu">
+        <li role="none"><a href="index.html" class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Trang chủ <!-- Home --></a></li>
+        <li role="none"><a href="habits.html" class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Bài Tập <!-- Exercises --></a></li>
+        <li role="none"><a href="challenges.html" class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Thử Thách <!-- Challenges --></a></li>
+        <li role="none"><a href="habits.html" class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Thói Quen <!-- Habits --></a></li>
+        <li role="none"><a href="{{route('profile')}}" wire:navigate class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Thông tin cá nhân <!-- Profile --></a></li>
+      </ul>
+      <!-- User avatar dropdown -->
+      <div class="relative ml-4">
+        <button id="user-menu-button" aria-haspopup="true" aria-expanded="false" aria-controls="user-menu" class="flex items-center focus:outline-none focus:ring-2 focus:ring-teal-600 rounded-full" tabindex="0">
+            @auth
+                <img src="https://i.pravatar.cc/40" alt="User avatar" class="w-10 h-10 rounded-full" />
+            @else
+                <img src="https://i.pravatar.cc/40" alt="User avatar" class="w-10 h-10 rounded-full" />
+            @endauth
+            
+          <span class="sr-only">Menu người dùng <!-- User menu --></span>
+        </button>
+        <ul id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-label="User menu">
+        <!-- TODO: add auth check here -->
+           @auth
+            <li><a href="{{route('profile')}}" wire:navigate class="block px-4 py-2 text-gray-700 hover:bg-teal-100" role="menuitem" tabindex="-1">Hồ sơ của tôi <!-- My Profile --></a></li>
+            <li><a wire:click="logout" class="block px-4 py-2 text-gray-700 hover:bg-teal-100 cursor-pointer" role="menuitem" tabindex="-1">Đăng xuất <!-- Logout --></a></li>
+           @else
+            <li><a href="{{route('login')}}" wire:navigate class="block px-4 py-2 text-gray-700 hover:bg-teal-100" role="menuitem" tabindex="-1">Đăng nhập</a></li>
+            <li><a href="{{route('register')}}" wire:navigate class="block px-4 py-2 text-gray-700 hover:bg-teal-100" role="menuitem" tabindex="-1">Đăng ký</a></li>
+           @endauth
+          
+        </ul>
+      </div>
+    </nav>
+  </header>

@@ -15,5 +15,17 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
         $this->call(UserSeeder::class);
+        $this->call(CategorySeeder::class);
+        $this->call(ChallengeSeeder::class);
+        $this->call(ChallengeCategorieSeeder::class);
+        $this->call(ChallengeParticipantSeeder::class);
+        $this->call(ChallengeProgressSeeder::class);
+        $this->call(HabitSeeder::class);
+        $this->call(HabitParticipantSeeder::class);
+        $this->call(HabitLogSeeder::class);
+        $this->call(FollowerSeeder::class);
+        $this->call(CommentSeeder::class);
+        $this->call(HabitInvitationSeeder::class);
+        $this->call(ChallengeInvitationSeeder::class);
     }
 }

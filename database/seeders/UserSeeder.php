@@ -15,15 +15,15 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $users = [];
-        for ($i = 1; $i <= 15; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             $users[] = [
                 'name' => "User $i",
-                'email' => "user$i@example.com",
-                'password' => Hash::make('password123'),
+                'email' => "user$i@lifequest.vn",
+                'password' => Hash::make('12345678'),
                 'avatar' => 'default.png',
                 'bio' => "This is bio for user $i",
                 'interests' => 'coding, reading, cycling',
-                'location' => 'Hà Nội',
+                'ward_id' => '3356',
                 'created_at' => now(),
                 'updated_at' => now(),
             ];

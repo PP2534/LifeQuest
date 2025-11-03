@@ -15,11 +15,19 @@ return new class extends Migration
             $table->id(); 
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('password');
+            $table->string('password')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('avatar')->nullable();
             $table->text('bio')->nullable();
             $table->string('interests')->nullable();
-            $table->string('location')->nullable();
+            $table->foreignId('ward_id')
+                ->nullable()
+                ->constrained('wards')
+                ->nullOnDelete();
+            $table->enum('role', ['user', 'admin'])->default('user');
+            $table->string('provider')->nullable();
+            $table->string('provider_id')->nullable();
+            $table->rememberToken();
             $table->timestamps();
         });
     }
