@@ -26,5 +26,24 @@ class Habit extends Model
         'start_date',
         'end_date',
     ];
-    
+        /**
+     * Get the participants for the habit.
+     */
+    public function participants()
+    {
+        return $this->hasMany(\App\Models\HabitParticipant::class);
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::deleting(function (Habit $habit) {
+            // Khi một thói quen bị xóa, cũng xóa tất cả những người tham gia nó.
+            // Điều này đảm bảo tính toàn vẹn của dữ liệu.
+            $habit->participants()->delete();
+        });
+    }
+
 }
