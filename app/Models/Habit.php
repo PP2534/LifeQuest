@@ -35,13 +35,20 @@ class Habit extends Model
     }
 
     /**
+     * Get the invitations for the habit.
+     */
+    public function invitations()
+    {
+        return $this->hasMany(\App\Models\HabitInvitation::class);
+    }
+
+    /**
      * The "booted" method of the model.
      */
     protected static function booted(): void
     {
         static::deleting(function (Habit $habit) {
             // Khi một thói quen bị xóa, cũng xóa tất cả những người tham gia nó.
-            // Điều này đảm bảo tính toàn vẹn của dữ liệu.
             $habit->participants()->delete();
         });
     }

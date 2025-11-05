@@ -11,9 +11,7 @@
                 <h2 class="font-semibold mt-2">{{ $habit->title }}</h2>
                 <p class="text-sm text-gray-600">Ngày bắt đầu: {{ $habit->start_date }}</p>
                 <p class="text-sm text-gray-600">Ngày kết thúc : {{ $habit->end_date }}</p>
-                @if($habit->participants->isNotEmpty() && !is_null($habit->participants->first()->streak))
-                    <p class="text-sm text-gray-600">Streak: {{ $habit->participants->first()->streak }}</p>
-                @endif
+                
             </a>
         @endforeach
         

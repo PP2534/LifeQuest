@@ -14,9 +14,17 @@ class HabitList extends Component
     public function mount()
     {
         $userId = Auth::id();
-        $this->habits = Habit::with(['participants' => function ($query) use ($userId) {
-            $query->where('user_id', $userId);
-        }])->latest()->get();
+
+        if ($userId) {
+            // Lấy các thói quen mà người dùng hiện tại là thành viên (đã được duyệt và có status là 'active')
+            $this->habits = Habit::whereHas('participants', function ($query) use ($userId) {
+                $query->where('user_id', $userId)
+                      ->where('status', 'active');
+            })->latest()->get();
+        } else {
+            // Nếu người dùng chưa đăng nhập, không hiển thị thói quen nào
+            $this->habits = collect();
+        }
     }
     #[Layout('layouts.app')]
     public function render()
