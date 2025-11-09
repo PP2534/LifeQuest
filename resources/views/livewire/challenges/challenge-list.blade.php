@@ -1,0 +1,56 @@
+<div>
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold text-teal-600">Danh sách Thử Thách</h1>
+      <div class="space-x-3">
+        <a href="create-challenge.html"
+          class="inline-block bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-lg shadow">
+          + Tạo Thử Thách
+        </a>
+        <a href="my-challenge.html"
+          class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg shadow">
+          Quản lý Thử Thách
+        </a>
+      </div>
+    </div>
+    <section aria-label="Challenges list">
+      <div class="grid gap-8 md:grid-cols-3">
+        @foreach($challenges as $challenge)
+          <article class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow focus-within:ring-2 focus-within:ring-teal-600" tabindex="0">
+            <a href="{{ route('challenges.show', $challenge->id) }}">
+            <img src="{{ asset('storage/' . $challenge->image) }}" alt="Challenge Image" class="rounded-t-lg w-full object-cover h-48" />
+            </a>
+            <div class="p-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-1">{{$challenge->title}}</h3>
+                @if($challenge->categories->isNotEmpty())
+                    <p class="text-sm text-teal-600 mb-2">{{ $challenge->categories->first()->name }}</p>
+                @else
+                    <p class="text-sm text-teal-600 mb-2">Trạm Năng Lượng</p>
+                @endif
+                <p class="text-sm text-gray-600 mb-4">Thời gian: {{$challenge->duration_days}} ngày</p>
+                <button class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 rounded focus:outline-none focus:ring-2 focus:ring-teal-400" aria-label="Tham gia thử thách này">
+                Tham gia
+                </button>
+            </div>
+            </article>
+            <!-- <a href="{{ route('challenges.show', $challenge->id) }}" class="p-4 border rounded shadow hover:bg-gray-50">
+                <img src="{{ $challenge->image }}" class="w-full h-40 object-cover rounded">
+                <h2 class="font-semibold mt-2">{{ $challenge->title }}</h2>
+                <p class="text-sm text-gray-600">{{ Str::limit($challenge->description, 100) }}</p>
+            </a> -->
+        @endforeach
+      </div>
+    </section>
+
+    <!-- Pagination -->
+    <nav aria-label="Pagination" class="mt-12 flex justify-center items-center space-x-2">
+      <button class="px-3 py-1 rounded border border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-400" aria-label="Trang trước" disabled>
+        &laquo; Trước
+      </button>
+      <button class="px-3 py-1 rounded bg-teal-600 text-white focus:outline-none focus:ring-2 focus:ring-teal-400" aria-current="page">1</button>
+      <button class="px-3 py-1 rounded border border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-400">2</button>
+      <button class="px-3 py-1 rounded border border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-400">3</button>
+      <button class="px-3 py-1 rounded border border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-400" aria-label="Trang tiếp theo">
+        Tiếp &raquo;
+      </button>
+    </nav>
+</div>
