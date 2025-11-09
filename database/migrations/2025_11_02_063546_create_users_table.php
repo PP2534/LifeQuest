@@ -25,6 +25,7 @@ return new class extends Migration
                 ->constrained('wards')
                 ->nullOnDelete();
             $table->enum('role', ['user', 'admin'])->default('user');
+            $table->enum('status', ['active', 'banned', 'blocked'])->default('active');
             $table->string('provider')->nullable();
             $table->string('provider_id')->nullable();
             $table->rememberToken();

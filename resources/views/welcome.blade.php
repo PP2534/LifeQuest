@@ -1,5 +1,5 @@
 <x-app-layout>
-    <section aria-label="Hero section">
+    <section aria-label="Hero section" class="text-center">
       <h1 class="text-4xl md:text-5xl font-extrabold text-teal-600 mb-6 leading-tight">
         Hành trình phát triển bản thân bắt đầu từ đây
       </h1>
@@ -11,7 +11,7 @@
       </a>
     </section>
 
-    <section aria-label="Featured Challenges" class="mt-20">
+    <section aria-label="Featured Challenges" class="mt-20 text-center">
       <h2 class="text-2xl font-bold text-gray-900 mb-6">Thử Thách Nổi Bật</h2>
       <div class="grid gap-8 md:grid-cols-3">
         <article class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow focus-within:ring-2 focus-within:ring-teal-600" tabindex="0">
