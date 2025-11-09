@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class HabitInvitation extends Model
 {
@@ -21,4 +22,28 @@ class HabitInvitation extends Model
         'invitee_id',
         'status',
     ];
+
+    /**
+     * Get the habit that the invitation belongs to.
+     */
+    public function habit(): BelongsTo
+    {
+        return $this->belongsTo(Habit::class);
+    }
+
+    /**
+     * Get the user who invited.
+     */
+    public function inviter(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'inviter_id');
+    }
+
+    /**
+     * Get the user who was invited.
+     */
+    public function invitee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'invitee_id');
+    }
 }

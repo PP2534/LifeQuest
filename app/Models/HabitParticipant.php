@@ -22,4 +22,12 @@ class HabitParticipant extends Model
         'role',
         'status',
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function habit()
+    {
+        return $this->belongsTo(Habit::class);
+    }
 }

@@ -24,48 +24,50 @@ new #[Layout('layouts.app')] class extends Component
     }
 }; ?>
 
-<div>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+<div class="flex flex-col items-center justify-center">
+    <div class="w-full max-w-md bg-white rounded-lg shadow p-8">
+        <h1 class="text-3xl font-bold text-teal-600 mb-6 text-center">Đăng nhập</h1>
+        <!-- Session Status -->
+        <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form wire:submit="login">
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="form.email" id="email" class="block mt-1 w-full" type="email" name="email" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('form.email')" class="mt-2" />
-        </div>
+        <form wire:submit="login" class="space-y-6">
+            <!-- Email Address -->
+            <div>
+                <x-input-label for="email" value="Email" class="mb-1 font-medium" />
+                <x-text-input wire:model="form.email" id="email" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400" type="email" name="email" required autofocus autocomplete="username" placeholder="email@example.com" />
+                <x-input-error :messages="$errors->get('form.email')" class="mt-2" />
+            </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+            <!-- Password -->
+            <div>
+                <x-input-label for="password" value="Mật khẩu" class="mb-1 font-medium" />
+                <x-text-input wire:model="form.password" id="password" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400"
+                                type="password"
+                                name="password"
+                                required autocomplete="current-password" placeholder="••••••••" />
+                <x-input-error :messages="$errors->get('form.password')" class="mt-2" />
+            </div>
 
-            <x-text-input wire:model="form.password" id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+            <!-- Remember Me -->
+            <div class="flex items-center justify-between">
+                <label for="remember" class="inline-flex items-center text-sm">
+                    <input wire:model="form.remember" id="remember" type="checkbox" class="form-checkbox h-4 w-4 text-teal-600 focus:ring-teal-400 rounded" name="remember">
+                    <span class="ml-2 text-gray-700">Ghi nhớ đăng nhập</span>
+                </label>
+                @if (Route::has('password.request'))
+                    <a class="text-sm text-teal-600 hover:text-teal-700 focus:outline-none focus:underline" href="{{ route('password.request') }}" wire:navigate>
+                        Quên mật khẩu?
+                    </a>
+                @endif
+            </div>
 
-            <x-input-error :messages="$errors->get('form.password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember" class="inline-flex items-center">
-                <input wire:model="form.remember" id="remember" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}" wire:navigate>
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
+            <x-primary-button class="w-full justify-center py-3 font-semibold bg-teal-600 hover:bg-teal-700 focus:ring-teal-400 rounded-lg">
+                Đăng nhập
             </x-primary-button>
-        </div>
-    </form>
+        </form>
+        <p class="mt-6 text-center text-sm text-gray-600">
+            Chưa có tài khoản?
+            <a href="{{ route('register') }}" wire:navigate class="text-teal-600 hover:text-teal-700 focus:outline-none focus:underline">Đăng ký ngay</a>
+        </p>
+    </div>
 </div>

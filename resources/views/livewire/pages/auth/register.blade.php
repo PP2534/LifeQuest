@@ -8,7 +8,7 @@ use Illuminate\Validation\Rules;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
-new #[Layout('layouts.guest')] class extends Component
+new #[Layout('layouts.app')] class extends Component
 {
     public string $name = '';
     public string $email = '';
@@ -36,53 +36,50 @@ new #[Layout('layouts.guest')] class extends Component
     }
 }; ?>
 
-<div>
-    <form wire:submit="register">
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input wire:model="name" id="name" class="block mt-1 w-full" type="text" name="name" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
-        </div>
+<div class="flex flex-col items-center justify-center">
+    <div class="w-full max-w-md bg-white rounded-lg shadow p-8">
+        <h1 class="text-3xl font-bold text-teal-600 mb-6 text-center">Đăng ký</h1>
+        <form wire:submit="register" class="space-y-6">
+            <!-- Name -->
+            <div>
+                <x-input-label for="name" value="Họ tên" class="mb-1 font-medium" />
+                <x-text-input wire:model="name" id="name" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400" type="text" name="name" required autofocus autocomplete="name" placeholder="Nguyễn Văn A" />
+                <x-input-error :messages="$errors->get('name')" class="mt-2" />
+            </div>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="email" id="email" class="block mt-1 w-full" type="email" name="email" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+            <!-- Email Address -->
+            <div>
+                <x-input-label for="email" value="Email" class="mb-1 font-medium" />
+                <x-text-input wire:model="email" id="email" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400" type="email" name="email" required autocomplete="username" placeholder="email@example.com" />
+                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+            <!-- Password -->
+            <div>
+                <x-input-label for="password" value="Mật khẩu" class="mb-1 font-medium" />
+                <x-text-input wire:model="password" id="password" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400"
+                                type="password"
+                                name="password"
+                                required autocomplete="new-password" placeholder="••••••••" />
+                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            </div>
 
-            <x-text-input wire:model="password" id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
+            <!-- Confirm Password -->
+            <div>
+                <x-input-label for="password_confirmation" value="Xác nhận mật khẩu" class="mb-1 font-medium" />
+                <x-text-input wire:model="password_confirmation" id="password_confirmation" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400"
+                                type="password"
+                                name="password_confirmation" required autocomplete="new-password" placeholder="••••••••" />
+                <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+            </div>
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input wire:model="password_confirmation" id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}" wire:navigate>
-                {{ __('Already registered?') }}
-            </a>
-
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
+            <x-primary-button class="w-full justify-center py-3 font-semibold bg-teal-600 hover:bg-teal-700 focus:ring-teal-400 rounded-lg">
+                Đăng ký
             </x-primary-button>
-        </div>
-    </form>
+        </form>
+        <p class="mt-6 text-center text-sm text-gray-600">
+            Đã có tài khoản?
+            <a href="{{ route('login') }}" wire:navigate class="text-teal-600 hover:text-teal-700 focus:outline-none focus:underline">Đăng nhập ngay</a>
+        </p>
+    </div>
 </div>
