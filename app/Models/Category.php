@@ -7,17 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
-    /** @use HasFactory<\Database\Factories\CategoryFactory> */
     use HasFactory;
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+
     protected $fillable = [
-        'name',
-        'slug',
-        'description',
-        'icon',
+        'name', 'slug', 'icon', 'description'
     ];
+
+    /**
+     * The challenges that belong to the category.
+     */
+    public function challenges()
+    {
+        return $this->belongsToMany(Challenge::class, 'challenge_categories');
+    }
 }

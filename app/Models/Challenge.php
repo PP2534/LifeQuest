@@ -29,4 +29,12 @@ class Challenge extends Model
         'allow_member_invite',
         'creator_id',
     ];
+
+    /**
+     * The categories that belong to the challenge.
+     */
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'challenge_categories');
+    }
 }
