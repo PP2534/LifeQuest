@@ -13,7 +13,7 @@ Route::view('/', 'welcome')->name('homepage');
 
 // Public pages
 Route::get('/challenges', ChallengeList::class)->name('challenges.index');
-Route::get('/challenges/{id}', ChallengeDetail::class)->name('challenges.show');
+Route::get('/challenges/{challenge}', ChallengeDetail::class)->name('challenges.show');
 
 // Protected (requires login)
 // Route::middleware('auth')->group(function () {
