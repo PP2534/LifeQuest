@@ -89,18 +89,20 @@
                     </thead>
                     <tbody>
                         @forelse ($leaderboard as $index => $participant)
-                            <tr class="border-t border-gray-200 hover:bg-teal-50 
-                                {{ ($myParticipation && $participant->user_id == $myParticipation->user_id) ? 'bg-teal-100 font-bold' : '' }}">
-                                <td class="px-4 py-2 font-semibold">{{ $index + 1 }}</td>
-                                <td class="px-4 py-2 flex items-center">
-                                    <img src="{{ $participant->user->avatar ?? 'https://i.pravatar.cc/40?u='.$participant->user_id }}" alt="Avatar" class="w-8 h-8 rounded-full mr-2" />
-                                    {{ $participant->user->name }}
-                                    @if($participant->role == 'creator')
-                                        <span class="ml-2 text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full">Người tạo</span>
-                                    @endif
-                                </td>
-                                <td class="px-4 py-2">{{ $participant->progress_percent }}%</td>
-                            </tr>
+                            @if ($participant->user)
+                                <tr class="border-t border-gray-200 hover:bg-teal-50 
+                                    {{ ($myParticipation && $participant->user_id == $myParticipation->user_id) ? 'bg-teal-100 font-bold' : '' }}">
+                                    <td class="px-4 py-2 font-semibold">{{ $index + 1 }}</td>
+                                    <td class="px-4 py-2 flex items-center">
+                                        <img src="{{ $participant->user->avatar ?? 'https://i.pravatar.cc/40?u='.$participant->user_id }}" alt="Avatar" class="w-8 h-8 rounded-full mr-2" />
+                                        {{ $participant->user->name }}
+                                        @if($participant->role == 'creator')
+                                            <span class="ml-2 text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full">Người tạo</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-4 py-2">{{ $participant->progress_percent }}%</td>
+                                </tr>
+                            @endif
                         @empty
                             <tr class="border-t border-gray-200">
                                 <td colspan="3" class="px-4 py-3 text-center text-gray-500">
@@ -139,16 +141,18 @@
 
             <ul class="space-y-4">
                 @forelse ($challenge->comments->sortByDesc('created_at') as $comment)
-                    <li class="flex items-start">
-                        <img src="{{ $comment->user->avatar ?? 'https://i.pravatar.cc/40?u='.$comment->user_id }}" alt="Avatar" class="w-10 h-10 rounded-full mr-3" />
-                        <div class="flex-1 bg-gray-100 rounded-lg px-4 py-3">
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="font-semibold text-sm">{{ $comment->user->name }}</span>
-                                <span class="text-xs text-gray-500">{{ $comment->created_at->diffForHumans() }}</span>
+                    @if ($comment->user)
+                        <li class="flex items-start">
+                            <img src="{{ $comment->user->avatar ?? 'https://i.pravatar.cc/40?u='.$comment->user_id }}" alt="Avatar" class="w-10 h-10 rounded-full mr-3" />
+                            <div class="flex-1 bg-gray-100 rounded-lg px-4 py-3">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="font-semibold text-sm">{{ $comment->user->name }}</span>
+                                    <span class="text-xs text-gray-500">{{ $comment->created_at->diffForHumans() }}</span>
+                                </div>
+                                <p class="text-sm text-gray-700">{!! nl2br(e($comment->content)) !!}</p>
                             </div>
-                            <p class="text-sm text-gray-700">{!! nl2br(e($comment->content)) !!}</p>
-                        </div>
-                    </li>
+                        </li>
+                    @endif
                 @empty
                     <li class="text-center text-gray-500 text-sm">
                         Chưa có bình luận nào.
