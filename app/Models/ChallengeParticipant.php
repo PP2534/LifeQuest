@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ChallengeParticipant extends Model
 {
@@ -25,4 +26,19 @@ class ChallengeParticipant extends Model
         'progress_percent',
         'streak',
     ];
+    /**
+     * Lấy người dùng tham gia thử thách.
+     */
+    public function user(): BelongsTo 
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Lấy thử thách.
+     */
+    public function challenge(): BelongsTo 
+    {
+        return $this->belongsTo(Challenge::class, 'challenge_id');
+    }
 }

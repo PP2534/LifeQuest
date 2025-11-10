@@ -71,8 +71,8 @@ class ChallengeDetail extends Component
             ]);
 
             // Tải lại dữ liệu (vì collection đã thay đổi)
-            $this->challenge->load('participants.user');
-            $this->loadMyParticipation(); // Tải lại thông tin của tôi
+            $this->challenge->refresh()->load('participants.user', 'comments.user', 'creator', 'categories');
+            $this->loadMyParticipation(); // Tải lại thông tin của tôi sau khi refresh
             
             session()->flash('success', 'Bạn đã tham gia thử thách thành công!');
         }
@@ -86,7 +86,7 @@ class ChallengeDetail extends Component
         if ($this->myParticipation) {
             $this->myParticipation->delete(); // Xóa record tham gia
             
-            $this->challenge->load('participants.user'); // Tải lại
+            $this->challenge->refresh()->load('participants.user', 'comments.user', 'creator', 'categories'); // Tải lại
             $this->myParticipation = null; // Reset
             
             session()->flash('info', 'Bạn đã rời khỏi thử thách.');
@@ -113,7 +113,7 @@ class ChallengeDetail extends Component
         ]);
 
         $this->newComment = '';
-        $this->challenge->load('comments.user'); // Tải lại bình luận
+        $this->challenge->refresh()->load('comments.user', 'participants.user', 'creator', 'categories'); // Tải lại toàn bộ
         
         session()->flash('success', 'Đã đăng bình luận!');
     }
