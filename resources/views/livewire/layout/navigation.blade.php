@@ -138,6 +138,7 @@ new class extends Component
         <ul id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-label="User menu">
         <!-- TODO: add auth check here -->
            @auth
+           <livewire:notifications />
             <li><a href="{{route('profile')}}" wire:navigate class="block px-4 py-2 text-gray-700 hover:bg-teal-100" role="menuitem" tabindex="-1">Hồ sơ của tôi <!-- My Profile --></a></li>
             <li><a wire:click="logout" class="block px-4 py-2 text-gray-700 hover:bg-teal-100 cursor-pointer" role="menuitem" tabindex="-1">Đăng xuất <!-- Logout --></a></li>
            @else
