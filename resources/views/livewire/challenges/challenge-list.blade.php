@@ -1,16 +1,18 @@
 <div>
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-3xl font-bold text-teal-600">Danh sách Thử Thách</h1>
-      <div class="space-x-3">
-        <a href="create-challenge.html"
-          class="inline-block bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-lg shadow">
-          + Tạo Thử Thách
-        </a>
-        <a href="my-challenge.html"
-          class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg shadow">
-          Quản lý Thử Thách
-        </a>
-      </div>
+      <div class="space-x-3">      
+        @auth
+            <a href="{{ route('challenges.create') }}" wire:navigate
+               class="inline-block bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-lg shadow">
+                + Tạo Thử Thách
+            </a>          
+            <a href="{{route('my-challenges')}}" wire:navigate
+               class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg shadow">
+                Quản lý Thử Thách
+            </a>
+        @endauth
+        </div>
     </div>
     <section aria-label="Challenges list">
       <div class="grid gap-8 md:grid-cols-3">

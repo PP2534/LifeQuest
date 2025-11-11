@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Carbon\Carbon;
 
 class Challenge extends Model
 {
@@ -63,5 +64,18 @@ class Challenge extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+    /** 
+    * Tự động tính toán trạng thái dựa trên ngày kết thúc.
+     */
+    public function getStatusAttribute(): string
+    {
+        if ($this->end_date && Carbon::parse($this->end_date)->isPast()) {
+            return 'Hoàn thành';
+        }
+        
+        // (có thể thêm logic cho 'Sắp diễn ra' nếu $this->start_date > now())
+
+        return 'Đang diễn ra';
     }
 }
