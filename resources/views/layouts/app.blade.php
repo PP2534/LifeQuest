@@ -39,39 +39,49 @@
             <main class="container mx-auto px-4 py-16 min-h-[80dvh]">
                 {{ $slot }}
             </main>
-
+ 
             <livewire:layout.footer />
         <!-- </div> -->
         <script data-navigate-once>
-            // Mobile nav toggle
-            const navToggle = document.getElementById('nav-toggle');
-            const primaryMenu = document.getElementById('primary-menu');
-            navToggle.addEventListener('click', () => {
-            const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
-            navToggle.setAttribute('aria-expanded', !expanded);
-            primaryMenu.classList.toggle('hidden');
-            });
-
-            // User menu dropdown toggle
-            const userMenuButton = document.getElementById('user-menu-button');
-            const userMenu = document.getElementById('user-menu');
-            userMenuButton.addEventListener('click', () => {
-            const expanded = userMenuButton.getAttribute('aria-expanded') === 'true' || false;
-            userMenuButton.setAttribute('aria-expanded', !expanded);
-            userMenu.classList.toggle('hidden');
-            });
-
-            // Close menus on outside click
-            document.addEventListener('click', (e) => {
-            if (!userMenuButton.contains(e.target) && !userMenu.contains(e.target)) {
-                userMenu.classList.add('hidden');
-                userMenuButton.setAttribute('aria-expanded', false);
+            function setupNavigation() {
+                // Mobile nav toggle
+                const navToggle = document.getElementById('nav-toggle');
+                const primaryMenu = document.getElementById('primary-menu');
+                if (navToggle && primaryMenu) {
+                    navToggle.addEventListener('click', () => {
+                        const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
+                        navToggle.setAttribute('aria-expanded', !expanded);
+                        primaryMenu.classList.toggle('hidden');
+                    });
+                }
+    
+                // User menu dropdown toggle
+                const userMenuButton = document.getElementById('user-menu-button');
+                const userMenu = document.getElementById('user-menu');
+                if (userMenuButton && userMenu) {
+                    userMenuButton.addEventListener('click', () => {
+                        const expanded = userMenuButton.getAttribute('aria-expanded') === 'true' || false;
+                        userMenuButton.setAttribute('aria-expanded', !expanded);
+                        userMenu.classList.toggle('hidden');
+                    });
+                }
+    
+                // Close menus on outside click
+                document.addEventListener('click', (e) => {
+                    if (userMenuButton && userMenu && !userMenuButton.contains(e.target) && !userMenu.contains(e.target)) {
+                        userMenu.classList.add('hidden');
+                        userMenuButton.setAttribute('aria-expanded', false);
+                    }
+                    if (navToggle && primaryMenu && !navToggle.contains(e.target) && !primaryMenu.contains(e.target)) {
+                        primaryMenu.classList.add('hidden');
+                        navToggle.setAttribute('aria-expanded', false);
+                    }
+                });
             }
-            if (!navToggle.contains(e.target) && !primaryMenu.contains(e.target)) {
-                primaryMenu.classList.add('hidden');
-                navToggle.setAttribute('aria-expanded', false);
-            }
-            });
+            
+            document.addEventListener('livewire:navigated', () => {
+                setupNavigation();
+            })
         </script>
     </body>
 </html>

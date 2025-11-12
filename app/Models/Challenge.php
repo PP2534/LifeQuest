@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,4 +31,20 @@ class Challenge extends Model
         'allow_member_invite',
         'creator_id',
     ];
+
+    /**
+     * Get the participants for the challenge.
+     */
+    public function participants(): HasMany
+    {
+        return $this->hasMany(ChallengeParticipant::class);
+    }
+
+    /**
+     * The categories that belong to the challenge.
+     */
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'challenge_categories');
+    }
 }
