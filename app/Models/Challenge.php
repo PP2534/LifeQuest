@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Carbon\Carbon;
 
 class Challenge extends Model
 {
@@ -29,4 +33,49 @@ class Challenge extends Model
         'allow_member_invite',
         'creator_id',
     ];
+
+    /**
+     * Lấy người tạo ra thử thách.
+     */
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    /**
+     * Lấy các danh mục của thử thách.
+     */
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'challenge_categories');
+    }
+
+    /**
+     * Lấy tất cả người tham gia thử thách.
+     */
+    public function participants(): HasMany
+    {
+        return $this->hasMany(ChallengeParticipant::class);
+    }
+
+    /**
+     * Lấy tất cả bình luận của thử thách.
+     */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+    /** 
+    * Tự động tính toán trạng thái dựa trên ngày kết thúc.
+     */
+    public function getStatusAttribute(): string
+    {
+        if ($this->end_date && Carbon::parse($this->end_date)->isPast()) {
+            return 'Hoàn thành';
+        }
+        
+        // (có thể thêm logic cho 'Sắp diễn ra' nếu $this->start_date > now())
+
+        return 'Đang diễn ra';
+    }
 }

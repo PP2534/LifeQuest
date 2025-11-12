@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Log;
@@ -54,5 +55,28 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    /**
+     * Các thử thách do người dùng này tạo.
+     */
+    public function challenges(): HasMany // 
+    {
+        return $this->hasMany(Challenge::class, 'creator_id');
+    }
+
+    /**
+     * Các thử thách mà người dùng này tham gia.
+     */
+    public function participations(): HasMany 
+    {
+        return $this->hasMany(ChallengeParticipant::class, 'user_id');
+    }
+
+    /**
+     * Các bình luận của người dùng này.
+     */
+    public function comments(): HasMany 
+    {
+        return $this->hasMany(Comment::class, 'user_id');
     }
 }

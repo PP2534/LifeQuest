@@ -120,7 +120,7 @@ new class extends Component
       <ul id="primary-menu" class="hidden md:flex md:items-center md:space-x-8" role="menu" aria-label="Main menu">
         <li role="none"><a href="{{route('homepage')}}" class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Trang chủ <!-- Home --></a></li>
         <li role="none"><a href="{{ route('habits.index') }}" class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Bài Tập <!-- Exercises --></a></li>
-        <li role="none"><a href="challenges.html" class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Thử Thách <!-- Challenges --></a></li>
+        <li role="none"><a href="challenges" class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Thử Thách <!-- Challenges --></a></li>
         <li role="none"><a href="{{ route('habits.index') }}" class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Thói Quen <!-- Habits --></a></li>
         <li role="none"><a href="{{route('profile')}}" wire:navigate class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Thông tin cá nhân <!-- Profile --></a></li>
       </ul>

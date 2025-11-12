@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Comment extends Model
 {
@@ -20,4 +21,19 @@ class Comment extends Model
         'challenge_id',
         'content',
     ];
+    /**
+     * Lấy người dùng đã viết bình luận.
+     */
+    public function user(): BelongsTo 
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Lấy thử thách mà bình luận này thuộc về.
+     */
+    public function challenge(): BelongsTo 
+    {
+        return $this->belongsTo(Challenge::class, 'challenge_id');
+    }
 }
