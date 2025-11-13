@@ -1,5 +1,5 @@
 <div class="container mx-auto p-6 bg-white rounded-lg shadow-md">
-    <h2 class="text-2xl font-semibold mb-6 text-indigo-600">Chỉnh sửa thói quen</h2>
+    <h2 class="text-2xl font-bold mb-6 text-teal-600">Chỉnh sửa thói quen</h2>
 
     <form wire:submit.prevent="update" class="space-y-6">
         {{-- Tên thói quen --}}
@@ -59,11 +59,11 @@
 
         {{-- Cài đặt cho nhóm --}}
         @if ($type === 'group')
-            <div class="space-y-4 border-t pt-4 mt-4">
+            <div class="space-y-4 border-t border-gray-200 pt-6 mt-6 bg-gray-50 p-4 rounded-lg">
                 <h3 class="text-lg font-medium text-gray-900">Cài đặt nhóm</h3>
                 <div class="flex items-start">
                     <div class="flex items-center h-5">
-                        <input wire:model="allow_request_join" id="allow_request_join" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                        <input wire:model="allow_request_join" id="allow_request_join" type="checkbox" class="focus:ring-teal-500 h-4 w-4 text-teal-600 border-gray-300 rounded">
                     </div>
                     <div class="ml-3 text-sm">
                         <label for="allow_request_join" class="font-medium text-gray-700">Cho phép người khác yêu cầu tham gia</label>
@@ -71,7 +71,7 @@
                 </div>
                 <div class="flex items-start">
                     <div class="flex items-center h-5">
-                        <input wire:model="allow_member_invite" id="allow_member_invite" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                        <input wire:model="allow_member_invite" id="allow_member_invite" type="checkbox" class="focus:ring-teal-500 h-4 w-4 text-teal-600 border-gray-300 rounded">
                     </div>
                     <div class="ml-3 text-sm">
                         <label for="allow_member_invite" class="font-medium text-gray-700">Cho phép thành viên mời người khác</label>
