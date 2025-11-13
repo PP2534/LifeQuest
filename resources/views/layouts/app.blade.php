@@ -36,13 +36,13 @@
             @endif
 
             <!-- Page Content -->
-            <main class="container mx-auto px-4 py-16 text-center">
+            <main class="container mx-auto px-4 py-16 min-h-[80dvh]">
                 {{ $slot }}
             </main>
 
             <livewire:layout.footer />
         <!-- </div> -->
-        <script>
+        <script data-navigate-once>
             // Mobile nav toggle
             const navToggle = document.getElementById('nav-toggle');
             const primaryMenu = document.getElementById('primary-menu');

@@ -1,26 +1,98 @@
-<div class="relative">
-    <button class="relative">
-        🔔
-        @if ($unreadCount > 0)
-            <span class="absolute top-0 right-0 bg-red-500 text-white text-xs px-2 rounded-full">
-                {{ $unreadCount }}
-            </span>
-        @endif 
+<div x-data="{ open: false }" @click.away="open = false" class="relative">
+    <!-- Nút chuông -->
+    <button 
+        @click="open = !open" 
+        class="relative focus:outline-none transition transform hover:scale-110"
+    >
+        <div id="notification-bell" class="relative">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                class="w-7 h-7 stroke-black stroke-[0.5] transition hover:drop-shadow-md hover:scale-105">
+                <defs>
+                    <linearGradient id="bellGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#facc15"/>
+                    <stop offset="100%" stop-color="#fef08a"/>
+                    </linearGradient>
+                </defs>
+                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" fill="url(#bellGradient)" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" fill="url(#bellGradient)" />
+            </svg>
+
+
+
+
+
+            @if ($unreadCount > 0)
+                <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full shadow-md ring-2 ring-white">
+                    {{ $unreadCount }}
+                </span>
+            @endif
+        </div>
+
     </button>
 
-    <div class="mt-3 bg-white border shadow-md rounded-lg w-80">
-        @foreach ($notifications as $notification)
-            <div class="p-3 border-b hover:bg-gray-50">
-                <div class="{{ $notification->read_at ? 'text-gray-500' : 'font-semibold' }}">
-                    {{ $notification->data['message'] }}
-                </div>
+    <!-- Dropdown thông báo -->
+    <div 
+        x-show="open" 
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 translate-y-2"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 translate-y-2"
+        class="absolute right-0 mt-3 bg-white border border-gray-100 shadow-lg rounded-xl w-80 z-50 overflow-hidden"
+        style="display: none;"
+    >
+        <div class="py-2 max-h-80 overflow-y-auto">
+            @auth 
+                @forelse ($notifications as $notification)
+                    <div class="p-3 border-b last:border-none hover:bg-gray-50 cursor-pointer">
+                        <div class="{{ $notification->read_at ? 'text-gray-500' : 'font-semibold text-gray-800' }}">
+                            {{ $notification->data['message'] }}
+                        </div>
 
-                @if(!$notification->read_at)
-                    <button wire:click="markAsRead('{{ $notification->id }}')" class="text-blue-500 text-xs mt-1">
-                        Đánh dấu đã đọc
-                    </button>
-                @endif
-            </div>
-        @endforeach
+                        @if(!$notification->read_at)
+                            <button 
+                                wire:click="markAsRead('{{ $notification->id }}')" 
+                                class="text-blue-500 text-xs mt-1 hover:underline"
+                            >
+                                Đánh dấu đã đọc
+                            </button>
+                        @endif
+                    </div>
+                @empty
+                    <div class="p-4 text-center text-gray-500">
+                        Không có thông báo nào
+                    </div>
+                @endforelse
+            @else
+                    <div class="p-4 text-center text-gray-500">
+                        Vui lòng đăng nhập để xem thông báo!
+                    </div>
+            @endauth
+        </div>
     </div>
+
+    <!-- Hiệu ứng rung chuông -->
+    <style>
+        @keyframes bell-shake {
+            0%, 100% { transform: rotate(0); }
+            20% { transform: rotate(-15deg); }
+            40% { transform: rotate(10deg); }
+            60% { transform: rotate(-10deg); }
+            80% { transform: rotate(15deg); }
+        }
+        .animate-bounce {
+            animation: bell-shake 1s ease-in-out;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('new-notification', () => {
+            const bell = document.getElementById('notification-bell');
+            if (bell) {
+                bell.classList.add('animate-bounce');
+                setTimeout(() => bell.classList.remove('animate-bounce'), 1000);
+            }
+        });
+    </script>
 </div>
