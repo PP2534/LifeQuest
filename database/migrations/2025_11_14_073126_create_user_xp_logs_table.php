@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('habit_logs', function (Blueprint $table) {
+        Schema::create('user_xp_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('habit_participant_id')->constrained('habit_participants')->onDelete('cascade');
-            $table->date('date');
-            $table->enum('status', ['done', 'missed'])->default('missed');
-            $table->string('proof_image')->nullable();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->string('action');
+            $table->integer('xp')->default(0);
             $table->timestamps();
-            $table->unique(['date']);
         });
     }
 
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('habit_logs');
+        Schema::dropIfExists('user_xp_logs');
     }
 };

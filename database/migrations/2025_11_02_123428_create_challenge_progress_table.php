@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('challenge_progress', function (Blueprint $table) {
             $table->id();
             $table->foreignId('challenge_participant_id')->constrained('challenge_participants')->onDelete('cascade');
-            $table->dateTime('date');
+            $table->date('date');
             $table->enum('status', ['done', 'missed'])->default('missed');
             $table->string('proof_image')->nullable();
             $table->timestamps();
+            $table->unique(['date']);
         });
     }
 
