@@ -139,7 +139,7 @@
                 </div>
             @endauth
 
-            <ul class="space-y-4">
+            <ul wire:poll.5s class="space-y-4">
                 @forelse ($challenge->comments->sortByDesc('created_at') as $comment)
                     @if ($comment->user)
                         <li class="flex items-start">

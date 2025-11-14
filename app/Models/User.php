@@ -12,6 +12,9 @@ use App\Notifications\CustomResetPassword;
 use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordNotification;
 
 
+/** @mixin \Illuminate\Notifications\HasDatabaseNotifications */
+/** @mixin \Illuminate\Database\Eloquent\Builder */
+
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -86,5 +89,9 @@ class User extends Authenticatable
     public function comments(): HasMany 
     {
         return $this->hasMany(Comment::class, 'user_id');
+    }
+    public function habits()
+    {
+        return $this->hasMany(\App\Models\Habit::class);
     }
 }
