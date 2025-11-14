@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('status', ['done', 'missed'])->default('missed');
             $table->string('proof_image')->nullable();
             $table->timestamps();
-            $table->unique(['date']);
+            $table->unique(['date','habit_participant_id']);
         });
     }
 
