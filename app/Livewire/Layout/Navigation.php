@@ -19,8 +19,8 @@ class Navigation extends Component
      public function logout()
     {
         Auth::logout();
-        $this->emit('refreshNavigation'); // update component
-        return redirect()->route('homepage');
+        $this->dispatch('refreshNavigation'); // update component
+        return $this->redirect(route('homepage'), navigate: true);
     }
 
     public function render()

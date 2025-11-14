@@ -30,7 +30,7 @@ class Notifications extends Component
         $this->unreadCount = $user->unreadNotifications->count();
 
         if ($this->unreadCount > $oldCount) {
-            $this->dispatchBrowserEvent('new-notification');
+            $this->dispatch('new-notification');
         }
     }
 

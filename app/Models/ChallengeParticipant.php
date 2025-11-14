@@ -25,4 +25,18 @@ class ChallengeParticipant extends Model
         'progress_percent',
         'streak',
     ];
+
+    /**
+     * Get the progress records for the challenge participant.
+     */
+    public function progress()
+    {
+        return $this->hasMany(ChallengeProgress::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
 }
