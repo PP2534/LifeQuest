@@ -26,6 +26,8 @@ return new class extends Migration
             $table->boolean(('allow_member_invite'))->default(true);
             $table->foreignId('ward_id')->nullable()->constrained('wards')->nullOnDelete();
             $table->foreignId('creator_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->boolean('need_proof')->default(false);
+            $table->enum('status', ['active','block'])->default('active');
             $table->timestamps();
         });
     }

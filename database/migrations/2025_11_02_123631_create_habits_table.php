@@ -20,8 +20,7 @@ return new class extends Migration
             $table->foreignId('creator_id')->nullable()->constrained('users')->onDelete('set null');
             $table->boolean('allow_request_join')->default(false);
             $table->boolean(('allow_member_invite'))->default(false);
-            $table->dateTime('start_date')->nullable();
-            $table->dateTime('end_date')->nullable();
+            $table->boolean('need_proof')->default(false);
             $table->timestamps();
         });
     }

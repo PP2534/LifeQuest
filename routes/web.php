@@ -13,9 +13,36 @@ use App\Livewire\Habits\HabitList;
 use App\Livewire\Admin\Users\UserList;
 use App\Livewire\UsersProfile\Create as UsersProfileCreate;
 use App\Models\Habit;
-
+use App\Livewire\Challenges\ChallengeList;
+use App\Livewire\Challenges\ChallengeDetail;
+use App\Livewire\Challenges\CreateChallenge;
+use App\Livewire\Challenges\MyChallengeList;
+use App\Livewire\Challenges\EditChallenge;
 
 Route::view('/', 'welcome')->name('homepage');
+
+// Public pages
+Route::get('/challenges', ChallengeList::class)->name('challenges.index');
+Route::get('/challenges/{challenge}', ChallengeDetail::class)->name('challenges.show');
+
+// Protected (requires login)
+// Route::middleware('auth')->group(function () {
+//     Route::get('/challenges/create', ChallengeCreate::class)->name('challenges.create');
+// });
+
+//  route này để truy cập trang tạo
+Route::get('/challenge/create', CreateChallenge::class)
+    ->middleware('auth') // Chỉ người đã đăng nhập mới được tạo
+    ->name('challenges.create');
+ 
+// Route SỬA (Trỏ đến EditChallenge)
+Route::get('/challenges/{challenge}/edit', EditChallenge::class) 
+    ->middleware('auth')
+    ->name('challenges.edit');  
+
+Route::get('/my-challenges', MyChallengeList::class)
+    ->middleware('auth')
+    ->name('my-challenges');
 
 // Các route cần xác thực người dùng
 Route::middleware('auth')->group(function () {

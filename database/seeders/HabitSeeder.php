@@ -19,8 +19,7 @@ class HabitSeeder extends Seeder
                 'image' => 'habit.png',
                 'creator_id' => 1,
                 'allow_request_join' => true,
-                'allow_member_invite' => true,
-                'start_date' => now(),
+                'allow_member_invite' => true
             ],
             [
                 'title' => 'Tập thể dục ít nhất 20 phút mỗi ngày',
@@ -28,8 +27,7 @@ class HabitSeeder extends Seeder
                 'image' => 'habit.png',
                 'creator_id' => 2,
                 'allow_request_join' => true,
-                'allow_member_invite' => true,
-                'start_date' => now(),
+                'allow_member_invite' => true
             ],
             [
                 'title' => 'Uống đủ 2 lít nước mỗi ngày',
@@ -37,8 +35,7 @@ class HabitSeeder extends Seeder
                 'image' => 'habit.png',
                 'creator_id' => 3,
                 'allow_request_join' => true,
-                'allow_member_invite' => true,
-                'start_date' => now(),
+                'allow_member_invite' => true
             ],
 
         ];

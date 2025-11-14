@@ -1,36 +1,27 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex items-center justify-between">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+
+
+    <div class="max-w-4xl mx-auto">
+        <h2 class="font-semibold text-2xl mb-4 text-gray-800 leading-tight">
             Hồ sơ
         </h2>
-
         <a href="{{ route('community') }}" class="px-4 py-2 bg-teal-600 text-white rounded-lg">
     Cộng đồng
 </a>
- </div>
-
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    <livewire:profile.update-profile-information-form />
-                </div>
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <!-- Update Profile Information -->
+            <div class="p-6 sm:p-8 border-b border-gray-200">
+                <livewire:profile.update-profile-information-form />
             </div>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    <livewire:profile.update-password-form />
-                </div>
+            <!-- Update Password -->
+            <div class="p-6 sm:p-8 border-b border-gray-200">
+                <livewire:profile.update-password-form />
             </div>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    <livewire:profile.delete-user-form />
-                </div>
+            <!-- Delete User -->
+            <div class="p-6 sm:p-8">
+                <livewire:profile.delete-user-form />
             </div>
         </div>
     </div>

@@ -30,4 +30,12 @@ class HabitParticipant extends Model
     {
         return $this->belongsTo(Habit::class);
     }
+
+    /**
+     * Get the logs for the habit participant.
+     */
+    public function logs()
+    {
+        return $this->hasMany(HabitLog::class);
+    }
 }

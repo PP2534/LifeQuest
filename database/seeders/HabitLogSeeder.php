@@ -15,19 +15,19 @@ class HabitLogSeeder extends Seeder
         $habit_logs = [
             [
                 'habit_participant_id' => 1,
-                'date' => '2023-10-01 08:00:00',
+                'date' => '2023-10-01',
                 'status' => 'done',
                 'proof_image' => 'proof.jpg',
             ],
             [
                 'habit_participant_id' => 1,
-                'date' => '2023-10-02 08:00:00',
+                'date' => '2023-10-02',
                 'status' => 'missed',
                 'proof_image' => 'proof.jpg',
             ],
             [
                 'habit_participant_id' => 2,
-                'date' => '2023-10-01 09:00:00',
+                'date' => '2023-10-01',
                 'status' => 'done',
                 'proof_image' => 'proof.jpg',
             ],
