@@ -26,6 +26,18 @@ class Habit extends Model
         'start_date',
         'end_date',
     ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'allow_request_join' => 'boolean',
+        'allow_member_invite' => 'boolean',
+        'start_date' => 'date',
+        'end_date' => 'date',
+    ];
         /**
      * Get the participants for the habit.
      */

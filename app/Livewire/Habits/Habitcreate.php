@@ -14,7 +14,9 @@ class Habitcreate extends Component
 {
     use WithFileUploads;
 
-    public $title, $description, $image ,$type, $allow_request_join, $allow_member_invite, $start_date, $end_date;
+    public $title, $description, $image, $type, $start_date, $end_date;
+    public $allow_request_join = false;
+    public $allow_member_invite = false;
 
     public function save()
     {
@@ -36,12 +38,14 @@ class Habitcreate extends Component
             'title' => $this->title,
             'description' => $this->description,
             'image' => $path,
-            'type' =>$this->type,
+            'type' => $this->type,
+            // Nếu là 'personal', các giá trị này sẽ là false do đã khởi tạo.
+            // Nếu là 'group', nó sẽ lấy giá trị từ checkbox (true/false).
             'allow_request_join' => (bool) $this->allow_request_join,
             'allow_member_invite' => (bool) $this->allow_member_invite,
-            'start_date' => $this->start_date,
-            'end_date' => $this->end_date,
-            'creator_id' => Auth::id() ?? 1, // tạm fix
+            'start_date' => $this->start_date ?: null,
+            'end_date' => $this->end_date ?: null,
+            'creator_id' => Auth::id(),
         ]);
         // Thêm người tạo vào danh sách người tham gia
         HabitParticipant::create([

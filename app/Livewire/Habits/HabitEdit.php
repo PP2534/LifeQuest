@@ -34,8 +34,8 @@ class HabitEdit extends Component
         $this->type = $habit->type;
         $this->allow_request_join = (bool) $habit->allow_request_join;
         $this->allow_member_invite = (bool) $habit->allow_member_invite;
-        $this->start_date = $habit->start_date;
-        $this->end_date = $habit->end_date;
+        $this->start_date = $this->habit->start_date?->format('Y-m-d');
+        $this->end_date = $this->habit->end_date?->format('Y-m-d');
         $this->existingImage = $habit->image;
     }
 
