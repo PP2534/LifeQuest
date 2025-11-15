@@ -1,13 +1,15 @@
 <x-app-layout>
-
-
     <div class="max-w-4xl mx-auto">
-        <h2 class="font-semibold text-2xl mb-4 text-gray-800 leading-tight">
-            Hồ sơ
-        </h2>
-        <a href="{{ route('community') }}" class="px-4 py-2 bg-teal-600 text-white rounded-lg">
-    Cộng đồng
-</a>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="font-semibold text-2xl mb-4 text-gray-800 leading-tight">
+                Hồ sơ
+            </h2>
+
+            <a href="{{ route('community') }}" class="px-4 py-2 bg-teal-600 text-white rounded-lg">
+                Cộng đồng
+            </a>
+        </div>
+
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <!-- Update Profile Information -->
             <div class="p-6 sm:p-8 border-b border-gray-200">

@@ -29,7 +29,6 @@
         </tbody>
     </table>
 
-    <!-- Phân trang -->
     <div class="mt-4">
         {{ $users->links() }}
     </div>

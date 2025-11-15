@@ -15,6 +15,7 @@ use App\Livewire\UsersProfile\Create as UsersProfileCreate;
 use App\Models\Habit;
 use App\Livewire\Challenges\ChallengeList;
 use App\Livewire\Challenges\ChallengeDetail;
+use App\Livewire\Challenges\ChallengesByLocation;
 use App\Livewire\Challenges\CreateChallenge;
 use App\Livewire\Challenges\MyChallengeList;
 use App\Livewire\Challenges\EditChallenge;
@@ -23,6 +24,11 @@ Route::view('/', 'welcome')->name('homepage');
 
 // Public pages
 Route::get('/challenges', ChallengeList::class)->name('challenges.index');
+
+Route::get('/challenges/location', ChallengesByLocation::class)
+    ->name('challenges.by-location')
+    ->middleware('auth');
+
 Route::get('/challenges/{challenge}', ChallengeDetail::class)->name('challenges.show');
 
 // Protected (requires login)
@@ -53,17 +59,16 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth'])->group(function () {
     //Route::get('/users', UserProfileCreate::class)->name('users.index');
     Route::get('/users', [WebUserController::class, 'index'])->name('users.index');
-
-    Route::post('/users/{id}/follow', [WebUserController::class, 'follow'])->name('users.follow');
-    Route::post('/users/{id}/unfollow', [WebUserController::class, 'unfollow'])->name('users.unfollow');
+    //Route::post('/users/{id}/follow', [WebUserController::class, 'follow'])->name('users.follow');
+    //Route::post('/users/{id}/unfollow', [WebUserController::class, 'unfollow'])->name('users.unfollow');
     Route::post('/users/{id}/toggle-follow', [WebUserController::class, 'toggleFollow'])->name('users.toggleFollow');
-
     Route::get('/admin/users', UserList::class)->name('admin.users');
 });
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/community', [CommunityController::class, 'index'])->name('community');
 });
+
 
 // Các route công khai hoặc có logic kiểm tra quyền riêng
 Route::get('/habits', HabitList::class)->name('habits.index');

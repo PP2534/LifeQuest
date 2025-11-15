@@ -1,5 +1,5 @@
 <section>
-    <h2 class="text-2xl font-semibold mb-6">Hoạt động của người bạn theo dõi</h2>
+    <h2 class="text-2xl font-semibold mb-6"> Hoạt động của người bạn theo dõi </h2>
     <ul class="space-y-4">
         @forelse($feed as $activity)
             <li class="bg-white p-4 rounded-lg shadow flex items-center justify-between">

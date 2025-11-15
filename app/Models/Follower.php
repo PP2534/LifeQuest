@@ -20,7 +20,7 @@ class Follower extends Model
         'following_id',
     ];
 
-     public function follower()
+    public function follower()
     {
         return $this->belongsTo(User::class, 'follower_id');
     }
