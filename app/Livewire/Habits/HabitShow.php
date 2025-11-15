@@ -334,8 +334,8 @@ class HabitShow extends Component
         if ($log && $log->status === 'done') {
             $log->delete();
             unset($this->myLogs);
-            unset($this->calendarGrid);
             session()->flash('status', 'Đã hủy ghi nhận.');
+            $this->updateStreakForCurrentUser();
             return;
         }
 
@@ -348,6 +348,7 @@ class HabitShow extends Component
         } else {
             // Ghi nhận trực tiếp không cần bằng chứng
             $this->logDayAsDone($dateString);
+            $this->updateStreakForCurrentUser();
             session()->flash('status', 'Đã ghi nhận hoàn thành!');
         }
     }
@@ -364,8 +365,8 @@ class HabitShow extends Component
 
         $this->logDayAsDone($this->selectedDate);
 
+        $this->updateStreakForCurrentUser();
         $this->closeProofModal();
-        session()->flash('status', 'Đã ghi nhận hoàn thành!');
     }
 
     public function logDayAsDone(string $dateString, ?string $proofImagePath = null): void
@@ -376,9 +377,6 @@ class HabitShow extends Component
             'status' => 'done',
             'proof_image' => $proofImagePath,
         ]);
-
-        unset($this->myLogs);
-        unset($this->calendarGrid);
     }
 
     public function closeProofModal()
@@ -387,6 +385,17 @@ class HabitShow extends Component
         $this->selectedDate = null;
         $this->proofImage = null;
         $this->resetErrorBag(); // Xóa lỗi validation (nếu có)
+        session()->flash('status', 'Đã ghi nhận hoàn thành!');
+    }
+
+    /**
+     * Helper method to trigger streak calculation and UI refresh.
+     */
+    private function updateStreakForCurrentUser(): void
+    {
+        $this->currentUserParticipant?->calculateAndUpdateStreak();
+        $this->currentUserParticipant?->refresh();
+        unset($this->calendarGrid); // Force calendar to re-render with new data
     }
 
     #[Computed]

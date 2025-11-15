@@ -143,6 +143,17 @@
                 <h2 class="text-xl font-bold text-gray-800 mb-4">Lịch trình của bạn</h2>
 
                 @if($isParticipant)
+                    {{-- Hiển thị Streak --}}
+                    <div class="mb-6 text-center border-b pb-6">
+                        <p class="text-sm font-medium text-gray-500">Streak hiện tại</p>
+                        <div class="flex items-center justify-center text-orange-500 mt-1">
+                            <svg class="w-8 h-8 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9.26,2.19C8.94,1.5,8.08,1.23,7.4,1.55S6.18,2.47,6.5,3.15l0.82,1.72 c-1.29,0.59-2.39,1.5-3.13,2.63c-1.48,2.24-1.58,5.13-0.28,7.51c1.3,2.38,3.95,3.63,6.58,3.13c2.63-0.5,4.68-2.55,5.18-5.18 c0.5-2.63-0.75-5.28-3.13-6.58c-0.45-0.24-0.93-0.43-1.43-0.57L9.26,2.19z M10,15c-2.21,0-4-1.79-4-4s1.79-4,4-4s4,1.79,4,4 S12.21,15,10,15z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="text-4xl font-bold text-orange-600">{{ $currentUserParticipant->streak ?? 0 }}</span>
+                        </div>
+                    </div>
+
                     {{-- Calendar Header --}}
                     <div class="flex items-center justify-between mb-4">
                         <button wire:click="previousMonth" aria-label="Tháng trước" class="p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-500">
