@@ -43,6 +43,11 @@
                        class="mt-4 inline-block bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-lg shadow">
                         + Tạo Thử Thách Ngay
                     </a>
+                    <br>
+                    <a href="{{ route('challenges.by-location') }}"
+                        class="mt-4 inline-block bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-lg shadow">
+                        Lọc thử thách theo vị trí
+                    </a>
                 </div>
             @endforelse
             </section>

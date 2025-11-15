@@ -14,6 +14,10 @@ new class extends Component
     public ?string $interests = '';
     public ?int $ward_id = null;
 
+    public array $provinces = [];
+    public array $wards = [];
+    public ?int $province_id = null;
+
     /**
      * Mount the component.
      */
@@ -25,7 +29,44 @@ new class extends Component
         $this->bio = $user->bio;
         $this->interests = $user->interests;
         $this->ward_id = $user->ward_id;
-    }
+
+        $this->provinces = \App\Models\Province::select('id', 'full_name')
+        ->orderBy('full_name')
+        ->get()
+        ->toArray();
+
+        //nếu user đã có ward=>load province + wards
+        if($user->ward_id){
+            $ward = \App\Models\Ward::find($user->ward_id);
+            if ($ward){
+                $this->province_id = $ward->province_id;
+            }
+        }
+
+        if(!$this->province_id && count($this->provinces) > 0){
+        $this->province_id = $this->provinces[0]['id'];
+        }
+        // Load wards dựa theo province_id
+        $this->loadWards();
+        }
+
+        public function updatedProvinceId($value): void{
+            $this->ward_id = null; // reset ward
+            $this->loadWards();
+        }
+
+        private function loadWards(): void{
+            if($this->province_id){
+                $this->wards = \App\Models\Ward::where('province_id', $this->province_id)
+                ->select('id', 'name_with_type')
+                ->orderBy('name_with_type')
+                ->get()
+                ->toArray();
+            }else{
+                $this->wards = [];
+        }
+}
+
 
     /**
      * Update the profile information for the currently authenticated user.
@@ -43,6 +84,7 @@ new class extends Component
         ]);
 
         $user->fill($validated);
+        $user->ward_id = $this->ward_id;
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
@@ -124,6 +166,28 @@ new class extends Component
             <x-input-label for="interests" value="Sở thích" />
             <x-text-input wire:model="interests" id="interests" name="interests" type="text" class="mt-1 block w-full focus:ring-teal-500 focus:border-teal-500" placeholder="Ví dụ: đọc sách, du lịch, code" />
             <x-input-error class="mt-2" :messages="$errors->get('interests')" />
+        </div>
+
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+            <x-input-label value="Tỉnh/Thành phố" />
+            <select wire:model="province_id" class="mt-1 block w-full border-gray-300 rounded focus:border-teal-500 focus:ring-teal-500">
+            <option value="">-- Chọn tỉnh --</option>
+            @foreach($provinces as $province)
+            <option value="{{ $province['id'] }}">{{ $province['full_name'] }}</option>
+            @endforeach
+            </select>
+        </div>
+
+        <div>
+            <x-input-label value="Phường / Xã" />
+            <select wire:model="ward_id" class="mt-1 block w-full border-gray-300 rounded focus:border-teal-500 focus:ring-teal-500">
+            <option value="">-- Chọn phường / xã --</option>
+            @foreach($wards as $ward)
+            <option value="{{ $ward['id'] }}">{{ $ward['name_with_type'] }}</option>
+            @endforeach
+            </select>
         </div>
 
         {{-- TODO: Implement a location selector component for ward_id --}}
