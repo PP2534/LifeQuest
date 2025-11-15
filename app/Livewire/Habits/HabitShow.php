@@ -9,11 +9,15 @@ use App\Models\HabitInvitation;
 use App\Models\User;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Computed;
+use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class HabitShow extends Component
 {
+    use WithFileUploads;
+
     public Habit $habit;
     public bool $isParticipant = false;
     public bool $isCreator = false;
@@ -23,12 +27,25 @@ class HabitShow extends Component
 
     public string $inviteEmail = '';
 
+    public $year;
+    public $month;
+    public $monthName;
+
+    public bool $showProofModal = false;
+    public ?string $selectedDate = null;
+    public $proofImage;
+
     public function mount(Habit $habit)
     {
         // Load all necessary relationships
         $this->habit = $habit->load(['participants.user', 'invitations.invitee', 'invitations.inviter']);
 
         $this->loadParticipationData();
+
+        $now = Carbon::now();
+        $this->year = $now->year;
+        $this->month = $now->month;
+        $this->updateMonthName();
     }
     
     public function requestToJoin()
@@ -272,6 +289,128 @@ class HabitShow extends Component
         }
     }
 
+    public function updateMonthName()
+    {
+        // Đảm bảo ngôn ngữ là tiếng Việt
+        Carbon::setLocale('vi');
+        $this->monthName = Carbon::create($this->year, $this->month)->translatedFormat('F Y');
+    }
+
+    public function previousMonth()
+    {
+        $date = Carbon::create($this->year, $this->month)->subMonth();
+        $this->year = $date->year;
+        $this->month = $date->month;
+        $this->updateMonthName();
+        unset($this->calendarGrid); // Xóa cache để tính toán lại
+    }
+
+    public function nextMonth()
+    {
+        $date = Carbon::create($this->year, $this->month)->addMonth();
+        $this->year = $date->year;
+        $this->month = $date->month;
+        $this->updateMonthName();
+        unset($this->calendarGrid); // Xóa cache để tính toán lại
+    }
+
+    public function toggleDayStatus(string $dateString)
+    {
+        if (!$this->isParticipant) return;
+
+        $date = Carbon::parse($dateString);
+
+        // Chỉ cho phép tương tác với ngày hôm nay
+        if (!$date->isToday()) {
+            return;
+        }
+
+        // Tìm log hiện có cho ngày hôm nay
+        $log = \App\Models\HabitLog::where('habit_participant_id', $this->currentUserParticipant->id)
+                                ->where('date', $date)
+                                ->first();
+
+        // Nếu đã hoàn thành, cho phép hủy (không cần modal)
+        if ($log && $log->status === 'done') {
+            $log->delete();
+            unset($this->myLogs);
+            unset($this->calendarGrid);
+            session()->flash('status', 'Đã hủy ghi nhận.');
+            return;
+        }
+
+        // Nếu chưa hoàn thành, tiến hành xử lý
+        if ($this->habit->need_proof) {
+            // Mở modal để yêu cầu bằng chứng
+            $this->selectedDate = $dateString;
+            $this->proofImage = null; // Reset ảnh cũ
+            $this->showProofModal = true;
+        } else {
+            // Ghi nhận trực tiếp không cần bằng chứng
+            $this->logDayAsDone($dateString);
+            session()->flash('status', 'Đã ghi nhận hoàn thành!');
+        }
+    }
+
+    public function saveLogWithProof()
+    {
+        if (!$this->selectedDate) return;
+
+        // Theo yêu cầu, hiện tại chỉ cần lưu 'done' mà không cần xử lý ảnh
+        // Trong tương lai, bạn có thể bỏ comment phần xử lý ảnh
+        // $this->validate(['proofImage' => 'required|image|max:2048']);
+        // $imagePath = $this->proofImage->store('habit_proofs', 'public');
+        // $this->logDayAsDone($this->selectedDate, $imagePath);
+
+        $this->logDayAsDone($this->selectedDate);
+
+        $this->closeProofModal();
+        session()->flash('status', 'Đã ghi nhận hoàn thành!');
+    }
+
+    public function logDayAsDone(string $dateString, ?string $proofImagePath = null): void
+    {
+        \App\Models\HabitLog::create([
+            'habit_participant_id' => $this->currentUserParticipant->id,
+            'date' => Carbon::parse($dateString),
+            'status' => 'done',
+            'proof_image' => $proofImagePath,
+        ]);
+
+        unset($this->myLogs);
+        unset($this->calendarGrid);
+    }
+
+    public function closeProofModal()
+    {
+        $this->showProofModal = false;
+        $this->selectedDate = null;
+        $this->proofImage = null;
+        $this->resetErrorBag(); // Xóa lỗi validation (nếu có)
+    }
+
+    #[Computed]
+    public function myLogs()
+    {
+        if (!$this->currentUserParticipant) {
+            return collect();
+        }
+        $freshParticipant = $this->currentUserParticipant->fresh(['logs']);
+
+        if (!$freshParticipant) {
+            return collect();
+        }
+
+        // Trả về logs với key là ngày tháng 'Y-m-d' để tra cứu nhanh
+        return $freshParticipant->logs->keyBy(function ($log) {
+            // Biện pháp phòng ngừa: Đảm bảo $log->date luôn là một đối tượng Carbon.
+            // Livewire đôi khi có thể "làm khô" (dehydrate) các đối tượng Carbon thành chuỗi
+            // và không "hồi sinh" (rehydrate) chúng một cách chính xác, đặc biệt với caching.
+            $date = $log->date instanceof Carbon ? $log->date : Carbon::parse($log->date);
+            return $date->format('Y-m-d');
+        });
+    }
+
     #[Computed]
     public function pendingInvitations(): Collection
     {
@@ -285,6 +424,43 @@ class HabitShow extends Component
     public function activeParticipants(): Collection
     {
         return $this->habit->participants->where('status', 'active');
+    }
+
+    #[Computed]
+    public function calendarGrid()
+    {
+        $startDate = Carbon::create($this->year, $this->month, 1);
+        $daysInMonth = $startDate->daysInMonth;
+        // dayOfWeek trả về 0 cho Chủ Nhật, 1 cho Thứ Hai, ..., 6 cho Thứ Bảy
+        $startDayOfWeek = $startDate->dayOfWeek;
+
+        $grid = [];
+
+        // Thêm các ô trống cho những ngày trước ngày 1 của tháng
+        for ($i = 0; $i < $startDayOfWeek; $i++) {
+            $grid[] = null;
+        }
+
+        // Thêm các ngày trong tháng
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $date = Carbon::create($this->year, $this->month, $day)->startOfDay();
+            $dateString = $date->format('Y-m-d');
+            $isToday = $date->isToday();
+            $isPast = $date->isPast() && !$isToday;
+            $isFuture = $date->isFuture();
+
+            $log = $this->myLogs[$dateString] ?? null;
+
+            $grid[] = [
+                'day' => $day,
+                'date' => $dateString,
+                'is_today' => $isToday,
+                'is_past' => $isPast,
+                'is_future' => $isFuture,
+                'status' => $log ? $log->status : 'pending'
+            ];
+        }
+        return $grid;
     }
 
     #[Layout('layouts.app')]
