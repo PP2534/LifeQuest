@@ -9,6 +9,7 @@ class Ward extends Model
 {
     /** @use HasFactory<\Database\Factories\WardFactory> */
     use HasFactory;
+    protected $table = 'wards';
 
     /**
      * The attributes that are mass assignable.
@@ -24,4 +25,9 @@ class Ward extends Model
         'path',
         'path_with_type',
     ];
+    public function province()
+    {
+        return $this->belongsTo(Province::class, 'province_id');
+    }
+
 }
