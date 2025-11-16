@@ -1,4 +1,4 @@
-<div x-data="{ open: false }" @click.away="open = false" class="relative">
+<div x-data="{ open: false }" @click.away="open = false" class="relative" wire:poll.5s="refreshNotifications">
     <!-- Nút chuông -->
     <button 
         @click="open = !open" 
@@ -16,10 +16,6 @@
                 <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" fill="url(#bellGradient)" />
                 <path d="M13.73 21a2 2 0 0 1-3.46 0" fill="url(#bellGradient)" />
             </svg>
-
-
-
-
 
             @if ($unreadCount > 0)
                 <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full shadow-md ring-2 ring-white">
@@ -42,34 +38,53 @@
         class="absolute right-0 mt-3 bg-white border border-gray-100 shadow-lg rounded-xl w-80 z-50 overflow-hidden"
         style="display: none;"
     >
-        <div class="py-2 max-h-80 overflow-y-auto">
-            @auth 
-                @forelse ($notifications as $notification)
-                    <div class="p-3 border-b last:border-none hover:bg-gray-50 cursor-pointer">
-                        <div class="{{ $notification->read_at ? 'text-gray-500' : 'font-semibold text-gray-800' }}">
-                            {{ $notification->data['message'] }}
-                        </div>
+        @auth 
+            <div class="px-4 py-2 border-b flex justify-between items-center">
+                <h3 class="font-semibold text-gray-800">Thông báo</h3>
+                <button 
+                    wire:click="markAllAsRead"
+                    class="text-sm text-blue-500 hover:underline focus:outline-none"
+                    @if($unreadCount == 0) disabled @endif
+                    :class="{ 'opacity-50 cursor-not-allowed': {{ $unreadCount }} == 0 }"
+                >
+                    Đánh dấu tất cả là đã đọc
+                </button>
+            </div>
 
-                        @if(!$notification->read_at)
-                            <button 
-                                wire:click="markAsRead('{{ $notification->id }}')" 
-                                class="text-blue-500 text-xs mt-1 hover:underline"
-                            >
-                                Đánh dấu đã đọc
-                            </button>
-                        @endif
+            <div class="max-h-80 overflow-y-auto">
+                @forelse ($notifications as $notification)
+                    <div 
+                        wire:click.prevent="markAsRead('{{ $notification->id }}')"
+                        class="p-3 border-b last:border-none transition duration-150 ease-in-out cursor-pointer {{ !$notification->read_at ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-gray-50' }}"
+                        title="{{ !$notification->read_at ? 'Click để đọc và xem chi tiết' : 'Xem chi tiết' }}"
+                    >
+                        <div class="flex items-start">
+                            @if(!$notification->read_at)
+                                <div class="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                            @else
+                                <div class="w-2 h-2 bg-transparent rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                            @endif
+                            <div class="flex-grow">
+                                <p class="{{ $notification->read_at ? 'text-gray-600' : 'font-semibold text-gray-800' }}">
+                                    {{ $notification->data['message'] }}
+                                </p>
+                                <div class="text-xs text-gray-400 mt-1">
+                                    {{ $notification->created_at->diffForHumans() }}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 @empty
                     <div class="p-4 text-center text-gray-500">
                         Không có thông báo nào
                     </div>
                 @endforelse
-            @else
-                    <div class="p-4 text-center text-gray-500">
-                        Vui lòng đăng nhập để xem thông báo!
-                    </div>
-            @endauth
-        </div>
+            </div>
+        @else
+            <div class="p-4 text-center text-gray-500">
+                Vui lòng đăng nhập để xem thông báo!
+            </div>
+        @endauth
     </div>
 
     <!-- Hiệu ứng rung chuông -->

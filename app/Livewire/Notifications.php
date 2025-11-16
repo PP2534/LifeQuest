@@ -54,13 +54,32 @@ class Notifications extends Component
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-
         $notification = $user->notifications()->find($notificationId);
-
 
         if ($notification) {
             $notification->markAsRead();
+            $this->refreshNotifications();
+
+            // Chuyển hướng đến trang chi tiết thử thách và trỏ tới đúng bình luận
+            $url = route('challenges.show', ['challenge' => $notification->data['challenge_id']]);
+            return redirect($url . '#comment-' . $notification->data['comment_id']);
         }
+    }
+
+    /**
+     * Mark all unread notifications as read.
+     */
+    public function markAllAsRead()
+    {
+        // Ensure a user is authenticated
+        if (!Auth::check()) {
+            return;
+        }
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        $user->unreadNotifications->markAsRead();
 
         $this->refreshNotifications();
     }
