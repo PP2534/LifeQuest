@@ -357,16 +357,11 @@ class HabitShow extends Component
     {
         if (!$this->selectedDate) return;
 
-        // Theo yêu cầu, hiện tại chỉ cần lưu 'done' mà không cần xử lý ảnh
-        // Trong tương lai, bạn có thể bỏ comment phần xử lý ảnh
-        // $this->validate(['proofImage' => 'required|image|max:2048']);
-        // $imagePath = $this->proofImage->store('habit_proofs', 'public');
-        // $this->logDayAsDone($this->selectedDate, $imagePath);
-
         $this->logDayAsDone($this->selectedDate);
 
         $this->updateStreakForCurrentUser();
         $this->closeProofModal();
+        session()->flash('status', 'Đã ghi nhận hoàn thành!');
     }
 
     public function logDayAsDone(string $dateString, ?string $proofImagePath = null): void
@@ -385,7 +380,6 @@ class HabitShow extends Component
         $this->selectedDate = null;
         $this->proofImage = null;
         $this->resetErrorBag(); // Xóa lỗi validation (nếu có)
-        session()->flash('status', 'Đã ghi nhận hoàn thành!');
     }
 
     /**
