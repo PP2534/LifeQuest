@@ -4,10 +4,10 @@
             <h2 class="font-semibold text-2xl mb-4 text-gray-800 leading-tight">
                 Hồ sơ
             </h2>
-
+<!-- 
             <a href="{{ route('community') }}" class="px-4 py-2 bg-teal-600 text-white rounded-lg">
                 Cộng đồng
-            </a>
+            </a> -->
         </div>
 
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
