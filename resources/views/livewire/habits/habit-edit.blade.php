@@ -77,7 +77,7 @@
                 <h3 class="text-lg font-medium text-gray-900">Cài đặt nhóm</h3>
                 <div class="flex items-start">
                     <div class="flex items-center h-5">
-                        <input wire:model="allow_request_join" id="allow_request_join" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                        <input wire:model="allow_request_join" id="allow_request_join" type="checkbox" class="focus:ring-teal-500 h-4 w-4 text-teal-600 border-gray-300 rounded">
                     </div>
                     <div class="ml-3 text-sm">
                         <label for="allow_request_join" class="font-medium text-gray-700">Cho phép người khác yêu cầu tham gia</label>
@@ -85,7 +85,7 @@
                 </div>
                 <div class="flex items-start">
                     <div class="flex items-center h-5">
-                        <input wire:model="allow_member_invite" id="allow_member_invite" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                        <input wire:model="allow_member_invite" id="allow_member_invite" type="checkbox" class="focus:ring-teal-500 h-4 w-4 text-teal-600 border-gray-300 rounded">
                     </div>
                     <div class="ml-3 text-sm">
                         <label for="allow_member_invite" class="font-medium text-gray-700">Cho phép thành viên mời người khác</label>

@@ -1,5 +1,5 @@
 <div class="container mx-auto p-4">
-    <div class="flex justify-between items-center mb-4">
+    <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Danh sách thói quen</h1>
         <a href="{{ route('habits.create') }}" wire:navigate class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700">Tạo thói quen mới</a>
     </div>

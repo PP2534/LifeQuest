@@ -8,7 +8,6 @@
     @endif
 
     <form wire:submit.prevent="save" class="space-y-6">
-        {{-- Tên thói quen --}}
         <div>
             <label for="title" class="block text-sm font-medium text-gray-700">Tên thói quen</label>
             <input wire:model="title" id="title" type="text" placeholder="Ví dụ: Đọc sách 30 phút mỗi ngày"
@@ -18,7 +17,6 @@
             @error('title') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>
 
-        {{-- Mô tả --}}
         <div>
             <label for="description" class="block text-sm font-medium text-gray-700">Mô tả</label>
             <textarea wire:model="description" id="description" rows="3" placeholder="Mô tả ngắn về mục tiêu và lợi ích của thói quen..."
@@ -28,7 +26,6 @@
             @error('description') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>
 
-        {{-- Ảnh bìa --}}
         <div>
             <label for="image" class="block text-sm font-medium text-gray-700">Ảnh bìa</label>
             <input wire:model="image" id="image" type="file" accept="image/*"
@@ -48,7 +45,6 @@
         </div>
 
 
-        {{-- Loại thói quen --}}
         <div>
             <label for="type" class="block text-sm font-medium text-gray-700">Loại</label>
             <select wire:model.live="type" id="type"
@@ -79,15 +75,14 @@
                 <h3 class="text-lg font-medium text-gray-900">Cài đặt nhóm</h3>
                 <div class="flex items-start">
                     <div class="flex items-center h-5">
-                        <input wire:model="allow_request_join" id="allow_request_join" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                    </div>
+                        <input wire:model="allow_request_join" id="allow_request_join" type="checkbox" class="focus:ring-teal-500 h-4 w-4 text-teal-600 border-gray-300 rounded">                    </div>
                     <div class="ml-3 text-sm">
                         <label for="allow_request_join" class="font-medium text-gray-700">Cho phép người khác yêu cầu tham gia</label>
                     </div>
                 </div>
                 <div class="flex items-start">
                     <div class="flex items-center h-5">
-                        <input wire:model="allow_member_invite" id="allow_member_invite" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                        <input wire:model="allow_member_invite" id="allow_member_invite" type="checkbox" class="focus:ring-teal-500 h-4 w-4 text-teal-600 border-gray-300 rounded">
                     </div>
                     <div class="ml-3 text-sm">
                         <label for="allow_member_invite" class="font-medium text-gray-700">Cho phép thành viên mời người khác</label>
@@ -96,7 +91,6 @@
             </div>
         @endif
 
-        {{-- Nút Lưu --}}
         <div class="text-right">
             <button type="submit" class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
                 Lưu

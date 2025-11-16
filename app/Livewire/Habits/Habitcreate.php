@@ -35,7 +35,9 @@ class Habitcreate extends Component
             'title' => $this->title,
             'description' => $this->description,
             'image' => $path,
-            'type' =>$this->type,
+            'type' => $this->type,
+            // Nếu là 'personal', các giá trị này sẽ là false do đã khởi tạo.
+            // Nếu là 'group', nó sẽ lấy giá trị từ checkbox (true/false).
             'allow_request_join' => (bool) $this->allow_request_join,
             'allow_member_invite' => (bool) $this->allow_member_invite,
             'need_proof' => (bool) $this->need_proof,
