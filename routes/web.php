@@ -19,6 +19,7 @@ use App\Livewire\Challenges\ChallengesByLocation;
 use App\Livewire\Challenges\CreateChallenge;
 use App\Livewire\Challenges\MyChallengeList;
 use App\Livewire\Challenges\EditChallenge;
+use App\Livewire\Public\Create;
 
 Route::view('/', 'welcome')->name('homepage');
 
@@ -68,6 +69,9 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/community', [CommunityController::class, 'index'])->name('community');
 });
+
+
+Route::get('/listing', Create::class)->name('public.listing');
 
 
 // Các route công khai hoặc có logic kiểm tra quyền riêng
