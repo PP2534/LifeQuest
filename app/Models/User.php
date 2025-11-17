@@ -124,4 +124,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(\App\Models\Habit::class);
     }
+
+    /**
+     * Get all of the xp logs for the user.
+     */
+    public function xpLogs(): HasMany
+    {
+        return $this->hasMany(UserXpLogs::class, 'user_id');
+    }
 }

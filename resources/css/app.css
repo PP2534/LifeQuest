@@ -9,3 +9,11 @@
         max-width: 1280px;
     }
 }
+@layer base {
+  input:focus,
+  textarea:focus,
+  button:focus,
+  select:focus {
+    @apply outline outline-2 outline-teal-500 outline-offset-2;
+  }
+}

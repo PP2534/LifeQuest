@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Web\CommunityController;
+use App\Livewire\Leaderboard;
 use App\Livewire\UserProfile\Create as UserProfileCreate;
 use App\Http\Controllers\Web\UserController as WebUserController;
 
@@ -30,6 +31,9 @@ Route::get('/challenges/location', ChallengesByLocation::class)
     ->middleware('auth');
 
 Route::get('/challenges/{challenge}', ChallengeDetail::class)->name('challenges.show');
+
+Route::get('leaderboard', Leaderboard::class)->name('leaderboard');
+
 
 // Protected (requires login)
 // Route::middleware('auth')->group(function () {

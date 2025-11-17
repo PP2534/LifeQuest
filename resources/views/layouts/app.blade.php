@@ -29,16 +29,25 @@
             <!-- Page Heading -->
             @if (isset($header))
                 <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    <div class="container mx-auto py-6 px-4 lg:px-8">
                         {{ $header }}
                     </div>
                 </header>
             @endif
 
             <!-- Page Content -->
-            <main class="container mx-auto px-4 py-16 min-h-[80dvh]">
-                {{ $slot }}
-            </main>
+            <div class="container mx-auto px-4 py-8 min-h-[80dvh]">
+                <div class="lg:flex lg:space-x-8">
+                    <main class="flex-1 min-w-0">
+                        {{ $slot }}
+                    </main>
+                    <aside class="w-full lg:w-80 xxl:w-96 flex-shrink-0 mt-8 lg:mt-0">
+                        <div class="sticky top-32 space-y-6">
+                            <livewire:leaderboard />
+                        </div>
+                    </aside>
+                </div>
+            </div>
  
             <livewire:layout.footer />
         <!-- </div> -->
