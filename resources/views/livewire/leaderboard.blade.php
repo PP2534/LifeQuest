@@ -1,5 +1,5 @@
 <div wire:poll.30s>
-    <div class="w-full bg-white shadow-lg rounded-xl border border-gray-200 ">
+    <div class="w-full bg-white shadow-lg rounded-xl border border-gray-200 min-h-[70dvh]">
         {{-- Header --}}
         <div class="p-4 border-b border-gray-200">
             <h2 class="text-lg font-bold text-gray-800 text-center">Bảng Xếp Hạng</h2>

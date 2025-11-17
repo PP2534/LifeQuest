@@ -41,11 +41,13 @@
                     <main class="flex-1 min-w-0">
                         {{ $slot }}
                     </main>
-                    <aside class="w-full lg:w-80 xxl:w-96 flex-shrink-0 mt-8 lg:mt-0">
-                        <div class="sticky top-32 space-y-6">
-                            <livewire:leaderboard />
-                        </div>
-                    </aside>
+                     @if (!request()->is('/') && !request()->is('challenges'))
+                        <aside class="w-full lg:w-80 xxl:w-96 flex-shrink-0 mt-8 lg:mt-0">
+                            <div class="sticky top-32 space-y-6">
+                                <livewire:leaderboard />
+                            </div>
+                        </aside>
+                    @endif
                 </div>
             </div>
  
