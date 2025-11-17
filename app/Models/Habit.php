@@ -23,8 +23,7 @@ class Habit extends Model
         'creator_id',
         'allow_request_join',
         'allow_member_invite',
-        'start_date',
-        'end_date',
+        'need_proof',
     ];
 
     /**
@@ -35,9 +34,9 @@ class Habit extends Model
     protected $casts = [
         'allow_request_join' => 'boolean',
         'allow_member_invite' => 'boolean',
-        'start_date' => 'date',
-        'end_date' => 'date',
+        'need_proof' => 'boolean',
     ];
+
         /**
      * Get the participants for the habit.
      */

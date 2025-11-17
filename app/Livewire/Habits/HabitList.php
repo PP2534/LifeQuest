@@ -16,7 +16,8 @@ class HabitList extends Component
         $userId = Auth::id();
 
         if ($userId) {
-            // Lấy các thói quen mà người dùng hiện tại là thành viên và eager load thông tin participant của họ
+            // Lấy các thói quen mà người dùng là thành viên và có status là 'active'
+            // Đồng thời, load thông tin participant của chính user đó để lấy streak
             $this->habits = Habit::whereHas('participants', function ($query) use ($userId) {
                 $query->where('user_id', $userId)
                       ->where('status', 'active');
