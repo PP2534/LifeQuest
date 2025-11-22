@@ -17,6 +17,7 @@ class FeaturedChallenges extends Component
     {
         $this->challenges = Challenge::with('categories')
             ->withCount('participants')
+            ->where('status', 'active')
             ->where('end_date', '>', now())
             ->where('allow_request_join', true)
             ->orderByDesc('participants_count')

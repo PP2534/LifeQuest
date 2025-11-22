@@ -8,7 +8,7 @@
                 + Tạo Thử Thách
             </a>          
             <a href="{{route('my-challenges')}}" wire:navigate
-               class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg shadow">
+               class="inline-block bg-yellow-500 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg shadow">
                 Quản lý Thử Thách
             </a>
         @endauth
@@ -29,9 +29,12 @@
                     <p class="text-sm text-teal-600 mb-2">Trạm Năng Lượng</p>
                 @endif
                 <p class="text-sm text-gray-600 mb-4">Thời gian: {{$challenge->duration_days}} ngày</p>
-                <button class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 rounded focus:outline-none focus:ring-2 focus:ring-teal-400" aria-label="Tham gia thử thách này">
-                Tham gia
-                </button>
+                <div class="flex justify-center">
+                  <a href="{{ route('challenges.show', $challenge->id) }}"
+                    class="w-11/12 bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 rounded focus:outline-none focus:ring-2 focus:ring-teal-400 text-center">
+                      Xem Chi Tiết
+                  </a>
+                </div>
             </div>
             </article>
             <!-- <a href="{{ route('challenges.show', $challenge->id) }}" class="p-4 border rounded shadow hover:bg-gray-50">

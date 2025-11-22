@@ -5,11 +5,12 @@ namespace App\Livewire\Challenges;
 use Livewire\Component;
 use App\Models\Challenge;
 
+
 class ChallengeList extends Component
 {
     public $challenges;
     public function mount(){
-        $this->challenges = Challenge::with('categories')->latest()->get();
+        $this->challenges = Challenge::with('categories')->where('status', 'active')->latest()->get();
     }
     public function render()
     {

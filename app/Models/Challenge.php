@@ -31,6 +31,8 @@ class Challenge extends Model
         'type',
         'allow_request_join',
         'allow_member_invite',
+        'need_proof',
+        'status',
         'creator_id',
     ];
 

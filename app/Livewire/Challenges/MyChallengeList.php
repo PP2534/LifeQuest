@@ -19,7 +19,7 @@ class MyChallengeList extends Component
      */
     public function deleteChallenge(int $challengeId)
     {
-        $challenge = Challenge::where('id', $challengeId)
+        $challenge = Challenge::where('id', $challengeId)->where('status', 'active')
                               ->where('creator_id', Auth::id())
                               ->first();
 
@@ -48,14 +48,23 @@ class MyChallengeList extends Component
 
     public function render()
     {
+        $userId = Auth::id(); // Lấy ID người dùng hiện tại
         // Chỉ tải các thử thách mà người dùng này đã tạo (creator_id)
         //
-        $challenges = Challenge::where('creator_id', Auth::id())
-            ->orderBy('created_at', 'desc')
+       $challenges = Challenge::query()
+            // 1. Lấy các thử thách do tôi tạo
+            ->where('creator_id', $userId)->where('status', 'active')
             
-            // Dùng with('participants') để tính toán $challenge->status
-            ->with('participants') 
-            ->paginate(10); // 10 thử thách mỗi trang
+            // 2. HOẶC (OR) lấy các thử thách tôi đang tham gia
+            // (sử dụng mối quan hệ 'participants' đã định nghĩa trong Model)
+            ->orWhereHas('participants', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            
+            // Tải kèm 'participants' (để tính status) và 'creator' (để kiểm tra quyền)
+            ->with(['participants', 'creator']) 
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
         return view('livewire.challenges.my-challenge-list', [
             'challenges' => $challenges,
