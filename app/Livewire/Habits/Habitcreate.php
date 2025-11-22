@@ -40,14 +40,8 @@ class Habitcreate extends Component
             // Nếu là 'group', nó sẽ lấy giá trị từ checkbox (true/false).
             'allow_request_join' => (bool) $this->allow_request_join,
             'allow_member_invite' => (bool) $this->allow_member_invite,
-<<<<<<< HEAD
-            'start_date' => $this->start_date ?: null,
-            'end_date' => $this->end_date ?: null,
-            'creator_id' => Auth::id(),
-=======
             'need_proof' => (bool) $this->need_proof,
             'creator_id' => Auth::id() ?? 1, // tạm fix
->>>>>>> main
         ]);
         // Thêm người tạo vào danh sách người tham gia
         HabitParticipant::create([

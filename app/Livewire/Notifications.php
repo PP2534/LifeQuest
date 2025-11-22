@@ -60,9 +60,15 @@ class Notifications extends Component
             $notification->markAsRead();
             $this->refreshNotifications();
 
-            // Chuyển hướng đến trang chi tiết thử thách và trỏ tới đúng bình luận
-            $url = route('challenges.show', ['challenge' => $notification->data['challenge_id']]);
-            return redirect($url . '#comment-' . $notification->data['comment_id']);
+            // Xử lý chuyển hướng dựa trên loại thông báo
+            if (isset($notification->data['challenge_id'])) {
+                // Chuyển hướng đến trang chi tiết thử thách và trỏ tới đúng bình luận
+                $url = route('challenges.show', ['challenge' => $notification->data['challenge_id']]);
+                return redirect($url . '#comment-' . $notification->data['comment_id']);
+            } elseif (isset($notification->data['follower_id'])) {
+                // Chuyển hướng đến trang cá nhân của người theo dõi
+                return redirect()->route('profile.show', $notification->data['follower_id']);
+            }
         }
     }
 
