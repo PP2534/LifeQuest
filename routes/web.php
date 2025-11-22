@@ -20,6 +20,7 @@ use App\Livewire\Challenges\ChallengesByLocation;
 use App\Livewire\Challenges\CreateChallenge;
 use App\Livewire\Challenges\MyChallengeList;
 use App\Livewire\Challenges\EditChallenge;
+use App\Livewire\Challenges\ChallengeCheckin;
 
 Route::view('/', 'welcome')->name('homepage');
 
@@ -53,6 +54,10 @@ Route::get('/challenges/{challenge}/edit', EditChallenge::class)
 Route::get('/my-challenges', MyChallengeList::class)
     ->middleware('auth')
     ->name('my-challenges');
+
+Route::get('/challenges/{challenge}/checkin', ChallengeCheckin::class)
+->middleware('auth')
+->name('challenges.checkin');
 
 // Các route cần xác thực người dùng
 Route::middleware('auth')->group(function () {
