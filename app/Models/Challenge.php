@@ -79,4 +79,8 @@ class Challenge extends Model
 
         return 'Đang diễn ra';
     }
+
+    public function ward(){
+        return $this->belongsTo(Ward::class);
+    }
 }

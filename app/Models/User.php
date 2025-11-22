@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Log;
+
 use App\Notifications\CustomResetPassword;
 use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordNotification;
 
@@ -63,6 +63,36 @@ class User extends Authenticatable
         ];
     }
 
+    public function ward()
+    {
+        return $this->belongsTo(Ward::class, 'ward_id');
+    }
+
+    public function province()
+    {
+        return $this->belongsTo(Province::class);
+    }
+
+    public function followers()
+    {
+        return $this->hasMany(\App\Models\Follower::class, 'following_id');
+    }
+
+    public function following()
+    {
+        return $this->hasMany(\App\Models\Follower::class, 'follower_id');
+    }
+
+    public function followingsUsers()
+    {
+        return $this->belongsToMany(User::class, 'followers', 'follower_id', 'following_id');
+    }
+
+    public function followersUsers()
+    {
+        return $this->belongsToMany(User::class, 'followers', 'following_id', 'follower_id');
+    }
+
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new CustomResetPassword($token));
@@ -93,5 +123,13 @@ class User extends Authenticatable
     public function habits()
     {
         return $this->hasMany(\App\Models\Habit::class);
+    }
+
+    /**
+     * Get all of the xp logs for the user.
+     */
+    public function xpLogs(): HasMany
+    {
+        return $this->hasMany(UserXpLogs::class, 'user_id');
     }
 }

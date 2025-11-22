@@ -17,7 +17,7 @@ class HabitEdit extends Component
 
     public Habit $habit;
 
-    public $title, $description, $type, $allow_request_join, $allow_member_invite, $start_date, $end_date;
+    public $title, $description, $type, $allow_request_join, $allow_member_invite, $need_proof;
     public $image; // Cho ảnh mới tải lên
     public $existingImage; // Để hiển thị ảnh hiện tại
 
@@ -34,8 +34,7 @@ class HabitEdit extends Component
         $this->type = $habit->type;
         $this->allow_request_join = (bool) $habit->allow_request_join;
         $this->allow_member_invite = (bool) $habit->allow_member_invite;
-        $this->start_date = $habit->start_date;
-        $this->end_date = $habit->end_date;
+        $this->need_proof = (bool) $habit->need_proof;
         $this->existingImage = $habit->image;
     }
 
@@ -48,8 +47,7 @@ class HabitEdit extends Component
             'type' => ['required', Rule::in(['personal', 'group'])],
             'allow_request_join'=> 'boolean',
             'allow_member_invite' => 'boolean',
-            'start_date' =>'nullable|date',
-            'end_date' =>'nullable|date|after_or_equal:start_date',
+            'need_proof' => 'boolean'
         ]);
 
         $path = $this->existingImage;
@@ -69,8 +67,7 @@ class HabitEdit extends Component
             'type' =>$this->type,
             'allow_request_join' => (bool) $this->allow_request_join,
             'allow_member_invite' => (bool) $this->allow_member_invite,
-            'start_date' => $this->start_date,
-            'end_date' => $this->end_date,
+            'need_proof' => (bool) $this->need_proof,
         ]);
 
         session()->flash('status', 'Cập nhật thói quen thành công!');
