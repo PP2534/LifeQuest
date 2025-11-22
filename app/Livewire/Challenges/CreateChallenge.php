@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads; //  để xử lý upload file
 use Carbon\Carbon;
+use App\Models\Province;
+use App\Models\Ward;
 
 class CreateChallenge extends Component
 {
@@ -27,9 +29,18 @@ class CreateChallenge extends Component
 
     // Dùng để lưu các danh mục được chọn
     public array $selectedCategories = [];
+    public $selectedProvinceId = null; // ID Tỉnh được chọn
+    public $ward_id = null;// ID xã 
     
     // Dùng để hiển thị danh sách category
     public Collection $allCategories;
+    public Collection $provinces;
+    public Collection $wards;
+
+    // mặc định là ko yêu cầu ảnh
+    public bool $need_proof = false;
+
+   
 
     /**
      * Hàm này chạy khi component được tải lần đầu
@@ -38,6 +49,12 @@ class CreateChallenge extends Component
     {
         // Tải tất cả danh mục từ CSDL để hiển thị cho người dùng chọn
         $this->allCategories = Category::orderBy('name')->get();
+
+        // Tải danh sách tất cả tỉnh thành
+        $this->provinces = Province::orderBy('name')->get();
+        
+        // Khởi tạo danh sách xã rỗng
+        $this->wards = collect();
     }
 
     /**
@@ -46,7 +63,7 @@ class CreateChallenge extends Component
     protected function rules(): array
     {
         return [
-            'title' => 'required|string|min:10|max:255',
+            'title' => 'required|string|min:5|max:255',
             'description' => 'required|string|min:20',
             'duration_days' => 'required|integer|min:1',
             'type' => 'required|in:public,private',
@@ -54,9 +71,27 @@ class CreateChallenge extends Component
             'streak_mode' => 'required|in:continuous,cumulative',
             'image' => 'nullable|image|max:2048', // cho phép null, 2MB max
             'selectedCategories' => 'required|array|min:1', // Yêu cầu ít nhất 1 danh mục
+            'need_proof' => 'boolean',
+            'selectedProvinceId' => 'required', // Bắt buộc chọn tỉnh
+            'ward_id' => 'required|exists:wards,id', // Bắt buộc chọn xã và xã phải tồn tại
         ];
     }
-
+/**
+     * Hàm Lifecycle Hook của Livewire:
+     * Tự động chạy khi $selectedProvinceId thay đổi
+     */
+    public function updatedSelectedProvinceId($value)
+    {
+        // Khi chọn tỉnh mới, reset xã đã chọn
+        $this->ward_id = null;
+        
+        // Lọc danh sách xã theo tỉnh mới chọn
+        if ($value) {
+            $this->wards = Ward::where('province_id', $value)->orderBy('name')->get();
+        } else {
+            $this->wards = collect();
+        }
+    }
     /**
      * Hàm này được gọi khi form được submit (wire:submit="save")
      */
@@ -73,6 +108,9 @@ class CreateChallenge extends Component
         // Tách categories ra
         $categories = $validatedData['selectedCategories'];
         unset($validatedData['selectedCategories']);
+
+        // Loại bỏ selectedProvinceId vì không lưu vào bảng challenges
+        unset($validatedData['selectedProvinceId']);
 
         $startDate = Carbon::now(); // Lấy ngày giờ hiện tại
         $duration = (int) $validatedData['duration_days']; // Lấy số ngày

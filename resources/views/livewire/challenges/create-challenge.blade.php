@@ -30,7 +30,39 @@
                 
                 @error('image') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="province" class="block text-sm font-medium text-gray-700">Tỉnh / Thành phố</label>
+                    <select id="province" 
+                            wire:model.live="selectedProvinceId" 
+                            class="w-full border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-teal-500 focus:border-teal-500">
+                        <option value="">-- Chọn Tỉnh/Thành --</option>
+                        @foreach($provinces as $province)
+                            <option value="{{ $province->id }}">{{ $province->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('selectedProvinceId') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                </div>
 
+                <div>
+                    <label for="ward" class="block text-sm font-medium text-gray-700">Phường / Xã</label>
+                    <select id="ward" 
+                            wire:model="ward_id" 
+                            class="w-full border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-teal-500 focus:border-teal-500"
+                            @if($wards->isEmpty()) disabled @endif> 
+                            <option value="">-- Chọn Phường/Xã --</option>
+                        @foreach($wards as $ward)
+                            <option value="{{ $ward->id }}">{{ $ward->name }}</option>
+                        @endforeach
+                    </select>
+                    
+                    <div wire:loading wire:target="selectedProvinceId" class="text-xs text-teal-600 mt-1">
+                        Đang tải danh sách xã...
+                    </div>
+                    
+                    @error('ward_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                </div>
+            </div>
             <div>
                 <label class="block text-sm font-medium">Danh mục (Chọn ít nhất 1)</label>
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
@@ -74,7 +106,18 @@
                 </select>
                 @error('type') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
-            
+            <div class="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                <div class="flex items-center h-5">
+                    <input id="need_proof" 
+                           wire:model="need_proof" 
+                           type="checkbox" 
+                           class="focus:ring-teal-500 h-5 w-5 text-teal-600 border-gray-300 rounded">
+                </div>
+                <div class="ml-3 text-sm">
+                    <label for="need_proof" class="font-medium text-gray-700">Yêu cầu ảnh minh chứng (Proof)</label>
+                    <p class="text-gray-500">Nếu chọn, người tham gia bắt buộc phải tải ảnh lên mỗi khi điểm danh hàng ngày.</p>
+                </div>
+            </div>
             <div class="text-right">
                 <button type="submit" class="bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700 font-semibold">
                     <span wire:loading.remove wire:target="save">

@@ -34,6 +34,7 @@ class Challenge extends Model
         'need_proof',
         'status',
         'creator_id',
+        'ward_id',
     ];
 
     /**
@@ -80,7 +81,8 @@ class Challenge extends Model
         return 'Đang diễn ra';
     }
 
-    public function ward(){
-        return $this->belongsTo(Ward::class);
+   public function ward()
+    {
+        return $this->belongsTo(Ward::class, 'ward_id');
     }
 }
