@@ -21,6 +21,7 @@ use App\Livewire\Challenges\CreateChallenge;
 use App\Livewire\Challenges\MyChallengeList;
 use App\Livewire\Challenges\EditChallenge;
 use App\Livewire\Public\Create;
+use App\Livewire\PublicPage\Create as PublicPageCreate;
 
 Route::view('/', 'welcome')->name('homepage');
 
