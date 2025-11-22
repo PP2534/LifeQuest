@@ -1,7 +1,5 @@
-<div>
 <div class="min-h-screen bg-gray-100 py-12">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        
         <div class="flex justify-between items-center mb-6">
             <div>
                 <a href="{{ route('challenges.show', $challenge) }}" class="text-teal-600 hover:underline mb-2 block">&larr; Quay lại chi tiết</a>
@@ -38,9 +36,8 @@
                             
                             if ($dayObj['status'] == 'done') {
                                 $bgColor = 'bg-green-100 border-green-200';
-                                $cursor = 'cursor-default'; // Đã làm rồi thì không click nữa
                             } elseif ($dayObj['status'] == 'missed') {
-                                $bgColor = 'bg-red-100';
+                                $bgColor = 'bg-red-100 border-red-200';
                             } elseif ($dayObj['is_today']) {
                                 $bgColor = 'bg-blue-50 ring-2 ring-inset ring-blue-300';
                             } elseif ($dayObj['is_future']) {
@@ -52,19 +49,29 @@
                         <div wire:click="selectDate({{ $dayObj['day'] }})" 
                              class="h-32 border-b border-r p-2 relative transition {{ $bgColor }} {{ $cursor }}">
                             
-                            <span class="font-semibold {{ $dayObj['is_today'] ? 'text-blue-600' : 'text-gray-700' }}">
-                                {{ $dayObj['day'] }}
-                            </span>
+                            <div class="flex justify-between">
+                                <span class="font-semibold {{ $dayObj['is_today'] ? 'text-blue-600' : 'text-gray-700' }}">
+                                    {{ $dayObj['day'] }}
+                                </span>
+                                @if($dayObj['is_today'])
+                                    <span class="text-[10px] font-bold text-blue-600 uppercase">Hôm nay</span>
+                                @endif
+                            </div>
 
                             @if($dayObj['status'] == 'done')
-                                <div class="mt-2 flex justify-center">
-                                    <span class="inline-flex items-center justify-center w-8 h-8 bg-green-500 rounded-full text-white">
-                                        ✓
+                                <div class="mt-4 flex flex-col items-center">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 bg-green-500 rounded-full text-white shadow-sm">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                     </span>
+                                    <span class="text-xs text-green-700 font-semibold mt-1">Đạt</span>
                                 </div>
-                                <p class="text-xs text-center text-green-700 mt-1 font-medium">Hoàn thành</p>
                             @elseif($dayObj['status'] == 'missed')
-                                <p class="text-xs text-center text-red-500 mt-4 font-medium">Bỏ lỡ</p>
+                                <div class="mt-4 flex flex-col items-center">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 bg-red-400 rounded-full text-white shadow-sm">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    </span>
+                                    <span class="text-xs text-red-600 font-semibold mt-1">Trượt</span>
+                                </div>
                             @endif
                         </div>
                     @endif
@@ -74,53 +81,83 @@
     </div>
 
     @if($showModal)
-        <div class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-            <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
-                <h3 class="text-2xl font-bold mb-4 text-gray-900">Điểm danh ngày {{ $selectedDate }}</h3>
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full transform transition-all">
                 
-                <form wire:submit.prevent="submitCheckin">
-                    
-                    @if($challenge->need_proof)
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Hình ảnh minh chứng <span class="text-red-500">*</span>
-                            </label>
-                            
-                            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                                <div class="space-y-1 text-center">
-                                    @if ($proofImage)
-                                        <img src="{{ $proofImage->temporaryUrl() }}" class="mx-auto h-32 object-cover rounded">
-                                    @else
-                                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
-                                        <div class="flex text-sm text-gray-600">
-                                            <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-teal-600 hover:text-teal-500 focus-within:outline-none">
-                                                <span>Tải ảnh lên</span>
-                                                <input id="file-upload" wire:model="proofImage" type="file" class="sr-only">
-                                            </label>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                            @error('proofImage') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                            <div wire:loading wire:target="proofImage" class="text-sm text-gray-500 mt-1">Đang xử lý ảnh...</div>
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t-xl">
+                    <h3 class="text-xl font-bold text-gray-800">
+                        Cập nhật ngày {{ $selectedDateDisplay }}
+                    </h3>
+                    <button wire:click="$set('showModal', false)" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+
+                <div class="p-6">
+                    @if($currentStatusOnDate == 'done')
+                        <div class="mb-6 bg-green-50 text-green-800 p-3 rounded-lg text-sm text-center">
+                            Ngày này đang được ghi nhận là <strong>Hoàn thành</strong>.
+                        </div>
+                    @elseif($currentStatusOnDate == 'missed')
+                        <div class="mb-6 bg-red-50 text-red-800 p-3 rounded-lg text-sm text-center">
+                            Ngày này đang được ghi nhận là <strong>Thất bại/Bỏ lỡ</strong>.
                         </div>
                     @else
-                        <p class="mb-6 text-gray-600">Xác nhận bạn đã hoàn thành nhiệm vụ hôm nay?</p>
+                        <div class="mb-6 bg-gray-50 text-gray-600 p-3 rounded-lg text-sm text-center">
+                            Chưa có dữ liệu cho ngày này.
+                        </div>
                     @endif
 
-                    <div class="flex justify-end space-x-3">
-                        <button type="button" wire:click="$set('showModal', false)" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
-                            Hủy
-                        </button>
-                        <button type="submit" class="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700" wire:loading.attr="disabled">
-                            <span wire:loading.remove wire:target="submitCheckin">Xác nhận</span>
-                            <span wire:loading wire:target="submitCheckin">Đang lưu...</span>
+                    <div class="mb-8">
+                        <h4 class="font-semibold text-gray-900 mb-3">1. Đánh dấu Hoàn thành</h4>
+                        
+                        @if($challenge->need_proof)
+                            <div class="mb-3">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Tải ảnh minh chứng (Bắt buộc)
+                                </label>
+                                <div class="flex items-center justify-center w-full">
+                                    <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                        @if ($proofImage)
+                                            <img src="{{ $proofImage->temporaryUrl() }}" class="h-full object-contain rounded-lg">
+                                        @else
+                                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                                <svg class="w-8 h-8 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                                <p class="text-xs text-gray-500">Bấm để chọn ảnh</p>
+                                            </div>
+                                        @endif
+                                        <input id="dropzone-file" wire:model="proofImage" type="file" class="hidden" accept="image/*" />
+                                    </label>
+                                </div>
+                                @error('proofImage') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                            </div>
+                        @endif
+
+                        <button wire:click="markAsDone" 
+                                class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-lg transition flex justify-center items-center"
+                                wire:loading.attr="disabled">
+                            <span wire:loading.remove wire:target="markAsDone">✅ Xác nhận Hoàn Thành</span>
+                            <span wire:loading wire:target="markAsDone">Đang xử lý...</span>
                         </button>
                     </div>
-                </form>
+
+                    <div class="relative flex py-2 items-center">
+                        <div class="flex-grow border-t border-gray-300"></div>
+                        <span class="flex-shrink-0 mx-4 text-gray-400 text-xs uppercase">Hoặc</span>
+                        <div class="flex-grow border-t border-gray-300"></div>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <h4 class="font-semibold text-gray-900 mb-3">2. Đánh dấu Thất bại / Bỏ lỡ</h4>
+                        <p class="text-xs text-gray-500 mb-3">Việc này sẽ làm ngắt chuỗi (streak) của bạn.</p>
+                        <button wire:click="markAsMissed" 
+                                class="text-red-600 hover:text-red-800 hover:bg-red-50 font-semibold py-2 px-4 rounded-lg transition border border-red-200 w-full">
+                            ❌ Xác nhận Bỏ lỡ
+                        </button>
+                    </div>
+
+                </div>
             </div>
         </div>
     @endif
-</div></div>
+</div>
