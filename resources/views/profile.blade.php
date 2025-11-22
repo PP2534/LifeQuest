@@ -1,30 +1,87 @@
 <x-app-layout>
-    <div class="max-w-4xl mx-auto">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="font-semibold text-2xl mb-4 text-gray-800 leading-tight">
-                Hồ sơ
-            </h2>
-<!-- 
-            <a href="{{ route('community') }}" class="px-4 py-2 bg-teal-600 text-white rounded-lg">
-                Cộng đồng
-            </a> -->
+    <div class="mx-auto py-8">
+        <!-- Profile Header -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+            <div class="p-6 sm:p-8">
+                <div class="flex items-center">
+                    {{-- Giả sử user có avatar, nếu không có bạn có thể thay bằng ảnh mặc định --}}
+                    <img class="h-20 w-20 rounded-full object-cover mr-6" src="{{ $user->avatar ? asset('storage/users/' . $user->avatar): 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=0d9488&background=94ffd8' }}" alt="{{ $user->name }}">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">{{ $user->name }}</h1>
+                        @if($user->ward_id)
+                            <p class="text-md text-gray-600 mt-1"><strong>Vị trí:</strong> {{ $user->ward->name }}, {{ $user->ward->province->name }}</p>
+                        @endif
+                        @if($user->interests)
+                            <p class="text-md text-gray-600 mt-1"><strong>Sở thích:</strong> {{ $user->interests }}</p>
+                        @endif
+                        <p class="text-md text-gray-600 mt-1">
+                            @if($rank)
+                                <span class="font-semibold text-teal-600">#{{ $rank}}</span> trên BXH
+                            @else
+                                Chưa xếp hạng
+                            @endif
+                        </p>
+                    </div>
+                    @if(auth()->id() == $user->id)
+                        <div class="flex-1 text-end self-start">
+                            <a href="{{ route('profile.edit')}}" wire:navigate class="inline-flex" title="Chỉnh sửa thông tin cá nhân"><x-lucide-user-round-pen class="w-6 h-6 text-primary"/></a>
+                        </div>
+                     @endif
+                </div>
+                <div class="mt-8">
+                    @if($user->bio)
+                        <p class="text-md text-gray-600 mt-1 text-center">{{$user->bio}}</p>
+                    @endif
+                </div>
+            </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-            <!-- Update Profile Information -->
-            <div class="p-6 sm:p-8 border-b border-gray-200">
-                <livewire:profile.update-profile-information-form />
-            </div>
+        <!-- Participated Challenges -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Thử thách đã tham gia</h2>
+            @if($participatedChallenges->count() > 0)
+                <div class="grid gap-8 md:grid-cols-2">
+                    @foreach($participatedChallenges as $challenge)
+                        <article class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
+                            <a href="{{ route('challenges.show', $challenge->id) }}" class="block">
+                                <img src="{{ $challenge->image && file_exists( asset('storage/challenges/' . $challenge->image))?   asset('storage/challenges/' . $challenge->image) : asset('storage/root/no_image.png')  }}" alt="Ảnh thử thách" class="rounded-t-lg w-full object-cover h-48" />
+                                <div class="p-4">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ $challenge->title }}</h3>
+                                    <p class="text-sm text-gray-600">Thời gian: {{ $challenge->duration_days }} ngày</p>
+                                </div>
+                            </a>
+                        </article>
+                    @endforeach
+                </div>
+            @else
+                <div class="bg-white rounded-lg shadow-md p-6 text-center text-gray-500">
+                    <p>Người dùng này chưa tham gia thử thách công khai nào.</p>
+                </div>
+            @endif
+        </div>
 
-            <!-- Update Password -->
-            <div class="p-6 sm:p-8 border-b border-gray-200">
-                <livewire:profile.update-password-form />
-            </div>
-
-            <!-- Delete User -->
-            <div class="p-6 sm:p-8">
-                <livewire:profile.delete-user-form />
-            </div>
+        <!-- Created Challenges -->
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Thử thách đã tạo</h2>
+            @if($createdChallenges->count() > 0)
+                <div class="grid gap-8 md:grid-cols-2">
+                    @foreach($createdChallenges as $challenge)
+                        <article class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
+                            <a href="{{ route('challenges.show', $challenge->id) }}" class="block">
+                                <img src="{{ asset('storage/' . $challenge->image) }}" alt="Ảnh thử thách" class="rounded-t-lg w-full object-cover h-48" />
+                                <div class="p-4">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ $challenge->title }}</h3>
+                                    <p class="text-sm text-gray-600">Thời gian: {{ $challenge->duration_days }} ngày</p>
+                                </div>
+                            </a>
+                        </article>
+                    @endforeach
+                </div>
+            @else
+                <div class="bg-white rounded-lg shadow-md p-6 text-center text-gray-500">
+                    <p>Người dùng này chưa tạo thử thách công khai nào.</p>
+                </div>
+            @endif
         </div>
     </div>
 </x-app-layout>

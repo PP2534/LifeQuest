@@ -4,6 +4,9 @@ namespace App\Providers;
 
 use App\Models\Comment;
 use App\Observers\CommentObserver;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Events\Login;
+use App\Listeners\AwardDailyLoginXp;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 
@@ -15,7 +18,12 @@ class EventServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
-        //
+        Registered::class => [
+            'Illuminate\Auth\Listeners\SendEmailVerificationNotification',
+        ],
+        Login::class => [
+            AwardDailyLoginXp::class,
+        ],
     ];
 
     /**

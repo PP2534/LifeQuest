@@ -1,14 +1,16 @@
 <?php
 
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Web\CommunityController;
 use App\Livewire\Leaderboard;
-use App\Livewire\UserProfile\Create as UserProfileCreate;
+use App\Livewire\LeaderboardPage;
 use App\Http\Controllers\Web\UserController as WebUserController;
 
 
 use App\Livewire\Habits\Habitcreate;
 use App\Livewire\Habits\HabitShow;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Habits\HabitList;
 use App\Livewire\Admin\Users\UserList;
@@ -32,7 +34,7 @@ Route::get('/challenges/location', ChallengesByLocation::class)
 
 Route::get('/challenges/{challenge}', ChallengeDetail::class)->name('challenges.show');
 
-Route::get('leaderboard', Leaderboard::class)->name('leaderboard');
+Route::get('leaderboard', LeaderboardPage::class)->name('leaderboard');
 
 
 // Protected (requires login)
@@ -78,12 +80,12 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/habits', HabitList::class)->name('habits.index');
 Route::get('/habits/{habit}', HabitShow::class)->name('habits.show');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
-
-Route::view('profile', 'profile')
-    ->middleware(['auth'])
-    ->name('profile');
+// Profile routes
+Route::middleware('auth')->group(function () {
+    Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/myprofile',  function () {
+    return redirect('/profile?id=' . Auth::id());})->name('profile');
+});
 
 require __DIR__.'/auth.php';

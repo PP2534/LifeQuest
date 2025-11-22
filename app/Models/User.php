@@ -100,17 +100,22 @@ class User extends Authenticatable
     /**
      * Các thử thách do người dùng này tạo.
      */
-    public function challenges(): HasMany // 
+    public function createdChallenges(): HasMany
     {
         return $this->hasMany(Challenge::class, 'creator_id');
     }
 
     /**
-     * Các thử thách mà người dùng này tham gia.
+     * Các bản ghi tham gia thử thách của người dùng.
      */
-    public function participations(): HasMany 
+    public function participations(): HasMany
     {
         return $this->hasMany(ChallengeParticipant::class, 'user_id');
+    }
+
+    public function participatedChallenges()
+    {
+        return $this->belongsToMany(Challenge::class, 'challenge_participants');
     }
 
     /**
