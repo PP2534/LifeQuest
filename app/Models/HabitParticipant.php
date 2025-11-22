@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\XpService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -43,10 +44,11 @@ class HabitParticipant extends Model
     /**
      * Calculates the current streak based on logs and updates the model.
      */
-    public function calculateAndUpdateStreak(): void
+    public function calculateAndUpdateStreak(XpService $xpService): void
     {
         // Lấy tất cả các bản ghi log, sắp xếp giảm dần, để đảm bảo cast 'date' hoạt động.
         $logModels = $this->logs()->orderBy('date', 'desc')->get();
+        $oldStreak = $this->streak;
 
         if ($logModels->isEmpty()) {
             $this->streak = 0;
@@ -90,5 +92,11 @@ class HabitParticipant extends Model
 
         $this->streak = $streak;
         $this->save();
+
+        // Cộng điểm XP nếu đạt mốc streak mới
+        if ($this->streak > $oldStreak) {
+            $user = $this->user;
+            $xpService->awardHabitStreakXp($user, $this->streak);
+        }
     }
 }

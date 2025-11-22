@@ -1,0 +1,31 @@
+<x-app-layout>
+    <div class="mx-auto">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="font-semibold text-2xl mb-4 text-gray-800 leading-tight">
+                Chỉnh sửa hồ sơ
+            </h2>
+<!-- 
+            <a href="{{ route('community') }}" class="px-4 py-2 bg-teal-600 text-white rounded-lg">
+                Cộng đồng
+            </a> -->
+            <a href="{{ route('profile') }}" wire:navigate class="px-4 py-2 bg-teal-600 text-white rounded-lg">Quay lại</a>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <!-- Update Profile Information -->
+            <div class="p-6 sm:p-8 border-b border-gray-200">
+                <livewire:profile.update-profile-information-form />
+            </div>
+
+            <!-- Update Password -->
+            <div class="p-6 sm:p-8 border-b border-gray-200">
+                <livewire:profile.update-password-form />
+            </div>
+
+            <!-- Delete User -->
+            <div class="p-6 sm:p-8">
+                <livewire:profile.delete-user-form />
+            </div>
+        </div>
+    </div>
+</x-app-layout>

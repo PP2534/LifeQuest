@@ -15,7 +15,9 @@ class UserXpLogs extends Model
     protected $fillable = [
         "user_id",
         "action",
-        "xp"
+        "xp",
+        "related_id",
+        "related_type"
     ];
 
     public function user()
