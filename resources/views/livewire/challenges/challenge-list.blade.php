@@ -47,15 +47,5 @@
     </section>
 
     <!-- Pagination -->
-    <nav aria-label="Pagination" class="mt-12 flex justify-center items-center space-x-2">
-      <button class="px-3 py-1 rounded border border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-400" aria-label="Trang trước" disabled>
-        &laquo; Trước
-      </button>
-      <button class="px-3 py-1 rounded bg-teal-600 text-white focus:outline-none focus:ring-2 focus:ring-teal-400" aria-current="page">1</button>
-      <button class="px-3 py-1 rounded border border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-400">2</button>
-      <button class="px-3 py-1 rounded border border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-400">3</button>
-      <button class="px-3 py-1 rounded border border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-400" aria-label="Trang tiếp theo">
-        Tiếp &raquo;
-      </button>
-    </nav>
+   {{ $challenges->links('components.pagination-teal') }}
 </div>
