@@ -118,11 +118,10 @@
             <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
         <ul id="primary-menu" class="hidden md:flex md:items-center md:space-x-8" role="menu" aria-label="Main menu">
-            <li role="none"><a href="{{route('homepage')}}" class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Trang chủ <!-- Home --></a></li>
-            <!-- <li role="none"><a href="{{ route('habits.index') }}" class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Bài Tập Exercises</a></li> -->
-            <li role="none"><a href="{{ route('challenges.index') }}" class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Thử Thách <!-- Challenges --></a></li>
-            <li role="none"><a href="{{ route('habits.index') }}" class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Thói Quen <!-- Habits --></a></li>
-            <li role="none"><a href="{{route('profile')}}" wire:navigate class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Thông tin cá nhân <!-- Profile --></a></li>
+            <li role="none"><a href="{{route('homepage')}}" wire:navigate class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Trang chủ <!-- Home --></a></li>
+            <li role="none"><a href="{{ route('challenges.index') }}" wire:navigate class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Thử Thách <!-- Challenges --></a></li>
+            <li role="none"><a href="{{ route('habits.index') }}" wire:navigate class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Thói Quen <!-- Habits --></a></li>
+            <li role="none"><a href="{{route('leaderboard')}}" wire:navigate class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Bảng xếp hạng <!-- Profile --></a></li>
         </ul>
         <!-- User avatar dropdown -->
         <div class="flex items-center">
@@ -132,7 +131,13 @@
             <div class="relative ml-4">
             <button id="user-menu-button" aria-haspopup="true" aria-expanded="false" aria-controls="user-menu" class="flex items-center focus:outline-none focus:ring-2 focus:ring-teal-600 rounded-full" tabindex="0">
                 @auth
-                    <img src="https://i.pravatar.cc/40" alt="User avatar" class="w-10 h-10 rounded-full" />
+                    <img 
+                        class="h-10 w-10 rounded-full object-cover"
+                        src="{{ $user->avatar 
+                                ? asset('storage/users/' . $user->avatar) 
+                                : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=0d9488&background=94ffd8'}}"
+                        alt="{{ $user->name }}"
+                    > 
                 @else
                     <x-heroicon-o-user-circle class="w-10 h-10 rounded-full text-gray-600" />
                 @endauth
