@@ -2,7 +2,7 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center mb-6">
             <div>
-                <a href="{{ route('challenges.show', $challenge) }}" class="text-teal-600 hover:underline mb-2 block">&larr; Quay lại chi tiết</a>
+                <a href="{{ route('challenges.show', $challenge) }}" wire:navigate class="text-teal-600 hover:underline mb-2 block">&larr; Quay lại chi tiết</a>
                 <h1 class="text-3xl font-bold text-gray-900">Điểm Danh: {{ $challenge->title }}</h1>
             </div>
             <div class="text-right">
