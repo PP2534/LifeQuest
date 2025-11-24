@@ -32,6 +32,7 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\CheckDomain::class
         ],
 
         'api' => [
@@ -48,11 +49,12 @@ class Kernel extends HttpKernel
      * @var array<string, class-string|string>
      */
     protected $middlewareAliases = [
-        'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
+        'auth' => \Illuminate\Auth\Middleware\Authenticate::class, // Sử dụng Authenticate tùy chỉnh
+        'isAdmin' => \App\Http\Middleware\IsAdmin::class,
         'guest' => \Illuminate\Auth\Middleware\RedirectIfAuthenticated::class,
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'isAdmin' => \App\Http\Middleware\IsAdmin::class, // <--- Dòng này đăng ký alias
+        'domain' =>  \App\Http\Middleware\CheckDomain::class
     ];
 }

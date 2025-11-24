@@ -1,11 +1,14 @@
 <?php
 
 use App\Http\Controllers\Auth\VerifyEmailController;
-use App\Livewire\Admin\Users\UserList;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-Route::middleware('web')->group(function () {
+// User authentication routes - chỉ dành cho user domain
+$appHost = parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST) ?: 'localhost';
+Route::domain($appHost)
+    ->middleware(['domain', 'web'])
+    ->group(function () {
     Route::middleware('guest')->group(function () {
         Volt::route('register', 'pages.auth.register')
             ->name('register');
@@ -30,11 +33,5 @@ Route::middleware('web')->group(function () {
     
         Volt::route('confirm-password', 'pages.auth.confirm-password')
             ->name('password.confirm');
-    });
-    
-    Route::domain('admin.localhost')->middleware(['auth', 'isAdmin'])->group(function () {
-        Volt::route('dashboard', 'pages.admin.dashboard')
-            ->name('admin.dashboard');
-        Route::get('/users', UserList::class)->name('admin.users.list');
     });
 });
