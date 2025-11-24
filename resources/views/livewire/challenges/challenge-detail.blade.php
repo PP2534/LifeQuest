@@ -28,31 +28,38 @@
             </div>
         </section>
 
-        <section aria-label="Join challenge" class="mb-8">
-            @auth
-                @if ($isParticipant)
-                    <button wire:click="leaveChallenge" wire:confirm="Bạn có chắc chắn muốn rời khỏi thử thách này không?"
-                            class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-lg focus:outline-none focus:ring-4 focus:ring-red-400" 
-                            aria-pressed="true">
-                        Đã tham gia (Rời khỏi)
-                    </button>
-                @else
-                    <button wire:click="joinChallenge"
-                            class="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-3 rounded-lg focus:outline-none focus:ring-4 focus:ring-teal-400" 
-                            aria-pressed="false">
-                        Tham gia thử thách
-                    </button>
-                @endif
-            @else
-                <a href="{{ route('login') }}" wire:navigate
-                   class="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-3 rounded-lg focus:outline-none focus:ring-4 focus:ring-teal-400">
-                    Đăng nhập để tham gia
-                </a>
-            @endauth
-        </section>
+       <section aria-label="Join challenge" class="mb-8">
+                @auth
+                    @if ($myParticipation)
+                        @if ($myParticipation->status === 'kicked')
+                            <div class="w-full bg-gray-400 text-white font-semibold px-6 py-3 rounded-lg text-center cursor-not-allowed shadow-inner">
+                                🔒 Bạn đã bị loại khỏi thử thách
+                            </div>
+                        
+                        @elseif ($myParticipation->status === 'active')
+                            <button wire:click="leaveChallenge" 
+                                    wire:confirm="Bạn có chắc chắn muốn rời khỏi thử thách này không?"
+                                    class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-lg focus:outline-none focus:ring-4 focus:ring-red-400 w-full sm:w-auto">
+                                Đã tham gia (Rời khỏi)
+                            </button>
+                        @endif
 
-        @if ($isParticipant && $myParticipation)
-            <section aria-label="Progress bar" class="mb-8">
+                    @else
+                        <button wire:click="joinChallenge"
+                                class="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-3 rounded-lg focus:outline-none focus:ring-4 focus:ring-teal-400 w-full sm:w-auto">
+                            Tham gia thử thách
+                        </button>
+                    @endif
+                @else
+                    <a href="{{ route('login') }}" wire:navigate
+                       class="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-3 rounded-lg focus:outline-none focus:ring-4 focus:ring-teal-400 inline-block">
+                        Đăng nhập để tham gia
+                    </a>
+                @endauth
+            </section>
+
+       @if ($isParticipant && $myParticipation && $myParticipation->status === 'active')
+                <section aria-label="Progress bar" class="mb-8">
                 <h2 class="text-xl font-semibold mb-4">Tiến trình của bạn</h2>
                 <div class="w-full bg-gray-200 rounded-full h-6 relative overflow-hidden" 
                      role="progressbar" aria-valuemin="0" aria-valuemax="100" 
@@ -85,43 +92,84 @@
         @endif
 
         <section aria-label="Leaderboard" class="mb-8">
-            <h2 class="text-xl font-semibold mb-4">Bảng xếp hạng ({{ $leaderboard->count() }} thành viên)</h2>
-            <div class="bg-white border border-gray-300 rounded shadow max-h-64 overflow-y-auto">
-                <table class="w-full text-left text-gray-700 text-sm">
-                    <thead class="bg-gray-100 sticky top-0">
-                        <tr>
-                            <th class="px-4 py-2">Hạng</th>
-                            <th class="px-4 py-2">Tên người dùng</th>
-                            <th class="px-4 py-2">Tiến trình</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($leaderboard as $index => $participant)
-                            @if ($participant->user)
-                                <tr class="border-t border-gray-200 hover:bg-teal-50 
-                                    {{ ($myParticipation && $participant->user_id == $myParticipation->user_id) ? 'bg-teal-100 font-bold' : '' }}">
-                                    <td class="px-4 py-2 font-semibold">{{ $index + 1 }}</td>
-                                    <td class="px-4 py-2 flex items-center">
-                                        <img src="{{ $participant->user->avatar ?? 'https://i.pravatar.cc/40?u='.$participant->user_id }}" alt="Avatar" class="w-8 h-8 rounded-full mr-2" />
-                                        {{ $participant->user->name }}
-                                        @if($participant->role == 'creator')
-                                            <span class="ml-2 text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full">Người tạo</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-4 py-2">{{ $participant->progress_percent }}%</td>
-                                </tr>
-                            @endif
-                        @empty
-                            <tr class="border-t border-gray-200">
-                                <td colspan="3" class="px-4 py-3 text-center text-gray-500">
-                                    Chưa có ai tham gia thử thách này.
-                                </td>
+                <h2 class="text-xl font-semibold mb-4">Bảng xếp hạng ({{ $leaderboard->count() }} thành viên)</h2>
+                <div class="bg-white border border-gray-300 rounded shadow max-h-64 overflow-y-auto">
+                    <table class="w-full text-left text-gray-700 text-sm">
+                        <thead class="bg-gray-100 sticky top-0 z-10">
+                            <tr>
+                                <th class="px-4 py-2">Hạng</th>
+                                <th class="px-4 py-2">Tên người dùng</th>
+                                <th class="px-4 py-2">Tiến trình</th>
+                                
+                                @if($challenge->creator_id === Auth::id())
+                                    <th class="px-4 py-2 text-center">Quản lý</th>
+                                @endif
                             </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </section>
+                        </thead>
+                        <tbody>
+                            @forelse ($leaderboard as $index => $participant)
+                                <tr class="border-t border-gray-200 hover:bg-teal-50 
+                                    {{ $participant->user_id == Auth::id() ? 'bg-teal-100' : '' }}">
+                                    
+                                    <td class="px-4 py-2 font-semibold">{{ $index + 1 }}</td>
+                                    
+                                   <td class="px-4 py-2">
+                                        <div class="flex items-center">
+                                            <img src="{{ $participant->user->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($participant->user->name) }}" 
+                                                 alt="{{ $participant->user->name }}" 
+                                                 class="w-8 h-8 rounded-full mr-2" />
+                                            
+                                            <div class="flex flex-col">
+                                                <div class="flex items-center">
+                                                    <span class="font-medium text-gray-900">{{ $participant->user->name }}</span>
+                                                    
+                                                   @if($participant->role == 'creator')
+                                                        <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800 border border-indigo-200">
+                                                            Người tạo
+                                                        </span>
+                                                    @else
+                                                        <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
+                                                            Thành viên
+                                                        </span>
+                                                    @endif
+                                                </div>
+
+                                                @if($participant->status === 'kicked')
+                                                    <span class="text-xs text-red-500 font-bold mt-0.5">
+                                                        🚫 Đã bị khóa
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td class="px-4 py-2">{{ $participant->progress_percent }}%</td>
+
+                                    @if($challenge->creator_id === Auth::id())
+                                        <td class="px-4 py-2 text-center">
+                                            @if($participant->user_id !== Auth::id())
+                                                @if($participant->status === 'active')
+                                                    <button wire:click="kickMember({{ $participant->id }})" 
+                                                            wire:confirm="Bạn có chắc chắn muốn khóa thành viên này khỏi thử thách?"
+                                                            class="text-xs bg-red-100 text-red-600 px-3 py-1 rounded hover:bg-red-200 border border-red-200 font-semibold">
+                                                        Kick 🚫
+                                                    </button>
+                                                @elseif($participant->status === 'kicked')
+                                                    <button wire:click="restoreMember({{ $participant->id }})"
+                                                            class="text-xs bg-green-100 text-green-600 px-3 py-1 rounded hover:bg-green-200 border border-green-200 font-semibold">
+                                                        Bỏ Kick ✅
+                                                    </button>
+                                                @endif
+                                            @endif
+                                        </td>
+                                    @endif
+                                </tr>
+                            @empty
+                                @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
         <section aria-label="Comments" class="mb-8">
             <h2 class="text-xl font-semibold mb-4">Bình luận ({{ $challenge->comments->count() }})</h2>

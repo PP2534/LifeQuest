@@ -96,7 +96,47 @@ class ChallengeDetail extends Component
             session()->flash('info', 'Bạn đã rời khỏi thử thách.');
         }
     }
+    /**
+     * Chức năng kick mấy người tham gia khó ưu
+     */
+    public function kickMember($participantId)
+    {
+        // 1. Chỉ người tạo (Creator) mới được quyền kick
+        if ($this->challenge->creator_id !== Auth::id()) {
+            return;
+        }
 
+        $participant = \App\Models\ChallengeParticipant::find($participantId);
+
+        // 2. Không thể kick chính mình
+        if ($participant && $participant->user_id !== Auth::id()) {
+            $participant->update(['status' => 'kicked']);
+            
+            // Tải lại danh sách để cập nhật giao diện
+            $this->challenge->load('participants.user');
+            session()->flash('success', 'Đã khóa thành viên này.');
+        }
+    }
+      /**
+     * Chức năng kick mấy người tham gia hết khó ưu
+     */
+    public function restoreMember($participantId)
+    {
+        // 1. Chỉ người tạo mới được quyền mở
+        if ($this->challenge->creator_id !== Auth::id()) {
+            return;
+        }
+
+        $participant = \App\Models\ChallengeParticipant::find($participantId);
+
+        if ($participant) {
+            $participant->update(['status' => 'active']);
+            
+            // Tải lại danh sách
+            $this->challenge->load('participants.user');
+            session()->flash('success', 'Đã mở khóa cho thành viên này.');
+        }
+    }
     /**
      * Thêm bình luận mới
      */

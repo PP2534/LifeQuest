@@ -48,8 +48,8 @@
         </section>
 
        
-            <!-- Pagination -->
-                {{ $challenges->links('components.pagination-teal') }}
+        <!-- Pagination -->
+        {{ $challenges->links('components.pagination-teal') }}
     
     </main>
 </div>

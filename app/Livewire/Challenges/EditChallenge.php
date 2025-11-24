@@ -58,7 +58,7 @@ class EditChallenge extends Component
     protected function rules(): array
     {
         return [
-            'title' => 'required|string|min:10|max:255',
+            'title' => 'required|string|min:5|max:255',
             'description' => 'required|string|min:20',
             'duration_days' => 'required|integer|min:1',
             'type' => 'required|in:public,private',
