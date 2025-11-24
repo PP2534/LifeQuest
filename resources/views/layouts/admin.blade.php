@@ -8,6 +8,8 @@
 
     <title>{{ config('app.name', 'Laravel') }} - Admin</title>
 
+    <link rel="icon" href="{{ asset('storage/root/favicon.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('storage/root/favicon.png') }}" type="image/x-icon">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -21,7 +23,6 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="font-sans antialiased bg-gray-100 text-gray-800">
     <div x-data="{ sidebarOpen: false }" class="flex h-screen bg-gray-100">
@@ -32,13 +33,13 @@
             aria-label="Sidebar"
         >
             <div class="flex items-center justify-center p-4 border-b border-gray-700">
-                <a href="{{ route('homepage') }}" wire:navigate class="text-2xl font-extrabold text-teal-400">
-                    LifeQuest
+                <a href="{{ route('admin.home') }}" wire:navigate class="text-2xl font-extrabold text-teal-400">
+                    <img src="{{asset('storage/root/logo_lifequest.png')  }}">
                 </a>
             </div>
 
             <nav class="mt-4">
-                <a class="flex items-center mt-2 py-3 px-6 {{ request()->routeIs('admin.dashboard') ? 'bg-gray-700' : '' }} hover:bg-gray-700" href="#">
+                <a class="flex items-center mt-2 py-3 px-6 {{ request()->routeIs('admin.dashboard') ? 'bg-gray-700' : '' }} hover:bg-gray-700" href="{{ route('admin.dashboard') }}" wire:navigate>
                     <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                     <span class="mx-3">Dashboard</span>
                 </a>
@@ -52,7 +53,11 @@
                 </a>
                 <a class="flex items-center mt-2 py-3 px-6 hover:bg-gray-700" href="#">
                     <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
-                    <span class="mx-3">Quản lý thói quen</span>
+                    <span class="mx-3">Quản lý danh mục</span>
+                </a>
+                <a class="flex items-center mt-2 py-3 px-6 hover:bg-gray-700" href="#">
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+                    <span class="mx-3">Cấu hình thông báo</span>
                 </a>
             </nav>
         </aside>

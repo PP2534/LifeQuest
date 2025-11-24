@@ -210,8 +210,13 @@ new class extends Component
                     <p class="text-sm mt-2 text-gray-800">
                         Địa chỉ email của bạn chưa được xác minh.
 
-                        <button wire:click.prevent="sendVerification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
-                            Nhấn vào đây để gửi lại email xác minh.
+                        <button wire:click.prevent="sendVerification" wire:loading.attr="disabled" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                            <span wire:loading.remove>
+                                Nhấn vào đây để gửi lại email xác minh.
+                            </span>
+                            <span wire:loading>
+                                Đang gửi email xác minh...
+                            </span>
                         </button>
                     </p>
 
@@ -262,16 +267,13 @@ new class extends Component
         {{-- For now, we'll just show the current ward_id if it exists --}}
 
         <div class="flex items-center gap-4">
-            <x-primary-button class="bg-teal-600 hover:bg-teal-700 focus:ring-teal-400">
+            <x-primary-button wire:loading.attr="disabled" class="bg-teal-600 hover:bg-teal-700 focus:ring-teal-400">
                 <span wire:loading.remove>
                     Lưu
                 </span>
 
-                <span wire:loading.flex class="items-center justify-center">
-                    <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
-                        <path class="opacity-75" d="M4 12a8 8 0 018-8"></path>
-                    </svg>
+                <span wire:loading>
+                    Đang lưu...
                 </span>
             </x-primary-button>
 
