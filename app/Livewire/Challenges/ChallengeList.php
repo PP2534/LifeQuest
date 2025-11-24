@@ -2,18 +2,19 @@
 
 namespace App\Livewire\Challenges;
 
-use Livewire\Component;
 use App\Models\Challenge;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class ChallengeList extends Component
 {
-    public $challenges;
-    public function mount(){
-        $this->challenges = Challenge::with('categories')->latest()->get();
-    }
+    use WithPagination;
+
     public function render()
     {
-        return view('livewire.challenges.challenge-list')
-            ->layout('layouts.app');
+        $challenges = Challenge::with('categories')->latest()->paginate(3);
+        return view('livewire.challenges.challenge-list', [
+            'challenges' => $challenges,
+        ])->layout('layouts.app');
     }
 }

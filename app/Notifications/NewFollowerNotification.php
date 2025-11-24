@@ -50,8 +50,7 @@ class NewFollowerNotification extends Notification
             'follower_id' => $this->follower->id,
             'follower_name' => $this->follower->name,
             'message' => "{$this->follower->name} đã bắt đầu theo dõi bạn.",
-            // Thêm các dữ liệu khác nếu cần, ví dụ: link tới trang cá nhân của người theo dõi
-            // 'follower_profile_url' => route('profile.show', $this->follower->id),
+            'link' => route('profile.show', $this->follower->id),
         ];
     }
 }

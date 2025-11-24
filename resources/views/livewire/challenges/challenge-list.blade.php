@@ -16,7 +16,7 @@
     </div>
     <section aria-label="Challenges list">
       <div class="grid gap-8 md:grid-cols-3">
-        @foreach($challenges as $challenge)
+        @forelse($challenges as $challenge)
           <article class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow focus-within:ring-2 focus-within:ring-teal-600" tabindex="0">
             <a href="{{ route('challenges.show', $challenge->id) }}">
             <img src="{{ asset('storage/' . $challenge->image) }}" alt="Challenge Image" class="rounded-t-lg w-full object-cover h-48" />
@@ -39,20 +39,17 @@
                 <h2 class="font-semibold mt-2">{{ $challenge->title }}</h2>
                 <p class="text-sm text-gray-600">{{ Str::limit($challenge->description, 100) }}</p>
             </a> -->
-        @endforeach
+        @empty
+            <div class="md:col-span-3 text-center text-gray-500 py-8">
+                <p>Chưa có thử thách nào được tạo.</p>
+            </div>
+        @endforelse
       </div>
     </section>
 
-    <!-- Pagination -->
-    <nav aria-label="Pagination" class="mt-12 flex justify-center items-center space-x-2">
-      <button class="px-3 py-1 rounded border border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-400" aria-label="Trang trước" disabled>
-        &laquo; Trước
-      </button>
-      <button class="px-3 py-1 rounded bg-teal-600 text-white focus:outline-none focus:ring-2 focus:ring-teal-400" aria-current="page">1</button>
-      <button class="px-3 py-1 rounded border border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-400">2</button>
-      <button class="px-3 py-1 rounded border border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-400">3</button>
-      <button class="px-3 py-1 rounded border border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-400" aria-label="Trang tiếp theo">
-        Tiếp &raquo;
-      </button>
-    </nav>
+    @if ($challenges->hasPages())
+        <div class="mt-12">
+            {{ $challenges->links('vendor.pagination.tailwind') }}
+        </div>
+    @endif
 </div>

@@ -57,7 +57,7 @@ class ChallengeDetail extends Component
     /**
      * Xử lý khi người dùng tham gia thử thách
      */
-    public function joinChallenge()
+    public function joinChallenge(XpService $xpService)
     {
         if (!Auth::check()) {
             return $this->redirect(route('login'), navigate: true);
@@ -74,6 +74,9 @@ class ChallengeDetail extends Component
                 'progress_percent' => 0, // Khởi tạo tiến độ
                 'streak' => 0,           // Khởi tạo chuỗi
             ]);
+
+            // Kiểm tra và cộng điểm cho người tạo challenge khi có người tham gia mới
+            $xpService->awardCreatorChallengeMilestoneXp($this->challenge);
 
             // Tải lại dữ liệu (vì collection đã thay đổi)
             $this->challenge->refresh()->load('participants.user', 'comments.user', 'creator', 'categories');

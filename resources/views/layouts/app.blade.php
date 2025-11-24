@@ -13,6 +13,7 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Inter&family=Noto+Sans&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap&subset=vietnamese" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css">
         <style>
             /* Small override for font-family */
             body {
@@ -41,7 +42,7 @@
                     <main class="flex-1 min-w-0">
                         {{ $slot }}
                     </main>
-                     @if (!request()->is('/') && !request()->is('challenges')&& !request()->is('community'))
+                     @if (!request()->is('/') && !request()->is('challenges')&& !request()->is('community') && !request()->is('leaderboard') && !request()->is('forgot-password') && !request()->is('reset-password') && !request()->is('register') && !request()->is('login'))
                         <aside class="w-full lg:w-80 xxl:w-96 flex-shrink-0 mt-8 lg:mt-0">
                             <div class="sticky top-32 space-y-6">
                                 <livewire:leaderboard />
@@ -110,7 +111,15 @@
                     }
                 });
             });
-        </script>
         
+            document.addEventListener('livewire:request-start', () => {
+                NProgress.start();
+            });
+
+            document.addEventListener('livewire:request-end', () => {
+                NProgress.done();
+            });
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script>
     </body>
 </html>

@@ -50,11 +50,29 @@ new #[Layout('layouts.app')] class extends Component
 
         <div class="mt-6 flex items-center justify-between">
             <x-primary-button wire:click="sendVerification" class="py-3 font-semibold bg-teal-600 hover:bg-teal-700 focus:ring-teal-400 rounded-lg">
-                Gửi lại Email xác thực
+                <span wire:loading.remove>
+                    Gửi lại email xác thực
+                </span>
+
+                <span wire:loading.flex class="items-center justify-center">
+                    <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
+                        <path class="opacity-75" d="M4 12a8 8 0 018-8"></path>
+                    </svg>
+                </span>
             </x-primary-button>
 
             <button wire:click="logout" type="submit" class="text-sm text-teal-600 hover:text-teal-700 focus:outline-none focus:underline">
-                Đăng xuất
+                <span wire:loading.remove>
+                    Đăng xuất
+                </span>
+
+                <span wire:loading.flex class="items-center justify-center">
+                    <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
+                        <path class="opacity-75" d="M4 12a8 8 0 018-8"></path>
+                    </svg>
+                </span>
             </button>
         </div>
     </div>

@@ -64,10 +64,11 @@ class Notifications extends Component
             if (isset($notification->data['challenge_id'])) {
                 // Chuyển hướng đến trang chi tiết thử thách và trỏ tới đúng bình luận
                 $url = route('challenges.show', ['challenge' => $notification->data['challenge_id']]);
-                return redirect($url . '#comment-' . $notification->data['comment_id']);
+                return $this->redirect($url . '#comment-' . $notification->data['comment_id'], navigate: true);
             } elseif (isset($notification->data['follower_id'])) {
                 // Chuyển hướng đến trang cá nhân của người theo dõi
-                return redirect()->route('profile.show', $notification->data['follower_id']);
+                $url = route('profile.show', ['id' => $notification->data['follower_id']]);
+                return $this->redirect($url, navigate: true);
             }
         }
     }
