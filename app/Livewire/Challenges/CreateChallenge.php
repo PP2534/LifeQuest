@@ -11,6 +11,7 @@ use Livewire\WithFileUploads; //  để xử lý upload file
 use Carbon\Carbon;
 use App\Models\Province;
 use App\Models\Ward;
+use App\Models\ChallengeParticipant;
 
 class CreateChallenge extends Component
 {
@@ -128,6 +129,17 @@ class CreateChallenge extends Component
         
         // Đính kèm categories
         $challenge->categories()->attach($categories);
+
+        // Thêm người tạo vào danh sách tham gia với vai trò 'creator'
+        ChallengeParticipant::create([
+            'challenge_id' => $challenge->id,
+            'user_id' => Auth::id(),
+            'role' => 'creator', 
+            'status' => 'active',
+            'progress_percent' => 0,
+            'streak' => 0,
+            'personal_start_date' => $startDate,
+        ]);
 
         session()->flash('success', 'Đã tạo thử thách thành công!');
         return $this->redirect(route('challenges.show', $challenge), navigate: true);
