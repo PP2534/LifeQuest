@@ -240,7 +240,7 @@ new class extends Component
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
             <x-input-label value="Tỉnh/Thành phố" />
-            <select wire:model="province_id" class="mt-1 block w-full border-gray-300 rounded focus:border-teal-500 focus:ring-teal-500">
+            <select wire:model="province_id" class="mt-1 block border-gray-300 rounded p-2 w-full pr-8 focus:outline-none focus:ring-2 focus:ring-teal-500">
             <option value="">-- Chọn tỉnh --</option>
             @foreach($provinces as $province)
             <option value="{{ $province['id'] }}">{{ $province['full_name'] }}</option>
@@ -250,7 +250,7 @@ new class extends Component
 
         <div>
             <x-input-label value="Phường / Xã" />
-            <select wire:model="ward_id" class="mt-1 block w-full border-gray-300 rounded focus:border-teal-500 focus:ring-teal-500">
+            <select wire:model="ward_id" class="mt-1 block w-full border-gray-300 rounded p-2 w-full pr-8 focus:outline-none focus:ring-2 focus:ring-teal-500">
             <option value="">-- Chọn phường / xã --</option>
             @foreach($wards as $ward)
             <option value="{{ $ward['id'] }}">{{ $ward['name_with_type'] }}</option>

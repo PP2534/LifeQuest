@@ -9,7 +9,7 @@ use App\Models\Follower;
 use App\Models\Province;
 use App\Models\Ward;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class Create extends Component
 {
@@ -18,67 +18,65 @@ class Create extends Component
     public $search = '';
     public $interest = '';
     public $province_id = '';
-    public $provinces;
     public $ward_id = '';
+    public $provinces;
     public $wards = [];
+    public $allWards;
+    public $perPage = 12;
+    public $searched = false;
     public $errorMessage = '';
+    public $followedUsers = [];
 
-     protected $updatesQueryString = ['search', 'interest', 'province_id', 'ward_id'];
+    protected $updatesQueryString = ['search', 'interest', 'province_id', 'ward_id'];
 
     public function mount()
     {
-        // $this->provinces = Province::all();
-        //  if (request()->has('page') && request('page') > 1) {
-        // $this->resetPage();
-        $this->provinces = Province::all();
-        $this->resetPageIfInvalid();
-    }
-
-    // Reset phân trang khi search/filter thay đổi
-    public function updatingSearch() { $this->resetPage(); }
-    public function updatingInterest() { $this->resetPage(); }
-    public function updatingProvinceId() {
-        $this->ward_id = '';
-        $this->wards = $this->province_id ? Ward::where('province_id', $this->province_id)->get() : [];
-        $this->resetPage();
-    }
-
-    public function updatingWardId() { 
-        $this->resetPage();  
-    }
-
-    // public function loadWards()
-    // {
-    //     $this->wards = $this->province_id 
-    //         ? Ward::where('province_id', $this->province_id)->get() 
-    //         : [];
-    // }
-
-     private function resetPageIfInvalid()
-    {
-        $query = User::where('id', '!=', Auth::id());
-        $total = $query->count();
-        $perPage = 12;
-        $lastPage = ceil($total / $perPage);
-
-        if (request()->has('page') && request('page') > $lastPage) {
-            $this->resetPage();
+        $user = auth()->user();
+        if ($user) {
+            $this->followedUsers = $user->followings()->pluck('following_id')->toArray();
         }
+        $this->provinces = Province::orderBy('name')->get();
+        $this->allWards = Ward::orderBy('name')->get();
+        $this->wards = $this->allWards;
     }
 
-    // Toggle follow/unfollow
+    public function updatedProvinceId($value)
+    {
+        $this->ward_id = '';
+        $this->wards = $value ? Ward::where('province_id', $value)->orderBy('name')->get() : $this->allWards;
+        $this->resetPage();
+        $this->searched = true;
+    }
+
+    public function searchAction()
+{
+    // Nếu không nhập gì -> vẫn tìm nhưng hiện cảnh báo
+    if (
+        trim($this->search) === '' &&
+        $this->interest === '' &&
+        $this->province_id === '' &&
+        $this->ward_id === ''
+    ) {
+        session()->flash('warning', 'Vui lòng nhập từ khóa hoặc lọc để tìm kiếm chính xác hơn.');
+    }
+
+    $this->searched = true;
+    $this->resetPage();
+}
+
     public function toggleFollow($userId)
     {
-        $existingFollow = Follower::where([
-            'follower_id' => Auth::id(),
+        $user = Auth::user();
+        $existing = Follower::where([
+            'follower_id' => $user->id,
             'following_id' => $userId
         ])->first();
 
-        if ($existingFollow) {
-            $existingFollow->delete();
+        if ($existing) {
+            $existing->delete();
         } else {
             Follower::create([
-                'follower_id' => Auth::id(),
+                'follower_id' => $user->id,
                 'following_id' => $userId
             ]);
         }
@@ -89,57 +87,29 @@ class Create extends Component
         $query = User::with(['ward.province', 'followers'])
             ->where('id', '!=', Auth::id());
 
-        if (!empty(trim($this->search))) {
-            $query->where('name', 'like', '%' . $this->search . '%');
+        if ($this->search) {
+            $query->where('name', 'like', '%'.$this->search.'%');
         }
 
-        if (!empty(trim($this->interest))) {
-            $query->where('interests', 'like', '%' . $this->interest . '%');
+        if ($this->interest) {
+            $query->where('interests', 'like', '%'.$this->interest.'%');
         }
 
-        if (!empty($this->province_id)) {
-            $query->whereHas('ward.province', function($q) {
-                $q->where('id', $this->province_id);
-            });
+        if ($this->province_id) {
+            $wardIds = Ward::where('province_id', $this->province_id)->pluck('id')->toArray();
+            $query->whereIn('ward_id', $wardIds);
         }
 
-        if (!empty($this->ward_id)) {
-            $query->whereHas('ward', function ($q) {
-            $q->where('id', $this->ward_id);
-        });
-       
+        if ($this->ward_id) {
+            $query->where('ward_id', $this->ward_id);
         }
 
-        // $users = $query->paginate(12);
-    $perPage = 12;
-    $users = $query->paginate($perPage);
+        $users = $query->paginate($this->perPage);
 
-    // Livewire sẽ reset page nếu page hiện tại > lastPage
-    if ($users->lastPage() <= 1) {
-        $this->resetPage();
-    }
-    
-    if ($users->isEmpty()) {
-            $this->errorMessage = !empty(trim($this->search)) 
-                ? 'Không có người dùng nào tên "' . $this->search . '" được tìm thấy.'
-                : 'Không tìm thấy người dùng phù hợp với bộ lọc của bạn.';
-        } else {
-            $this->errorMessage = '';
-        }
-
-        // Nếu tỉnh được chọn mà chưa load wards, load ngay
-        if ($this->province_id && empty($this->wards)) {
-            $this->loadWards();
-        }
-
-       // $provinces = Province::all();
-
-        //return view('livewire.user-profile.create', compact('users'));
-    
         return view('livewire.user-profile.create', [
-        'users' => $users,
-        'provinces' => Province::all(),
-        'wards' => $this->wards
-    ]);
+            'users' => $users,
+            'provinces' => $this->provinces,
+            'wards' => $this->wards,
+        ])->layout('layouts.app');
     }
 }

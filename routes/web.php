@@ -1,9 +1,7 @@
 <?php
 
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Web\CommunityController;
-use App\Livewire\Leaderboard;
 use App\Livewire\LeaderboardPage;
 use App\Http\Controllers\Web\UserController as WebUserController;
 
@@ -22,8 +20,8 @@ use App\Livewire\Challenges\ChallengesByLocation;
 use App\Livewire\Challenges\CreateChallenge;
 use App\Livewire\Challenges\MyChallengeList;
 use App\Livewire\Challenges\EditChallenge;
-use App\Livewire\Public\Create;
-use App\Livewire\PublicPage\Create as PublicPageCreate;
+use App\Livewire\Public\Listing;
+use App\Livewire\UserProfile\Create as UserProfileCreate;
 
 Route::view('/', 'welcome')->name('homepage');
 
@@ -65,8 +63,8 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    //Route::get('/users', UserProfileCreate::class)->name('users.index');
-    Route::get('/users', [WebUserController::class, 'index'])->name('users.index');
+    Route::get('/users', UserProfileCreate::class)->name('users.index');
+    //Route::get('/users', [WebUserController::class, 'index'])->name('users.index');
     //Route::post('/users/{id}/follow', [WebUserController::class, 'follow'])->name('users.follow');
     //Route::post('/users/{id}/unfollow', [WebUserController::class, 'unfollow'])->name('users.unfollow');
     Route::post('/users/{id}/toggle-follow', [WebUserController::class, 'toggleFollow'])->name('users.toggleFollow');
@@ -78,7 +76,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-Route::get('/listing', Create::class)->name('public.listing');
+Route::get('/listing', Listing::class)->name('public.listing');
 
 
 // Các route công khai hoặc có logic kiểm tra quyền riêng
