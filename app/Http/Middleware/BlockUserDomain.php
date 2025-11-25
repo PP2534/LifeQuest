@@ -21,8 +21,10 @@ class BlockUserDomain
         // Nếu đang ở user domain và user là admin, chặn
         if ($requestHost === $appHost) {
             if (auth()->check() && auth()->user()->role === 'admin') {
+                // Lấy URL đầy đủ từ biến môi trường
+                $adminUrl = rtrim(env('ADMIN_URL', 'http://admin.localhost'), '/');
                 // Redirect về admin domain
-                return redirect('http://' . $adminHost . $request->getPathInfo());
+                return redirect($adminUrl . $request->getPathInfo());
             }
         }
 

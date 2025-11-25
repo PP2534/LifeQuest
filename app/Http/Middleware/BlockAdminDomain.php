@@ -19,9 +19,10 @@ class BlockAdminDomain
 
         // Nếu đang ở admin domain, chặn user thường
         if ($requestHost === $adminHost) {
-            $appUrl = parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST);
+            // Lấy URL đầy đủ từ biến môi trường
+            $appUrl = rtrim(env('APP_URL', 'http://localhost'), '/');
             // Redirect về user domain
-            return redirect('http://' . $appUrl . $request->getPathInfo());
+            return redirect($appUrl . $request->getPathInfo());
         }
 
         return $next($request);

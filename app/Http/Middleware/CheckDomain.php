@@ -21,10 +21,9 @@ class CheckDomain
         $adminHost = parse_url(env('ADMIN_URL', 'http://admin.localhost'), PHP_URL_HOST) ?: 'admin.localhost';
         $appHost = parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST) ?: 'localhost';
         
-        // Lấy port từ request hoặc từ env
-        $port = $requestPort ?: parse_url(env('APP_URL', 'http://localhost:8000'), PHP_URL_PORT) ?: 8000;
-        $adminUrl = ($request->getScheme() ?? 'http') . '://' . $adminHost . ':' . $port;
-        $appUrl = ($request->getScheme() ?? 'http') . '://' . $appHost . ':' . $port;
+        // Lấy URL đầy đủ từ biến môi trường để đảm bảo tính đúng đắn trên cả local và live
+        $adminUrl = rtrim(env('ADMIN_URL', 'http://admin.localhost'), '/');
+        $appUrl = rtrim(env('APP_URL', 'http://localhost'), '/');
 
         // Nếu đang ở admin domain
         if ($requestHost === $adminHost) {
