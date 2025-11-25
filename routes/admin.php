@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 // Admin routes - chỉ truy cập được từ admin domain
-$adminHost = parse_url(env('ADMIN_URL', 'http://admin.localhost'), PHP_URL_HOST) ?: 'admin.localhost';
+$adminHost = parse_url(config('app.admin_url', 'http://admin.localhost'), PHP_URL_HOST) ?: 'admin.localhost';
 Route::domain($adminHost)
     ->middleware(['domain', 'web'])
     ->group(function () {

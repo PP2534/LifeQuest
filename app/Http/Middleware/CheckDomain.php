@@ -18,12 +18,12 @@ class CheckDomain
         $requestHost = $request->getHost();
         $requestPort = $request->getPort();
         $requestUrl = $request->getPathInfo();
-        $adminHost = parse_url(env('ADMIN_URL', 'http://admin.localhost'), PHP_URL_HOST) ?: 'admin.localhost';
-        $appHost = parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST) ?: 'localhost';
+        $adminHost = parse_url(config('app.admin_url', 'http://admin.localhost'), PHP_URL_HOST) ?: 'admin.localhost';
+        $appHost = parse_url(config('app.url', 'http://localhost'), PHP_URL_HOST) ?: 'localhost';
         
         // Lấy URL đầy đủ từ biến môi trường để đảm bảo tính đúng đắn trên cả local và live
-        $adminUrl = rtrim(env('ADMIN_URL', 'http://admin.localhost'), '/');
-        $appUrl = rtrim(env('APP_URL', 'http://localhost'), '/');
+        $adminUrl = rtrim(config('app.admin_url', 'http://admin.localhost'), '/');
+        $appUrl = rtrim(config('app.url', 'http://localhost'), '/');
 
         // Nếu đang ở admin domain
         if ($requestHost === $adminHost) {

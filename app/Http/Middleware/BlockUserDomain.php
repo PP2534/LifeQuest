@@ -15,14 +15,14 @@ class BlockUserDomain
     public function handle(Request $request, Closure $next): Response
     {
         $requestHost = $request->getHost();
-        $appHost = parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST);
-        $adminHost = parse_url(env('ADMIN_URL', 'http://admin.localhost'), PHP_URL_HOST);
+        $appHost = parse_url(config('app.url', 'http://localhost'), PHP_URL_HOST);
+        $adminHost = parse_url(config('app.admin_url', 'http://admin.localhost'), PHP_URL_HOST);
 
         // Nếu đang ở user domain và user là admin, chặn
         if ($requestHost === $appHost) {
             if (auth()->check() && auth()->user()->role === 'admin') {
                 // Lấy URL đầy đủ từ biến môi trường
-                $adminUrl = rtrim(env('ADMIN_URL', 'http://admin.localhost'), '/');
+                $adminUrl = rtrim(config('app.admin_url', 'http://admin.localhost'), '/');
                 // Redirect về admin domain
                 return redirect($adminUrl . $request->getPathInfo());
             }
