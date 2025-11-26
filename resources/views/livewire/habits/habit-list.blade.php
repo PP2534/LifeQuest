@@ -4,14 +4,16 @@
         <a href="{{ route('habits.create') }}" wire:navigate class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700">Tạo thói quen mới</a>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($habits as $habit)
             <div class="bg-white rounded-lg shadow-md overflow-hidden transition-transform transform hover:-translate-y-1">
                 <a href="{{ route('habits.show', $habit) }}" wire:navigate class="block">
                     <img src="{{ $habit->image ? asset('storage/' . $habit->image) : 'https://placehold.co/600x400/e2e8f0/4a5568?text=' . urlencode($habit->title) }}" alt="{{ $habit->title }}" class="w-full h-40 object-cover">
                     <div class="p-4">
                         <div class="flex justify-between items-start mb-2">
-                            <h2 class="font-bold text-lg text-gray-800 truncate pr-2" title="{{ $habit->title }}">{{ $habit->title }}</h2>
+                            <div class="min-w-0 flex-1 pr-2">
+                                <h2 class="font-bold text-lg text-gray-800 line-clamp-2" title="{{ $habit->title }}">{{ $habit->title }}</h2>
+                            </div>
                             <span class="flex-shrink-0 text-xs font-semibold px-2 py-1 rounded-full {{ $habit->type === 'group' ? 'bg-indigo-100 text-indigo-800' : 'bg-green-100 text-green-800' }}">
                                 {{ $habit->type === 'group' ? 'Nhóm' : 'Cá nhân' }}
                             </span>

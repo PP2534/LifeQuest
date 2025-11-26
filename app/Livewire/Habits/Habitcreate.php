@@ -14,7 +14,13 @@ class Habitcreate extends Component
 {
     use WithFileUploads;
 
-    public $title, $description, $image ,$type, $allow_request_join, $allow_member_invite, $need_proof = false;
+    public string $title = '';
+    public ?string $description = '';
+    public $image = null;
+    public string $type = 'personal';
+    public bool $allow_request_join = false;
+    public bool $allow_member_invite = false;
+    public bool $need_proof = false;
 
     public function save()
     {

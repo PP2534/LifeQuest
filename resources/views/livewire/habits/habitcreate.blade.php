@@ -51,7 +51,6 @@
                     class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm
                            focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500
                            @error('type') border-red-500 ring-red-500 @enderror">
-                <option value="">Chọn loại</option>
                 <option value="personal">Cá nhân</option>
                 <option value="group">Nhóm</option>
             </select>
