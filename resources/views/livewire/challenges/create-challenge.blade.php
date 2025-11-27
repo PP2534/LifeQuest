@@ -116,6 +116,17 @@
                 <div class="ml-3 text-sm">
                     <label for="need_proof" class="font-medium text-gray-700">Yêu cầu ảnh minh chứng (Proof)</label>
                     <p class="text-gray-500">Nếu chọn, người tham gia bắt buộc phải tải ảnh lên mỗi khi điểm danh hàng ngày.</p>
+                </div>                       
+            </div>
+            <div class="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                <div class="flex items-start space-x-3">
+                    <div class="flex items-center h-5">
+                        <input id="allow_member_invite" wire:model="allow_member_invite" type="checkbox" class="focus:ring-teal-500 h-5 w-5 text-teal-600 border-gray-300 rounded">
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label for="allow_member_invite" class="font-medium text-gray-700">Cho phép thành viên mời</label>
+                        <p class="text-gray-500 text-xs">Nếu tắt, chỉ có Người tạo (Bạn) mới được quyền mời người khác.</p>
+                    </div>
                 </div>
             </div>
             <div class="text-right">

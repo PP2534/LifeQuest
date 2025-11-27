@@ -10,6 +10,8 @@ use Livewire\Component;
 use App\Services\XpService;
 use App\Models\ChallengeInvitation;
 use Livewire\Attributes\Computed;
+use Carbon\Carbon;
+
 
 class ChallengeDetail extends Component
 {
@@ -25,6 +27,10 @@ class ChallengeDetail extends Component
 
     // Biến lưu trữ lời mời đang chờ
     public ?ChallengeInvitation $pendingInvitation = null;
+
+    //Biến cho cài đặt thời gian
+    public $showDateModal = false;
+    public $newStartDate;
 
     /**
      * Mount component, tải dữ liệu thử thách từ route
@@ -43,6 +49,12 @@ class ChallengeDetail extends Component
         $this->loadMyParticipation();
         //Kiểm tra xem có lời mời nào đang chờ cho user này ở challenge này không
         $this->checkPendingInvitation();
+
+        // // Khởi tạo giá trị cho input ngày 
+        if ($this->challenge->start_date) {
+            $this->newStartDate = Carbon::parse($this->challenge->start_date)
+        ->format('Y-m-d\TH:i');
+        }
     }
 
     /**
@@ -218,7 +230,7 @@ class ChallengeDetail extends Component
             $this->showInviteModal = true;
         }
     }
-    /**
+  /**
      * Gửi lời mời
      */
     public function inviteUser($userId)
@@ -230,8 +242,13 @@ class ChallengeDetail extends Component
             'status' => 'pending'
         ]);
 
-        // Reload lại danh sách để cập nhật nút bấm
-        $this->openInviteModal();
+        // [QUAN TRỌNG] Xóa cache của computed property
+        // Để lần render tới, nó sẽ tự tính lại và thấy trạng thái mới là 'pending'
+        unset($this->followings); 
+
+        // Mở lại modal (để người dùng thấy trạng thái mới)
+        $this->showInviteModal = true; 
+        
         session()->flash('success', 'Đã gửi lời mời thành công!');
     }
     /**
@@ -294,6 +311,45 @@ class ChallengeDetail extends Component
             session()->flash('info', 'Bạn đã từ chối lời mời.');
         }
     }
+#[Computed]
+    public function isLocked()
+    {
+        // Nếu là Rolling (Linh hoạt) -> Không bao giờ khóa
+        if ($this->challenge->time_mode === 'rolling') {
+            return false;
+        }
+
+        // Nếu là Fixed (Cố định):
+        // Chưa set ngày bắt đầu -> Chưa khóa (để người ta còn join)
+        if (!$this->challenge->start_date) {
+            return false;
+        }
+
+        // Nếu Hiện tại > Ngày bắt đầu -> KHÓA (Ẩn nút join, invite, checkin...)
+        return now()->gt($this->challenge->start_date);
+    }
+    /**
+     * Lưu thời gian bắt đầu (Chỉ Creator)
+     */
+    public function setStartDate()
+    {
+        if ($this->challenge->creator_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $this->validate([
+            'newStartDate' => 'required|date|after:now', // Phải là ngày trong tương lai
+        ], [
+            'newStartDate.after' => 'Thời gian bắt đầu phải ở trong tương lai để đếm ngược!',
+        ]);
+
+        $this->challenge->update([
+            'start_date' => $this->newStartDate
+        ]);
+
+        $this->showDateModal = false;
+        session()->flash('success', 'Đã đặt lịch bắt đầu thử thách!');
+    }
     /**
      * Hiển thị view
      */
@@ -302,12 +358,12 @@ class ChallengeDetail extends Component
         // Logic Bảng xếp hạng: Sắp xếp người tham gia
         // dựa trên 'progress_percent' từ cao đến thấp
         $leaderboard = $this->challenge->participants->sortByDesc('progress_percent');
-        // Logic kiểm tra quyền hiển thị nút Mời
+        // Logic kiểm tra quyền hiển thị nút Mời.
         $canInvite = false;
         if (Auth::check()) {
             $isCreator = $this->challenge->creator_id == Auth::id();
             // Điều kiện: Là người tạo HOẶC (Là thành viên VÀ thử thách cho phép thành viên mời)
-            $canInvite = $isCreator || ($this->myParticipation && $this->challenge->allow_member_invite);
+            $canInvite = !$this->isLocked && ($isCreator || ($this->myParticipation && $this->challenge->allow_member_invite));
         }
 
         return view('livewire.challenges.challenge-detail', [

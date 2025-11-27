@@ -41,6 +41,8 @@ class CreateChallenge extends Component
     // mặc định là ko yêu cầu ảnh
     public bool $need_proof = false;
 
+    public bool $allow_member_invite = true;
+
    
 
     /**
@@ -73,8 +75,25 @@ class CreateChallenge extends Component
             'image' => 'nullable|image|max:2048', // cho phép null, 2MB max
             'selectedCategories' => 'required|array|min:1', // Yêu cầu ít nhất 1 danh mục
             'need_proof' => 'boolean',
+            'allow_member_invite' => 'boolean',
             'selectedProvinceId' => 'required', // Bắt buộc chọn tỉnh
             'ward_id' => 'required|exists:wards,id', // Bắt buộc chọn xã và xã phải tồn tại
+        ];
+    }
+    protected function messages()
+    {
+        return [
+            'title.required' => 'Vui lòng nhập tiêu đề thử thách.',
+            'title.min' => 'Tiêu đề phải có ít nhất 5 ký tự.',
+            'description.required' => 'Vui lòng nhập mô tả chi tiết.',
+            'description.min' => 'Mô tả phải có ít nhất 20 ký tự.',
+            'duration_days.required' => 'Vui lòng nhập thời lượng.',
+            'duration_days.min' => 'Thời lượng tối thiểu là 1 ngày.',
+            'selectedCategories.required' => 'Bạn phải chọn ít nhất một danh mục.',
+            'selectedProvinceId.required' => 'Vui lòng chọn Tỉnh/Thành phố.',
+            'ward_id.required' => 'Vui lòng chọn Phường/Xã.',
+            'image.max' => 'Kích thước ảnh không được vượt quá 2MB.',
+            'image.image' => 'File tải lên phải là định dạng ảnh.',
         ];
     }
 /**

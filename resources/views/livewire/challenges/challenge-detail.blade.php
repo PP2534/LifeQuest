@@ -1,6 +1,45 @@
 <div> <main role="main" class="container mx-auto px-4 py-12 max-w-4xl">
     <article aria-label="Challenge detail" class="bg-white rounded-lg shadow p-8">
-        
+        @if($challenge->start_date)
+            <div x-data="countdown('{{ \Carbon\Carbon::parse($challenge->start_date)->format('Y-m-d H:i:s') }}')"
+                 x-init="init()"
+                 class="mb-6 p-4 rounded-xl text-center shadow-inner border border-teal-100 bg-gradient-to-r from-teal-50 to-white">
+                
+                @if($this->isLocked)
+                    <div class="flex flex-col items-center text-red-600">
+                        <span class="text-2xl font-bold uppercase tracking-widest">🚫 Đã Chốt Sổ 🚫</span>
+                        <p class="text-sm mt-1">Thử thách cố định (Fixed) này đã bắt đầu. Không thể tham gia, mời hoặc điểm danh được nữa.</p>
+                        <p class="text-xs font-mono mt-1 text-gray-500">Bắt đầu lúc: {{ \Carbon\Carbon::parse($challenge->start_date)->format('Y-m-d H:i:s') }}</p>
+                    </div>
+                @else
+                    <p class="text-sm text-gray-500 uppercase tracking-wide font-bold mb-2">
+                        {{ $challenge->time_mode == 'rolling' ? '⏳ Thời gian bắt đầu dự kiến' : '🔥 Đếm ngược Thời gian (Fixed)' }}
+                    </p>
+                    
+                    <div class="flex justify-center gap-4 font-mono text-3xl md:text-4xl font-bold text-teal-700">
+                        <div class="flex flex-col items-center">
+                            <span x-text="days">00</span>
+                            <span class="text-xs font-sans text-gray-400 font-normal">Ngày</span>
+                        </div>
+                        <span>:</span>
+                        <div class="flex flex-col items-center">
+                            <span x-text="hours">00</span>
+                            <span class="text-xs font-sans text-gray-400 font-normal">Giờ</span>
+                        </div>
+                        <span>:</span>
+                        <div class="flex flex-col items-center">
+                            <span x-text="minutes">00</span>
+                            <span class="text-xs font-sans text-gray-400 font-normal">Phút</span>
+                        </div>
+                        <span>:</span>
+                        <div class="flex flex-col items-center">
+                            <span x-text="seconds">00</span>
+                            <span class="text-xs font-sans text-gray-400 font-normal">Giây</span>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        @endif
         @if (session('success'))
             <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-6" role="alert">
                 <p class="font-bold">Thành công!</p>
@@ -13,12 +52,15 @@
             </div>
         @endif
 
-        <header class="mb-6">
+        <header class="mb-6 border-b pb-6 relative">
+            @if($challenge->creator_id === Auth::id())
+                <button wire:click="$set('showDateModal', true)" 
+                        class="absolute top-0 right-0 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-full border border-gray-300 flex items-center transition">
+                    📅 {{ $challenge->start_date ? 'Đổi giờ' : 'Đặt thời gian' }}
+                </button>
+            @endif
+
             <h1 class="text-3xl font-bold text-teal-600 mb-2">{{ $challenge->title }}</h1>
-            <p class="text-sm text-teal-700 font-semibold mb-1">
-                {{ $challenge->categories->first()->name ?? 'Chưa phân loại' }}
-            </p>
-            <p class="text-sm text-gray-600">Thời gian thử thách: {{ $challenge->duration_days }} ngày</p>
         </header>
 
         <section aria-label="Challenge description" class="mb-8">
@@ -248,7 +290,7 @@
             <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all">
                 
                 <div class="bg-teal-600 px-6 py-4 flex justify-between items-center">
-                    <h3 class="text-lg font-bold text-white">Mời người theo dõi</h3>
+                    <h3 class="text-lg font-bold text-white">Mời bạn bè</h3>
                     <button wire:click="$set('showInviteModal', false)" class="text-white hover:text-gray-200 text-2xl">&times;</button>
                 </div>
 
@@ -354,5 +396,63 @@
             </div>
         </div>
     @endif
+    @if($showDateModal)
+        <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+                <div class="bg-teal-600 px-6 py-4 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-white">Đặt thời gian bắt đầu</h3>
+                    <button wire:click="$set('showDateModal', false)" class="text-white text-2xl">&times;</button>
+                </div>
+                <div class="p-6">
+                    <p class="text-sm text-gray-600 mb-4">
+                        @if($challenge->time_mode == 'fixed')
+                            ⚠️ <strong>Chế độ Cố định:</strong> Sau thời gian này, thử thách sẽ bị KHÓA. Không ai có thể tham gia, mời hoặc điểm danh được nữa.
+                        @else
+                            ℹ️ <strong>Chế độ Linh hoạt:</strong> Đây chỉ là mốc thời gian để đếm ngược sự kiện. Mọi người vẫn có thể tham gia sau đó.
+                        @endif
+                    </p>
+                    
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Ngày giờ bắt đầu:</label>
+                    <input type="datetime-local" wire:model="newStartDate" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500">
+                    @error('newStartDate') <span class="text-red-500 text-xs block mt-1">{{ $message }}</span> @enderror
+
+                    <div class="mt-6 flex justify-end space-x-3">
+                        <button wire:click="$set('showDateModal', false)" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Hủy</button>
+                        <button wire:click="setStartDate" class="px-4 py-2 bg-teal-600 text-white font-bold rounded-lg hover:bg-teal-700">Lưu thiết lập</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
 </div>
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('countdown', (endTime) => ({
+            days: '00', hours: '00', minutes: '00', seconds: '00',
+            endTime: new Date(endTime).getTime(),
+            timer: null,
+            init() {
+                this.updateTimer();
+                this.timer = setInterval(() => this.updateTimer(), 1000);
+            },
+            updateTimer() {
+                const now = new Date().getTime();
+                const distance = this.endTime - now;
+
+                if (distance < 0) {
+                    clearInterval(this.timer);
+                    this.days = this.hours = this.minutes = this.seconds = '00';
+                    // Tùy chọn: Refresh trang khi hết giờ để server cập nhật trạng thái Lock
+                    // window.location.reload(); 
+                    return;
+                }
+
+                this.days = String(Math.floor(distance / (1000 * 60 * 60 * 24))).padStart(2, '0');
+                this.hours = String(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+                this.minutes = String(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+                this.seconds = String(Math.floor((distance % (1000 * 60)) / 1000)).padStart(2, '0');
+            }
+        }));
+    });
+</script>
