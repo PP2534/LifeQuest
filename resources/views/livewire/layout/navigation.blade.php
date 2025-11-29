@@ -115,7 +115,7 @@
             <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
         <a href="{{ route('homepage') }}" wire:navigate class="text-2xl font-extrabold text-teal-600" aria-label="LifeQuest logo">
-           <img src="{{asset('storage/root/logo_lifequest.png')}}" class="h-14">
+           <img src="{{asset('logo_lifequest.png')}}" class="h-14">
         </a>
         <ul id="primary-menu" class="hidden absolute md:relative top-16 left-0 md:top-auto md:left-auto w-full md:w-auto bg-white md:flex md:items-center md:space-x-8 shadow-md md:shadow-none" role="menu" aria-label="Main menu">
             <li role="none"><a href="{{route('homepage')}}" wire:navigate class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Trang chủ <!-- Home --></a></li>

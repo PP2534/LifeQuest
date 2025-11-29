@@ -19,7 +19,7 @@ use App\Livewire\Challenges\MyChallengeList;
 use App\Livewire\Challenges\EditChallenge;
 
 // User routes - chỉ truy cập được từ user domain
-$appHost = parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST) ?: 'localhost';
+$appHost = parse_url(config('app.url', 'http://localhost'), PHP_URL_HOST) ?: 'localhost';
 Route::domain($appHost)
     ->middleware(['domain', 'web'])
     ->group(function () {
