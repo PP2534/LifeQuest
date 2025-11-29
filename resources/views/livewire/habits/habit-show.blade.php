@@ -14,8 +14,8 @@
                 @endif
                 <div class="p-6">
                     <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ $habit->title }}</h1>
+                        <div class="min-w-0 flex-1">
+                            <h1 class="text-3xl font-bold text-gray-800 mb-2 break-words">{{ $habit->title }}</h1>
                             <p class="text-gray-600">{{ $habit->description }}</p>
                         </div>
 
