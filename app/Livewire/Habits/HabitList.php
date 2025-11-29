@@ -12,18 +12,21 @@ class HabitList extends Component
 {
     use WithPagination;
 
+    public string $search = '';
+
     #[Layout('layouts.app')]
     public function render()
     {
         $userId = Auth::id();
-        $habits = Habit::query(); // Bắt đầu với một query builder trống
 
         if ($userId) {
             // Lấy các thói quen mà người dùng là thành viên và có status là 'active'
             // Đồng thời, load thông tin participant của chính user đó để lấy streak
             $habits = Habit::whereHas('participants', function ($query) use ($userId) {
                 $query->where('user_id', $userId)
-                      ->where('status', 'active');
+                    ->where('status', 'active');
+            })->where(function ($query) {
+                $query->where('title', 'like', '%' . $this->search . '%');
             })->with(['participants' => function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             }])->latest()->paginate(3);
@@ -33,5 +36,10 @@ class HabitList extends Component
         }
 
         return view('livewire.habits.habit-list', ['habits' => $habits]);
+    }
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
     }
 }
