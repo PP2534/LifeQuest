@@ -17,6 +17,7 @@ use App\Livewire\Challenges\ChallengesByLocation;
 use App\Livewire\Challenges\CreateChallenge;
 use App\Livewire\Challenges\MyChallengeList;
 use App\Livewire\Challenges\EditChallenge;
+use App\Livewire\Challenges\ChallengeCheckin;
 
 // User routes - chỉ truy cập được từ user domain
 $appHost = parse_url(config('app.url', 'http://localhost'), PHP_URL_HOST) ?: 'localhost';
@@ -55,7 +56,9 @@ Route::domain($appHost)
     Route::get('/my-challenges', MyChallengeList::class)
         ->middleware('auth')
         ->name('my-challenges');
-
+    Route::get('/challenges/{challenge}/checkin', ChallengeCheckin::class)
+        ->middleware('auth')
+        ->name('challenges.checkin');
     // Các route cần xác thực người dùng
     Route::middleware('auth')->group(function () {
         Route::get('/habits/create', Habitcreate::class)->name('habits.create');
