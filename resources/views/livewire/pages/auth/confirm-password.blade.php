@@ -29,7 +29,7 @@ new #[Layout('layouts.app')] class extends Component
 
         session(['auth.password_confirmed_at' => time()]);
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        $this->redirectIntended(default: route('homepage', absolute: false), navigate: true);
     }
 }; ?>
 
@@ -54,16 +54,13 @@ new #[Layout('layouts.app')] class extends Component
                 <x-input-error :messages="$errors->get('password')" class="mt-2" />
             </div>
 
-            <x-primary-button class="w-full justify-center py-3 font-semibold bg-teal-600 hover:bg-teal-700 focus:ring-teal-400 rounded-lg">
+            <x-primary-button wire:loading.attr="disabled" class="w-full justify-center py-3 font-semibold bg-teal-600 hover:bg-teal-700 focus:ring-teal-400 rounded-lg">
                 <span wire:loading.remove>
                     Xác nhận
                 </span>
 
-                <span wire:loading.flex class="items-center justify-center">
-                    <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
-                        <path class="opacity-75" d="M4 12a8 8 0 018-8"></path>
-                    </svg>
+                <span wire:loading>
+                    Đang xác nhận...
                 </span>
             </x-primary-button>
         </form>

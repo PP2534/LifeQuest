@@ -33,4 +33,10 @@
             </div>
         @endforelse
     </div>
+
+    @if ($habits->hasPages())
+        <div class="mt-8">
+            {{ $habits->links('vendor.pagination.tailwind') }}
+        </div>
+    @endif
 </div>

@@ -8,6 +8,7 @@ use App\Models\Comment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
+use App\Services\XpService;
 
 class ChallengeDetail extends Component
 {

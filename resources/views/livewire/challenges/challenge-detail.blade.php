@@ -1,20 +1,28 @@
 <div x-data="{ confirmDelete: false, deleteId: null, commentNotFoundModal: false }"
      x-init="() => {
         const checkCommentHash = () => {
-            const hash = window.location.hash;
-            if (hash && hash.startsWith('#comment-')) {
-                const commentId = hash.substring('#comment-'.length);
-                // Wait for Livewire/Alpine to update the DOM
-                Alpine.nextTick(() => {
-                    // Check if it's a number and the element doesn't exist
-                    if (/^\d+$/.test(commentId) && !document.getElementById('comment-' + commentId)) {
-                        commentNotFoundModal = true;
-                    }
-                });
-            }
+             const hash = window.location.hash;
+             if (hash && hash.startsWith('#comment-')) {
+                 const commentId = hash.substring('#comment-'.length);
+                 // Đợi DOM được cập nhật bởi Livewire/Alpine
+                 Alpine.nextTick(() => {
+                     const element = document.getElementById('comment-' + commentId);
+                     if (element) {
+                         // Nếu phần tử tồn tại, cuộn đến nó
+                         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                         element.classList.add('highlight');
+                         setTimeout(() => element.classList.remove('highlight'), 2000);
+                     } else if (/^\d+$/.test(commentId)) {
+                         // Nếu không tồn tại, hiển thị modal thông báo
+                         commentNotFoundModal = true;
+                     }
+                 });
+             }
         };
-        checkCommentHash(); // Check on initial load
-        window.addEventListener('hashchange', checkCommentHash); // Check when hash changes
+ 
+        checkCommentHash(); // Kiểm tra khi tải trang lần đầu
+        window.addEventListener('hashchange', checkCommentHash); // Kiểm tra khi hash thay đổi
+        document.addEventListener('livewire:navigated', checkCommentHash); // Kiểm tra sau khi điều hướng bằng wire:navigate
      }"
 >
     <main role="main" class="container mx-auto px-4 py-12 max-w-4xl">

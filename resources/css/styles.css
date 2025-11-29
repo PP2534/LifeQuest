@@ -84,3 +84,12 @@ button:focus, input:focus, textarea:focus {
       animation: highlight-fade 8s ease-out;
       border-radius: 8px; 
   }
+
+  /* .highlight {
+      animation: highlight-fade 8s ease-out;
+      border-radius: 8px; 
+  } */
+  .highlight > .comment-content {
+    animation: highlight-fade 8s ease-out;
+      border-radius: 8px; 
+  }

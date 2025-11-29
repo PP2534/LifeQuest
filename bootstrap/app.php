@@ -12,6 +12,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
         health: '/up',
         then: function () {
             require __DIR__.'/../routes/auth.php';
+            require __DIR__.'/../routes/admin.php';
         }
     )
     ->withMiddleware(function (Middleware $middleware): void {
