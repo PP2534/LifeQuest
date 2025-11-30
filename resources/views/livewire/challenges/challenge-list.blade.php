@@ -20,7 +20,15 @@
           <article class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col overflow-hidden">
             <div class="relative">
                 <a href="{{ route('challenges.show', $challenge->id) }}" wire:navigate>
-                    <img src="{{ asset('storage/' . $challenge->image) }}" alt="Challenge Image" class="w-full object-cover h-48">
+                    @php
+                        $imageUrl = asset('no_image.png');
+                        if ($challenge->image && file_exists(public_path('storage/' . $challenge->image))) {
+                            $imageUrl = asset('storage/' . $challenge->image);
+                        } elseif ($challenge->categories->isNotEmpty() && $challenge->categories->first()->icon && file_exists(public_path('storage/' . $challenge->categories->first()->icon))) {
+                            $imageUrl = asset('storage/' . $challenge->categories->first()->icon);
+                        }
+                    @endphp
+                    <img src="{{ $imageUrl }}" alt="Challenge Image" class="w-full object-cover h-48">
                 </a>
                 @if($challenge->categories->isNotEmpty())
                     <span class="absolute top-3 left-3 bg-teal-500 text-white text-xs font-semibold px-3 py-1 rounded-full">{{ $challenge->categories->first()->name }}</span>

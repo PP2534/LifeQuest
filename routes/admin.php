@@ -23,6 +23,13 @@ Route::domain($adminHost)
             Volt::route('dashboard', 'admin.dashboard')->name('admin.dashboard');
             Route::get('/users', UserList::class)->name('admin.users.list');
             Route::get('/users/{user}/edit', UserEdit::class)->name('admin.users.edit');
+
+            // Category Management
+            Route::get('/categories', \App\Livewire\Admin\Categories\CategoryList::class)->name('admin.categories.list');
+            Route::get('/categories/{category}/edit', \App\Livewire\Admin\Categories\CategoryEdit::class)->name('admin.categories.edit');
+
+            // Challenge Management
+            Route::get('/challenges', \App\Livewire\Admin\Challenges\ChallengeList::class)->name('admin.challenges.list');
         });
     });
 

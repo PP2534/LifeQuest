@@ -113,6 +113,12 @@
             <h1 class="text-3xl font-bold text-teal-600 mb-2">{{ $challenge->title }}</h1>
         </header>
 
+        @if($challenge->image && file_exists(public_path('storage/' . $challenge->image)))
+            <div class="mb-8 rounded-lg overflow-hidden shadow-lg">
+                <img src="{{ asset('storage/' . $challenge->image) }}" alt="Challenge Image" class="w-full h-80 object-cover">
+            </div>
+        @endif
+
         <section aria-label="Challenge description" class="mb-8">
             <h2 class="text-xl font-semibold mb-2">Mô tả thử thách</h2>
             <div class="text-gray-700 leading-relaxed prose max-w-none">
