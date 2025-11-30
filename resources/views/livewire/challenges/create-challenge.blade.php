@@ -84,11 +84,24 @@
                 </div>
                 <div>
                     <label for="time_mode" class="block text-sm font-medium">Chế độ thời gian</label>
-                    <select id="time_mode" wire:model="time_mode" class="w-full border rounded px-3 py-2 mt-1">
+                    <select id="time_mode" wire:model.live="time_mode" class="w-full border rounded px-3 py-2 mt-1">
                         <option value="fixed">Cố định (Fixed)</option>
                         <option value="rolling">Linh hoạt (Rolling)</option>
                     </select>
+                    @if($time_mode == 'fixed')
+                    <div>
+                        <label for="custom_start_date" class="block text-sm font-medium">Ngày bắt đầu <span class="text-red-500">*</span></label>
+                        <input type="datetime-local" 
+                               id="custom_start_date" 
+                               wire:model="custom_start_date" 
+                               class="w-full border rounded px-3 py-2 mt-1"
+                               min="{{ now()->format('Y-m-d\TH:i') }}">
+                        @error('custom_start_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+                @endif
+
                 </div>
+                
                 <div>
                     <label for="streak_mode" class="block text-sm font-medium">Chế độ chuỗi</label>
                     <select id="streak_mode" wire:model="streak_mode" class="w-full border rounded px-3 py-2 mt-1">
