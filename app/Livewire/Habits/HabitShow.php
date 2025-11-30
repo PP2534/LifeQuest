@@ -7,6 +7,7 @@ use App\Models\HabitParticipant;
 use Livewire\Component;
 use App\Models\HabitInvitation;
 use App\Models\User;
+use App\Services\XpService;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Computed;
 use Livewire\WithFileUploads;
@@ -390,7 +391,7 @@ class HabitShow extends Component
     // Cập nhật streak và giao diện
     private function updateStreakForCurrentUser(): void
     {
-        $this->currentUserParticipant?->calculateAndUpdateStreak();
+        $this->currentUserParticipant?->calculateAndUpdateStreak(app(XpService::class));
         $this->currentUserParticipant?->refresh();
         unset($this->calendarGrid); // Force calendar to re-render with new data
     }

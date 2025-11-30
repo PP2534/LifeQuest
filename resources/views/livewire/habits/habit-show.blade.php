@@ -5,9 +5,9 @@
         </div>
     @endif
 
-    <div class="grid grid-cols-1 lg:gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 lg:gap-8">
         {{-- Cột nội dung chính --}}
-        <div class="lg:col-span-1">
+        <div class="lg:col-span-2">
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 @if($habit->image)
                     <img src="{{ asset('storage/' . $habit->image) }}" alt="{{ $habit->title }}" class="w-full h-64 object-cover">
@@ -16,13 +16,13 @@
                     <div class="flex justify-between items-start mb-4">
                         <div class="min-w-0 flex-1">
                             <h1 class="text-3xl font-bold text-gray-800 mb-2 break-words">{{ $habit->title }}</h1>
-                            <div class="text-gray-600">{!!$habit->description!!}</div>
+                            <p class="text-gray-600">{{ $habit->description }}</p>
                         </div>
 
                         <div class="flex-shrink-0 ml-4 flex items-center space-x-2">
                             @if($isCreator)
-                                <a href="{{ route('habits.edit', $habit) }}" wire:navigate class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700">Sửa</a>
-                                <button wire:click="deleteHabit" wire:confirm="Bạn có chắc chắn muốn xóa thói quen này? Hành động này không thể hoàn tác." class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">Xóa</button>
+                                <a href="{{ route('habits.edit', $habit) }}" wire:navigate class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Sửa</a>
+                                <button wire:click="deleteHabit" wire:confirm="Bạn có chắc chắn muốn xóa thói quen này? Hành động này không thể hoàn tác." class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Xóa</button>
                             @endif
 
                             @if ($habit->type === 'group')
@@ -140,7 +140,7 @@
         {{-- Cột Lịch trình --}}
         <div class="lg:col-span-1 mt-6 lg:mt-0">
             <div class="bg-white rounded-lg shadow-md p-6 sticky top-6">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">Bảng theo dõi</h2>
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Lịch trình của bạn</h2>
 
                 @if($isParticipant)
                     {{-- Hiển thị Streak --}}
