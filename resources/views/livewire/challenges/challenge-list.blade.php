@@ -37,7 +37,7 @@
                 @if($challenge->creator)
                 <div class="flex items-center mb-4 text-sm">
                     <a href="{{ route('profile.show', ['id' => $challenge->creator->id]) }}" wire:navigate class="flex items-center text-gray-600 hover:text-gray-900">
-                        <img class="w-8 h-8 rounded-full object-cover mr-3" src="{{ $challenge->creator->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($challenge->creator->name) . '&color=7F9CF5&background=EBF4FF' }}" alt="{{ $challenge->creator->name }}">
+                        <img class="w-8 h-8 rounded-full object-cover mr-3" src="{{ $challenge->creator->avatar ? asset('storage/users'. $challenge->creator->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($challenge->creator->name) . '&color=0d9488&background=94ffd8' }}" alt="{{ $challenge->creator->name }}">
                         <span class="font-medium">{{ $challenge->creator->name }}</span>
                     </a>
                 </div>

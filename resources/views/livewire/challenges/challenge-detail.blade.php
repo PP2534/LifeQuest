@@ -12,7 +12,7 @@
                         if (!$this->isLocked) {
                             // Fixed challenge, not started yet. Countdown to start date.
                             $countdownTarget = $challenge->start_date;
-                            $countdownMessage = '🔥 Đếm ngược Thời gian';
+                            $countdownMessage = 'Thử thách sắp diễn ra - Bắt đầu trong';
                         } elseif (!$this->isEnded) {
                             // Fixed challenge, started and not ended yet. Countdown to end date.
                             $countdownTarget = $this->endDate;
@@ -122,12 +122,6 @@
 
        <section aria-label="Join challenge" class="mb-8 flex gap-4 align-middle">
                 @auth
-                     @if($canInvite && !$this->isChallengeDisplayLocked)
-                        <button wire:click="openInviteModal"
-                                class="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-3 rounded-lg focus:outline-none focus:ring-4 focus:ring-indigo-300 transition">
-                            Mời bạn bè
-                        </button>
-                    @endif
                     @if ($myParticipation)
                         @if ($myParticipation->status === 'kicked')
                             <div class="w-full bg-gray-400 text-white font-semibold px-6 py-3 rounded-lg text-center cursor-not-allowed shadow-inner">
@@ -159,7 +153,7 @@
                         Chuỗi {{ $myParticipation->streak }} ngày 
                         </div>
                 @endif
-                <div class="mt-6 flex justify-center">
+                <div class="mt-6 flex justify-center gap-6">
                     <a href="{{ route('challenges.checkin', $challenge) }}" wire:navigate
                         class="inline-flex items-center px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg shadow-lg transform transition hover:scale-105">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -167,6 +161,12 @@
                         </svg>
                         Điểm danh & Xem Lịch
                     </a>
+                    @if($canInvite && !$this->isChallengeDisplayLocked)
+                        <button wire:click="openInviteModal"
+                                class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-semibold px-8 py-4 rounded-lg shadow-md focus:outline-none focus:ring-4 focus:ring-amber-300">
+                            Mời bạn bè
+                        </button>
+                    @endif
                 </div>
             </section>
         @endif
