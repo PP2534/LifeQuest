@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads; //  để xử lý upload file
 use Carbon\Carbon;
+use App\Models\Province;
+use App\Models\Ward;
+use App\Models\ChallengeParticipant;
 
 class CreateChallenge extends Component
 {
@@ -27,9 +30,20 @@ class CreateChallenge extends Component
 
     // Dùng để lưu các danh mục được chọn
     public array $selectedCategories = [];
+    public $selectedProvinceId = null; // ID Tỉnh được chọn
+    public $ward_id = null;// ID xã 
     
     // Dùng để hiển thị danh sách category
     public Collection $allCategories;
+    public Collection $provinces;
+    public Collection $wards;
+
+    // mặc định là ko yêu cầu ảnh
+    public bool $need_proof = false;
+
+    public bool $allow_member_invite = true;
+
+   
 
     /**
      * Hàm này chạy khi component được tải lần đầu
@@ -38,6 +52,12 @@ class CreateChallenge extends Component
     {
         // Tải tất cả danh mục từ CSDL để hiển thị cho người dùng chọn
         $this->allCategories = Category::orderBy('name')->get();
+
+        // Tải danh sách tất cả tỉnh thành
+        $this->provinces = Province::orderBy('name')->get();
+        
+        // Khởi tạo danh sách xã rỗng
+        $this->wards = collect();
     }
 
     /**
@@ -46,7 +66,7 @@ class CreateChallenge extends Component
     protected function rules(): array
     {
         return [
-            'title' => 'required|string|min:10|max:255',
+            'title' => 'required|string|min:5|max:255',
             'description' => 'required|string|min:20',
             'duration_days' => 'required|integer|min:1',
             'type' => 'required|in:public,private',
@@ -54,9 +74,44 @@ class CreateChallenge extends Component
             'streak_mode' => 'required|in:continuous,cumulative',
             'image' => 'nullable|image|max:2048', // cho phép null, 2MB max
             'selectedCategories' => 'required|array|min:1', // Yêu cầu ít nhất 1 danh mục
+            'need_proof' => 'boolean',
+            'allow_member_invite' => 'boolean',
+            'selectedProvinceId' => 'required', // Bắt buộc chọn tỉnh
+            'ward_id' => 'required|exists:wards,id', // Bắt buộc chọn xã và xã phải tồn tại
         ];
     }
-
+    protected function messages()
+    {
+        return [
+            'title.required' => 'Vui lòng nhập tiêu đề thử thách.',
+            'title.min' => 'Tiêu đề phải có ít nhất 5 ký tự.',
+            'description.required' => 'Vui lòng nhập mô tả chi tiết.',
+            'description.min' => 'Mô tả phải có ít nhất 20 ký tự.',
+            'duration_days.required' => 'Vui lòng nhập thời lượng.',
+            'duration_days.min' => 'Thời lượng tối thiểu là 1 ngày.',
+            'selectedCategories.required' => 'Bạn phải chọn ít nhất một danh mục.',
+            'selectedProvinceId.required' => 'Vui lòng chọn Tỉnh/Thành phố.',
+            'ward_id.required' => 'Vui lòng chọn Phường/Xã.',
+            'image.max' => 'Kích thước ảnh không được vượt quá 2MB.',
+            'image.image' => 'File tải lên phải là định dạng ảnh.',
+        ];
+    }
+/**
+     * Hàm Lifecycle Hook của Livewire:
+     * Tự động chạy khi $selectedProvinceId thay đổi
+     */
+    public function updatedSelectedProvinceId($value)
+    {
+        // Khi chọn tỉnh mới, reset xã đã chọn
+        $this->ward_id = null;
+        
+        // Lọc danh sách xã theo tỉnh mới chọn
+        if ($value) {
+            $this->wards = Ward::where('province_id', $value)->orderBy('name')->get();
+        } else {
+            $this->wards = collect();
+        }
+    }
     /**
      * Hàm này được gọi khi form được submit (wire:submit="save")
      */
@@ -74,6 +129,9 @@ class CreateChallenge extends Component
         $categories = $validatedData['selectedCategories'];
         unset($validatedData['selectedCategories']);
 
+        // Loại bỏ selectedProvinceId vì không lưu vào bảng challenges
+        unset($validatedData['selectedProvinceId']);
+
         $startDate = Carbon::now(); // Lấy ngày giờ hiện tại
         $duration = (int) $validatedData['duration_days']; // Lấy số ngày
         
@@ -90,6 +148,17 @@ class CreateChallenge extends Component
         
         // Đính kèm categories
         $challenge->categories()->attach($categories);
+
+        // Thêm người tạo vào danh sách tham gia với vai trò 'creator'
+        ChallengeParticipant::create([
+            'challenge_id' => $challenge->id,
+            'user_id' => Auth::id(),
+            'role' => 'creator', 
+            'status' => 'active',
+            'progress_percent' => 0,
+            'streak' => 0,
+            'personal_start_date' => $startDate,
+        ]);
 
         session()->flash('success', 'Đã tạo thử thách thành công!');
         return $this->redirect(route('challenges.show', $challenge), navigate: true);

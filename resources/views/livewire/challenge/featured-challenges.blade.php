@@ -14,9 +14,12 @@
                 @endif
                 <p class="text-sm text-gray-600 mb-4 mt-auto">Thời gian: {{ $challenge->duration_days }} ngày</p>
                 {{-- TODO: Link to join challenge action --}}
-                <button class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 rounded focus:outline-none focus:ring-2 focus:ring-teal-400" aria-label="Tham gia thử thách này">
-                    Tham gia
-                </button>
+                <div class="flex justify-center">
+                  <a href="{{ route('challenges.show', $challenge->id) }}" wire:navigate
+                    class="w-11/12 bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 rounded focus:outline-none focus:ring-2 focus:ring-teal-400 text-center">
+                      Xem Chi Tiết
+                  </a>
+                </div>
             </div>
         </article>
       @empty

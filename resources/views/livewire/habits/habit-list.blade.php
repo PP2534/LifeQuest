@@ -1,28 +1,35 @@
 <div class="container mx-auto p-4">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">Danh sách thói quen</h1>
-        <div class="flex items-center space-x-3">
-            <div class="relative">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                    <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none">
-                        <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </svg>
-                </span>
-                <input wire:model.live.debounce.300ms="search" type="text" placeholder="Tìm kiếm thói quen..."
-                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
-            </div>
-            <a href="{{ route('habits.create') }}" wire:navigate class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700">Tạo thói quen mới</a>
-        </div>
+    <!-- Dòng tiêu đề -->
+    <div class="mb-4">
+        <h1 class="text-3xl font-bold text-teal-600 inline-block">Danh Sách Thói Quen</h1>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- Dòng tìm kiếm và nút hành động -->
+    <div class="flex justify-between items-center mb-6">
+        <!-- Ô tìm kiếm -->
+        <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none">
+                    <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </span>
+            <input wire:model.live.debounce.300ms="search" type="text" placeholder="Tìm kiếm thói quen..."
+                class="w-96 pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
+        </div>
+        <!-- Nút hành động -->
+        <a href="{{ route('habits.create') }}" wire:navigate class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 whitespace-nowrap"> + Tạo thói quen mới</a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($habits as $habit)
             <div class="bg-white rounded-lg shadow-md overflow-hidden transition-transform transform hover:-translate-y-1">
                 <a href="{{ route('habits.show', $habit) }}" wire:navigate class="block">
                     <img src="{{ $habit->image ? asset('storage/' . $habit->image) : 'https://placehold.co/600x400/e2e8f0/4a5568?text=' . urlencode($habit->title) }}" alt="{{ $habit->title }}" class="w-full h-40 object-cover">
                     <div class="p-4">
                         <div class="flex justify-between items-start mb-2">
-                            <h2 class="font-bold text-lg text-gray-800 truncate pr-2" title="{{ $habit->title }}">{{ $habit->title }}</h2>
+                            <div class="min-w-0 flex-1 pr-2">
+                                <h2 class="font-bold text-lg text-gray-800 line-clamp-2" title="{{ $habit->title }}">{{ $habit->title }}</h2>
+                            </div>
                             <span class="flex-shrink-0 text-xs font-semibold px-2 py-1 rounded-full {{ $habit->type === 'group' ? 'bg-indigo-100 text-indigo-800' : 'bg-green-100 text-green-800' }}">
                                 {{ $habit->type === 'group' ? 'Nhóm' : 'Cá nhân' }}
                             </span>

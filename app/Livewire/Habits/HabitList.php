@@ -29,10 +29,10 @@ class HabitList extends Component
                 $query->where('title', 'like', '%' . $this->search . '%');
             })->with(['participants' => function ($query) use ($userId) {
                 $query->where('user_id', $userId);
-            }])->latest()->paginate(3);
+            }])->latest()->paginate(12);
         } else {
             // Nếu người dùng chưa đăng nhập, trả về một paginator rỗng
-            $habits = Habit::where('id', -1)->paginate(3);
+            $habits = Habit::where('id', -1)->paginate(12);
         }
 
         return view('livewire.habits.habit-list', ['habits' => $habits]);
