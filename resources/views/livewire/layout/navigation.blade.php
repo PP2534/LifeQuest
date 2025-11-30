@@ -118,10 +118,10 @@
            <img src="{{asset('logo_lifequest.png')}}" class="h-14">
         </a>
         <ul id="primary-menu" class="hidden absolute md:relative top-16 left-0 md:top-auto md:left-auto w-full md:w-auto bg-white md:flex md:items-center md:space-x-8 shadow-md md:shadow-none" role="menu" aria-label="Main menu">
-            <li role="none"><a href="{{route('homepage')}}" wire:navigate class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Trang chủ <!-- Home --></a></li>
-            <li role="none"><a href="{{ route('challenges.index') }}" wire:navigate class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Thử Thách <!-- Challenges --></a></li>
-            <li role="none"><a href="{{ route('habits.index') }}" wire:navigate class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Thói Quen <!-- Habits --></a></li>
-            <li role="none"><a href="{{route('leaderboard')}}" wire:navigate class="block py-2 px-3 hover:text-teal-600 focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Bảng xếp hạng <!-- Profile --></a></li>
+            <li role="none"><a href="{{route('homepage')}}" wire:navigate class="block py-2 px-3 {{ request()->routeIs('homepage') ? 'text-teal-600 font-bold' : 'hover:text-teal-600' }} focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Trang chủ <!-- Home --></a></li>
+            <li role="none"><a href="{{ route('challenges.index') }}" wire:navigate class="block py-2 px-3 {{ request()->routeIs('challenges.index') || request()->routeIs('challenges.show') || request()->routeIs('challenges.checkin') || request()->routeIs('challenges.create') || request()->routeIs('challenges.edit') ? 'text-teal-600 font-bold' : 'hover:text-teal-600' }} focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Thử Thách <!-- Challenges --></a></li>
+            <li role="none"><a href="{{ route('habits.index') }}" wire:navigate class="block py-2 px-3 {{ request()->routeIs('habits.index') || request()->routeIs('habits.show') || request()->routeIs('habits.create') || request()->routeIs('habits.edit') ? 'text-teal-600 font-bold' : 'hover:text-teal-600' }} focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Thói Quen <!-- Habits --></a></li>
+            <li role="none"><a href="{{route('leaderboard')}}" wire:navigate class="block py-2 px-3 {{ request()->routeIs('leaderboard') ? 'text-teal-600 font-bold' : 'hover:text-teal-600' }} focus:outline-none focus:text-teal-600" role="menuitem" tabindex="0">Bảng xếp hạng <!-- Profile --></a></li>
         </ul>
         <!-- User avatar dropdown -->
         <div class="flex items-center">
