@@ -71,7 +71,7 @@ class HabitEdit extends Component
         ]);
 
         session()->flash('status', 'Cập nhật thói quen thành công!');
-        return redirect()->route('habits.show', $this->habit);
+        return $this->redirect(route('habits.show', $this->habit), navigate: true);
     }
 
     public function render()

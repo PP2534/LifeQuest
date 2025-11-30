@@ -73,6 +73,7 @@ class ChallengeList extends Component
             ->when($this->selectedWard, function ($query) {
                 $query->where('ward_id', $this->selectedWard);
             })
+            ->withCount('participants')
             ->latest()
             ->paginate(12);
 

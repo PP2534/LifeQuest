@@ -28,43 +28,93 @@
     <main role="main" class="container mx-auto px-4 py-12 max-w-4xl">
     <article aria-label="Challenge detail" class="bg-white rounded-lg shadow p-8">
         @if($challenge->start_date)
-            <div x-data="countdown('{{ \Carbon\Carbon::parse($challenge->start_date)->format('Y-m-d H:i:s') }}')"
-                 x-init="init()"
-                 class="mb-6 p-4 rounded-xl text-center shadow-inner border border-teal-100 bg-gradient-to-r from-teal-50 to-white">
-                
-                @if($this->isLocked)
-                    <div class="flex flex-col items-center text-red-600">
-                        <span class="text-2xl font-bold uppercase tracking-widest">🚫 Đã Chốt Sổ 🚫</span>
-                        <p class="text-sm mt-1">Thử thách cố định (Fixed) này đã bắt đầu. Không thể tham gia, mời hoặc điểm danh được nữa.</p>
-                        <p class="text-xs font-mono mt-1 text-gray-500">Bắt đầu lúc: {{ \Carbon\Carbon::parse($challenge->start_date)->format('Y-m-d H:i:s') }}</p>
-                    </div>
-                @else
-                    <p class="text-sm text-gray-500 uppercase tracking-wide font-bold mb-2">
-                        {{ $challenge->time_mode == 'rolling' ? '⏳ Thời gian bắt đầu dự kiến' : '🔥 Đếm ngược Thời gian (Fixed)' }}
-                    </p>
-                    
-                    <div class="flex justify-center gap-4 font-mono text-3xl md:text-4xl font-bold text-teal-700">
-                        <div class="flex flex-col items-center">
-                            <span x-text="days">00</span>
-                            <span class="text-xs font-sans text-gray-400 font-normal">Ngày</span>
-                        </div>
-                        <span>:</span>
-                        <div class="flex flex-col items-center">
-                            <span x-text="hours">00</span>
-                            <span class="text-xs font-sans text-gray-400 font-normal">Giờ</span>
-                        </div>
-                        <span>:</span>
-                        <div class="flex flex-col items-center">
-                            <span x-text="minutes">00</span>
-                            <span class="text-xs font-sans text-gray-400 font-normal">Phút</span>
-                        </div>
-                        <span>:</span>
-                        <div class="flex flex-col items-center">
-                            <span x-text="seconds">00</span>
-                            <span class="text-xs font-sans text-gray-400 font-normal">Giây</span>
-                        </div>
-                    </div>
+            <div
+                @php
+                    $countdownTarget = null;
+                    $countdownMessage = '';
+                    $countdownColor = 'teal-700'; // Default for active countdown
+                    $displayDates = false; // Flag to show start/end dates
+
+                    if ($challenge->time_mode == 'fixed') {
+                        if (!$this->isLocked) {
+                            // Fixed challenge, not started yet. Countdown to start date.
+                            $countdownTarget = $challenge->start_date;
+                            $countdownMessage = 'Thử thách sắp diễn ra - Bắt đầu trong';
+                        } elseif (!$this->isEnded) {
+                            // Fixed challenge, started and not ended yet. Countdown to end date.
+                            $countdownTarget = $this->endDate;
+                            $countdownMessage = 'Thử thách đang diễn ra - Thời gian còn lại';
+                            $countdownColor = 'red-700';
+                            $displayDates = true; // Show dates when ongoing fixed
+                        } else {
+                            // Fixed challenge, ended.
+                            $countdownMessage = $this->lockedMessage; // "Thử thách đã kết thúc"
+                            $countdownColor = 'red-600';
+                            $displayDates = true; // Always show dates when ended
+                        }
+                    } elseif ($challenge->time_mode == 'rolling') {
+                        if (!$this->isEnded) {
+                            // Rolling challenge, not ended yet. Countdown to end date.
+                            $countdownTarget = $this->endDate;
+                            $countdownMessage = 'Thử thách đang diễn ra - Thời gian còn lại';
+                        } else {
+                            // Rolling challenge, ended.
+                            $countdownMessage = $this->lockedMessage; // "Thử thách đã kết thúc"
+                            $countdownColor = 'red-600';
+                            $displayDates = true; // Always show dates when ended
+                        }
+                    }
+                @endphp
+
+                @if($countdownTarget)
+                    x-data="countdown('{{ \Carbon\Carbon::parse($countdownTarget)->format('Y-m-d H:i:s') }}')"
+                    x-init="init()"
                 @endif
+                class="mb-6 p-4 rounded-xl text-center shadow-inner border border-teal-100 bg-gradient-to-r from-teal-50 to-white">
+
+                <div class="flex flex-col items-center text-gray-700">
+                    <span class="text-2xl font-bold uppercase tracking-widest {{ $countdownColor }}">
+                        {{ $countdownMessage }}
+                    </span>
+                    
+                    @if($displayDates)
+                        <div class="text-xs font-mono mt-2 text-gray-500 flex gap-4">
+                            <span>Bắt đầu: {{ \Carbon\Carbon::parse($challenge->start_date)->format('d/m/Y H:i') }}</span>
+                            <span>Kết thúc: {{ $this->endDate ? $this->endDate->format('d/m/Y H:i') : 'N/A' }}</span>
+                        </div>
+                    @endif
+
+                    @if ($countdownTarget)
+                        <div class="flex justify-center gap-4 font-mono text-3xl md:text-4xl font-bold text-{{ $countdownColor }}">
+                            <div class="flex flex-col items-center">
+                                <span x-text="days">00</span>
+                                <span class="text-xs font-sans text-gray-400 font-normal">Ngày</span>
+                            </div>
+                            <span>:</span>
+                            <div class="flex flex-col items-center">
+                                <span x-text="hours">00</span>
+                                <span class="text-xs font-sans text-gray-400 font-normal">Giờ</span>
+                            </div>
+                            <span>:</span>
+                            <div class="flex flex-col items-center">
+                                <span x-text="minutes">00</span>
+                                <span class="text-xs font-sans text-gray-400 font-normal">Phút</span>
+                            </div>
+                            <span>:</span>
+                            <div class="flex flex-col items-center">
+                                <span x-text="seconds">00</span>
+                                <span class="text-xs font-sans text-gray-400 font-normal">Giây</span>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if(!$countdownTarget && !$displayDates && $challenge->start_date)
+                        {{-- Fallback for scenarios like rolling not ended, but no end date (shouldn't happen with current logic) --}}
+                        <p class="text-sm text-gray-500 mt-2">Thử thách đang chờ hoặc không yêu cầu đếm ngược cụ thể.</p>
+                    @elseif(!$challenge->start_date)
+                        <p class="text-sm text-gray-500 mt-2">Thời gian bắt đầu chưa được thiết lập cho thử thách này.</p>
+                    @endif
+                </div>
             </div>
         @endif
         @if (session('success'))
@@ -80,7 +130,7 @@
         @endif
 
         <header class="mb-6 border-b pb-6 relative">
-            @if($challenge->creator_id === Auth::id())
+            @if($challenge->creator_id === Auth::id() && $challenge->start_date < now() && $challenge->time_mode === 'fixed')
                 <button wire:click="$set('showDateModal', true)" 
                         class="absolute top-0 right-0 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-full border border-gray-300 flex items-center transition">
                     📅 {{ $challenge->start_date ? 'Đổi giờ' : 'Đặt thời gian' }}
@@ -97,38 +147,15 @@
             </div>
         </section>
 
-       <section aria-label="Join challenge" class="mb-8 ">
+       <section aria-label="Join challenge" class="mb-8 flex gap-4 align-middle">
                 @auth
                     @if ($myParticipation)
                         @if ($myParticipation->status === 'kicked')
                             <div class="w-full bg-gray-400 text-white font-semibold px-6 py-3 rounded-lg text-center cursor-not-allowed shadow-inner">
                                 🔒 Bạn đã bị loại khỏi thử thách
                             </div>
-                        
-                        @elseif ($myParticipation->status === 'active')
-                            <button wire:click="leaveChallenge" 
-                                    wire:confirm="Bạn có chắc chắn muốn rời khỏi thử thách này không?"
-                                    class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-lg focus:outline-none focus:ring-4 focus:ring-red-400 w-full sm:w-auto">
-                                Đã tham gia (Rời khỏi)
-                            </button>
                         @endif
-                    @else
-                        <button wire:click="joinChallenge"
-                                class="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-3 rounded-lg focus:outline-none focus:ring-4 focus:ring-teal-400 w-full sm:w-auto">
-                            Tham gia thử thách
-                        </button>
                     @endif
-                     @if($canInvite)
-                        <button wire:click="openInviteModal"
-                                class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-6 py-3 rounded-lg focus:outline-none focus:ring-4 focus:ring-indigo-300 transition">
-                            Mời bạn bè
-                        </button>
-                    @endif
-                @else
-                    <a href="{{ route('login') }}" wire:navigate
-                       class="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-3 rounded-lg focus:outline-none focus:ring-4 focus:ring-teal-400 inline-block">
-                        Đăng nhập để tham gia
-                    </a>
                 @endauth
             </section>
 
@@ -153,7 +180,7 @@
                         Chuỗi {{ $myParticipation->streak }} ngày 
                         </div>
                 @endif
-                <div class="mt-6 flex justify-center">
+                <div class="mt-6 flex justify-center gap-6">
                     <a href="{{ route('challenges.checkin', $challenge) }}" wire:navigate
                         class="inline-flex items-center px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg shadow-lg transform transition hover:scale-105">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -161,19 +188,51 @@
                         </svg>
                         Điểm danh & Xem Lịch
                     </a>
+                    @if($canInvite && !$this->isChallengeDisplayLocked)
+                        <button wire:click="openInviteModal"
+                                class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-semibold px-8 py-4 rounded-lg shadow-md focus:outline-none focus:ring-4 focus:ring-amber-300">
+                            Mời bạn bè
+                        </button>
+                    @endif
                 </div>
             </section>
         @endif
 
-        <section aria-label="Leaderboard" class="mb-8">
+
+        @if(!$isParticipant && !$this->isChallengeDisplayLocked)
+            <section aria-label="Call to action" class="my-8">
+                <div class="bg-teal-50 border-2 border-dashed border-teal-200 rounded-lg text-center p-8">
+                    <h3 class="text-xl font-bold text-teal-800 mb-2">Sẵn sàng chinh phục thử thách?</h3>
+                    <p class="text-teal-700 mb-6">Hãy tham gia ngay để bắt đầu ghi nhận tiến trình và leo lên bảng xếp hạng!</p>
+                    
+                    @auth
+                        @if (!$myParticipation)
+                            <button wire:click="joinChallenge"
+                                    class="bg-teal-600 hover:bg-teal-700 text-white font-bold px-8 py-3 rounded-lg focus:outline-none focus:ring-4 focus:ring-teal-400 shadow-lg text-base transform hover:scale-105 transition">
+                                Tham gia ngay!
+                            </button>
+                        @endif
+                    @else
+                        <a href="{{ route('login') }}" wire:navigate
+                           class="bg-teal-600 hover:bg-teal-700 text-white font-bold px-8 py-3 rounded-lg focus:outline-none focus:ring-4 focus:ring-teal-400 inline-block shadow-lg text-base transform hover:scale-105 transition">
+                            Đăng nhập để tham gia
+                        </a>
+                    @endauth
+                </div>
+            </section>
+        @endif
+
+        <section aria-label="Leaderboard" class="mb-8 relative">
+            <div>
                 <h2 class="text-xl font-semibold mb-4">Bảng xếp hạng ({{ $leaderboard->count() }} thành viên)</h2>
-                <div class="bg-white border border-gray-300 rounded shadow max-h-64 overflow-y-auto">
+                <div class="bg-white border border-gray-300 rounded shadow max-h-[40rem] overflow-y-auto">
                     <table class="w-full text-left text-gray-700 text-sm">
                         <thead class="bg-gray-100 sticky top-0 z-10">
                             <tr>
                                 <th class="px-4 py-2">Hạng</th>
                                 <th class="px-4 py-2">Tên người dùng</th>
                                 <th class="px-4 py-2">Tiến trình</th>
+                                <th class="px-4 py-2">Streak</th>
                                 
                                 @if($challenge->creator_id === Auth::id())
                                     <th class="px-4 py-2 text-center">Quản lý</th>
@@ -218,6 +277,7 @@
                                     </td>
 
                                     <td class="px-4 py-2">{{ $participant->progress_percent }}%</td>
+                                    <td class="px-4 py-2">{{ $participant->streak }}</td> 
 
                                     @if($challenge->creator_id === Auth::id())
                                         <td class="px-4 py-2 text-center">
@@ -243,7 +303,8 @@
                         </tbody>
                     </table>
                 </div>
-            </section>
+            </div>
+        </section>
 
         <section aria-label="Comments" class="mb-8">
             <h2 class="text-xl font-semibold mb-4">Bình luận ({{ $challenge->comments->count() }})</h2>
@@ -347,6 +408,20 @@
                 </div>
             @endif
         </section>
+        
+        @if ($myParticipation && $myParticipation->status !== 'kicked')
+            <section aria-label="Leave challenge" class="mt-12 pt-8 border-t border-gray-200 text-center">
+                 @if ($myParticipation->status === 'active')
+                    <a wire:click="leaveChallenge" 
+                            wire:confirm="Bạn có chắc chắn muốn rời khỏi thử thách này không? Mọi tiến trình sẽ bị mất."
+                            class="text-red-600 cursor-pointer hover:underline font-semibold focus:outline-none focus:ring-4 focus:ring-red-400">
+                        Rời khỏi thử thách
+                    </a>
+                    <p class="text-xs text-gray-500 mt-2">Hành động này không thể hoàn tác.</p>
+                @endif
+            </section>
+        @endif
+
     </article>
     </main>
         <!-- Modal -->
