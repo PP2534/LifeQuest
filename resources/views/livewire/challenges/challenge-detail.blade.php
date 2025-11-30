@@ -475,7 +475,7 @@
                 </div>
             </div>
         </div>
-</div>
+
     @if($showInviteModal)
         <div class="fixed inset-0 bg-gray-900 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
             <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all">
@@ -646,3 +646,4 @@
         }));
     });
 </script>
+</div>
