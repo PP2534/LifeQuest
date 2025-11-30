@@ -25,7 +25,6 @@
         document.addEventListener('livewire:navigated', checkCommentHash); // Kiểm tra sau khi điều hướng bằng wire:navigate
      }"
 >
-    <main role="main" class="container mx-auto px-4 py-12 max-w-4xl">
     <article aria-label="Challenge detail" class="bg-white rounded-lg shadow p-8">
         @if($challenge->start_date)
             <div
@@ -139,6 +138,12 @@
 
             <h1 class="text-3xl font-bold text-teal-600 mb-2">{{ $challenge->title }}</h1>
         </header>
+
+        @if($challenge->image && file_exists(public_path('storage/' . $challenge->image)))
+            <div class="mb-8 rounded-lg overflow-hidden shadow-lg">
+                <img src="{{ asset('storage/' . $challenge->image) }}" alt="Challenge Image" class="w-full h-80 object-cover">
+            </div>
+        @endif
 
         <section aria-label="Challenge description" class="mb-8">
             <h2 class="text-xl font-semibold mb-2">Mô tả thử thách</h2>
@@ -423,7 +428,6 @@
         @endif
 
     </article>
-    </main>
         <!-- Modal -->
         <div 
             x-show="confirmDelete"
@@ -471,7 +475,7 @@
                 </div>
             </div>
         </div>
-</div>
+
     @if($showInviteModal)
         <div class="fixed inset-0 bg-gray-900 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
             <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all">
@@ -612,7 +616,6 @@
         </div>
     @endif
 
-</div>
 <script>
     document.addEventListener('alpine:init', () => {
         Alpine.data('countdown', (endTime) => ({
@@ -643,3 +646,4 @@
         }));
     });
 </script>
+</div>

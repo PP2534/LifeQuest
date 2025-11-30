@@ -26,11 +26,11 @@ class HabitShow extends Component
     public ?HabitInvitation $currentUserInvitation = null;
 
     public string $inviteEmail = '';
-
+// Lịch
     public $year;
     public $month;
     public $monthName;
-
+// Tải bằng chứng 
     public bool $showProofModal = false;
     public ?string $selectedDate = null;
     public $proofImage;
@@ -47,7 +47,7 @@ class HabitShow extends Component
         $this->month = $now->month;
         $this->updateMonthName();
     }
-    
+    // Cho phép người dùng gửi yêu cầu tham gia một thói quen nhóm
     public function requestToJoin()
     {
         if ($this->habit->type !== 'group' || $this->participationStatus !== null || !Auth::check()) {
@@ -68,7 +68,7 @@ class HabitShow extends Component
 
         session()->flash('status', 'Yêu cầu tham gia của bạn đã được gửi đi và đang chờ duyệt.');
     }
-
+    // Cho phép người dùng hủy bỏ yêu cầu tham gia
     public function cancelRequest()
     {
         if (!$this->currentUserInvitation || $this->isCreator) {
@@ -82,7 +82,7 @@ class HabitShow extends Component
 
         session()->flash('status', 'Bạn đã hủy yêu cầu tham gia.');
     }
-
+    // Cho phép người dùng rời khỏi thói quen 
     public function leaveHabit()
     {
         if (!$this->isParticipant || $this->isCreator) {
@@ -99,7 +99,7 @@ class HabitShow extends Component
 
         session()->flash('status', 'Bạn đã rời khỏi thói quen.');
     }
-
+    // Xóa thói quen
     public function deleteHabit()
     {
         // Chỉ người tạo mới có quyền xóa
@@ -114,7 +114,7 @@ class HabitShow extends Component
         session()->flash('status', 'Thói quen đã được xóa thành công.');
         return redirect()->route('habits.index');
     }
-
+    // Duyệt một yêu cầu tham gia
     public function approveRequest(int $invitationId)
     {
         $invitation = HabitInvitation::find($invitationId);
@@ -156,7 +156,7 @@ class HabitShow extends Component
         $this->loadParticipationData();
         session()->flash('status', 'Đã duyệt thành viên.');
     }
-
+    // Từ chối lời mời 
     public function rejectRequest(int $invitationId)
     {
         $invitation = HabitInvitation::find($invitationId);
@@ -180,7 +180,7 @@ class HabitShow extends Component
         $this->loadParticipationData();
         session()->flash('status', 'Đã từ chối yêu cầu.');
     }
-
+    // Mời người khác 
     public function inviteMember()
     {
         // Cho phép mọi thành viên mời nếu cài đặt được bật
@@ -219,7 +219,7 @@ class HabitShow extends Component
         $this->inviteEmail = ''; // Clear input
         session()->flash('status', 'Đã gửi lời mời thành công.');
     }
-
+    // Đuổi người trong nhóm
     public function kickMember(int $participantId)
     {
         // Chỉ người tạo mới có quyền xóa thành viên
@@ -237,7 +237,7 @@ class HabitShow extends Component
             session()->flash('status', 'Đã xóa thành viên khỏi nhóm.');
         }
     }
-
+    // Chấp nhận lời mời
     public function acceptInvitation()
     {
         if (!$this->currentUserInvitation || $this->currentUserInvitation->status !== 'pending') {
@@ -247,7 +247,7 @@ class HabitShow extends Component
         $this->approveRequest($this->currentUserInvitation->id);
         session()->flash('status', 'Bạn đã tham gia thói quen!');
     }
-
+    // Từ chối lời mời 
     public function rejectInvitation()
     {
         if (!$this->currentUserInvitation || $this->currentUserInvitation->status !== 'pending') {
@@ -257,21 +257,21 @@ class HabitShow extends Component
         $this->rejectRequest($this->currentUserInvitation->id);
         session()->flash('status', 'Bạn đã từ chối lời mời.');
     }
-
+    // Trạng thái Tham gia
     protected function loadParticipationData(): void
     {
         // Reset state
-        $this->isParticipant = false;
-        $this->isCreator = false;
-        $this->participationStatus = null;
-        $this->currentUserParticipant = null;
-        $this->currentUserInvitation = null;
+        $this->isParticipant = false; // người dùng tham gia
+        $this->isCreator = false; // người tạo
+        $this->participationStatus = null; // trạng thái tham gia
+        $this->currentUserParticipant = null; 
+        $this->currentUserInvitation = null; // lời mời của người dùng 
 
-        if (!Auth::check()) return;
+        if (!Auth::check()) return; //Kiểm tra chưa đăng nhập thì dừng
 
         $userId = Auth::id();
 
-        // 1. Check if user is already an active participant
+        // 1. Kiểm tra xem có phải là thành viên đang hoạt động không
         $this->currentUserParticipant = $this->habit->participants->firstWhere('user_id', $userId);
 
         if ($this->currentUserParticipant && $this->currentUserParticipant->status === 'active') {
@@ -281,21 +281,23 @@ class HabitShow extends Component
             return;
         }
 
-        // 2. If not an active participant, check for pending invitations
+        // 2. Nếu không, kiểm tra xem có lời mời/yêu cầu đang chờ không
         $this->currentUserInvitation = $this->habit->invitations->where('invitee_id', $userId)->where('status', 'pending')->first();
 
         if ($this->currentUserInvitation) {
+              // Nếu người mời và người được mời là một -> đây là yêu cầu tham gia
+            // Ngược lại -> đây là lời mời từ người khác
             $this->participationStatus = $this->currentUserInvitation->inviter_id === $userId ? 'pending_request' : 'invited';
         }
     }
-
+    // Cập nhật tên tháng và năm
     public function updateMonthName()
     {
         // Đảm bảo ngôn ngữ là tiếng Việt
         Carbon::setLocale('vi');
         $this->monthName = Carbon::create($this->year, $this->month)->translatedFormat('F Y');
     }
-
+    // Chuyển đến tháng trước
     public function previousMonth()
     {
         $date = Carbon::create($this->year, $this->month)->subMonth();
@@ -304,7 +306,7 @@ class HabitShow extends Component
         $this->updateMonthName();
         unset($this->calendarGrid); // Xóa cache để tính toán lại
     }
-
+    // Chuyển đến tháng sau
     public function nextMonth()
     {
         $date = Carbon::create($this->year, $this->month)->addMonth();
@@ -313,7 +315,7 @@ class HabitShow extends Component
         $this->updateMonthName();
         unset($this->calendarGrid); // Xóa cache để tính toán lại
     }
-
+    // Xử lý khi nhấn vào một ngày trên lịch
     public function toggleDayStatus(string $dateString)
     {
         if (!$this->isParticipant) return;
@@ -352,7 +354,7 @@ class HabitShow extends Component
             session()->flash('status', 'Đã ghi nhận hoàn thành!');
         }
     }
-
+    //  Lưu log khi có bằng chứng (từ modal)
     public function saveLogWithProof()
     {
         if (!$this->selectedDate) return;
@@ -373,7 +375,7 @@ class HabitShow extends Component
             'proof_image' => $proofImagePath,
         ]);
     }
-
+    // Đóng modal tải bằng chứng
     public function closeProofModal()
     {
         $this->showProofModal = false;
@@ -385,13 +387,14 @@ class HabitShow extends Component
     /**
      * Helper method to trigger streak calculation and UI refresh.
      */
+    // Cập nhật streak và giao diện
     private function updateStreakForCurrentUser(): void
     {
         $this->currentUserParticipant?->calculateAndUpdateStreak();
         $this->currentUserParticipant?->refresh();
         unset($this->calendarGrid); // Force calendar to re-render with new data
     }
-
+    // Lấy danh sách log của người dùng hiện tại
     #[Computed]
     public function myLogs()
     {
@@ -413,7 +416,7 @@ class HabitShow extends Component
             return $date->format('Y-m-d');
         });
     }
-
+    // Lấy danh sách lời mời đang chờ (chỉ cho người tạo)
     #[Computed]
     public function pendingInvitations(): Collection
     {
@@ -423,12 +426,13 @@ class HabitShow extends Component
         return $this->habit->invitations->where('status', 'pending');
     }
 
+    //  Lấy danh sách thành viên đang hoạt động
     #[Computed]
     public function activeParticipants(): Collection
     {
         return $this->habit->participants->where('status', 'active');
     }
-
+    // Tạo ra cấu trúc dữ liệu cho lưới lịch
     #[Computed]
     public function calendarGrid()
     {
