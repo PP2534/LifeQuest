@@ -89,11 +89,25 @@
                         @if($isParticipant && $habit->allow_member_invite)
                             <div class="mt-6 border-t pt-6">
                                 <h2 class="text-2xl font-semibold text-gray-800 mb-4">Mời thành viên mới</h2>
-                                <form wire:submit.prevent="inviteMember" class="flex items-center space-x-2">
-                                    <input wire:model="inviteEmail" type="email" placeholder="Nhập email để mời..." class="w-full border rounded-md px-3 py-2 focus:ring-teal-500 focus:border-teal-500">
-                                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex-shrink-0">Mời</button>
-                                </form>
-                                @error('inviteEmail') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
+                                <div class="relative" wire:click.away="hideSearchResults">
+                                    <form wire:submit.prevent="inviteMember" class="flex items-center space-x-2">
+                                        <input wire:model.live.debounce.300ms="inviteName" type="text" placeholder="Nhập tên người dùng để mời..." class="w-full border rounded-md px-3 py-2 focus:ring-teal-500 focus:border-teal-500" autocomplete="off">
+                                        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex-shrink-0">Mời</button>
+                                    </form>
+
+                                    @if($showResults && $searchResults->isNotEmpty())
+                                        <ul class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 shadow-lg max-h-60 overflow-y-auto">
+                                            @foreach($searchResults as $user)
+                                                <li wire:click.prevent="selectUser('{{ $user->name }}')" class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center">
+                                                    <img src="{{ $user->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($user->name) }}" alt="{{ $user->name }}" class="w-8 h-8 rounded-full mr-3">
+                                                    <span>{{ $user->name }}</span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </div>
+
+                                @error('inviteName') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
                                 @if(session('invite_error'))
                                     <div class="text-red-500 text-sm mt-1">{{ session('invite_error') }}</div>
                                 @endif

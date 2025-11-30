@@ -26,7 +26,9 @@ class HabitShow extends Component
     public ?HabitParticipant $currentUserParticipant = null;
     public ?HabitInvitation $currentUserInvitation = null;
 
-    public string $inviteEmail = '';
+    public string $inviteName = '';
+    public Collection $searchResults;
+    public bool $showResults = false;
 // Lịch
     public $year;
     public $month;
@@ -47,6 +49,8 @@ class HabitShow extends Component
         $this->year = $now->year;
         $this->month = $now->month;
         $this->updateMonthName();
+
+        $this->searchResults = collect();
     }
     // Cho phép người dùng gửi yêu cầu tham gia một thói quen nhóm
     public function requestToJoin()
@@ -190,12 +194,12 @@ class HabitShow extends Component
         }
 
         $this->validate([
-            'inviteEmail' => 'required|email|exists:users,email',
+            'inviteName' => 'required|string|exists:users,name',
         ], [
-            'inviteEmail.exists' => 'Không tìm thấy người dùng với email này.',
+            'inviteName.exists' => 'Không tìm thấy người dùng với tên này.',
         ]);
 
-        $invitee = User::where('email', $this->inviteEmail)->first();
+        $invitee = User::where('name', $this->inviteName)->first();
 
         // Check if user is already a participant
         if ($this->habit->participants()->where('user_id', $invitee->id)->exists()) {
@@ -217,8 +221,43 @@ class HabitShow extends Component
         ]);
 
         $this->habit->refresh()->load(['participants.user', 'invitations.invitee', 'invitations.inviter']);
-        $this->inviteEmail = ''; // Clear input
+        $this->inviteName = ''; // Clear input
         session()->flash('status', 'Đã gửi lời mời thành công.');
+    }
+
+    // Lifecycle hook, chạy mỗi khi $inviteName được cập nhật từ frontend
+    public function updatedInviteName(string $value): void
+    {
+        if (strlen($value) < 2) {
+            $this->searchResults = collect();
+            $this->showResults = false;
+            return;
+        }
+
+        // Lấy ID của những người đã là thành viên hoặc đã được mời
+        $currentParticipantIds = $this->habit->participants->pluck('user_id');
+        $pendingInviteIds = $this->habit->invitations()->where('status', 'pending')->pluck('invitee_id');
+        $excludeIds = $currentParticipantIds->merge($pendingInviteIds)->push(Auth::id())->unique();
+
+        $this->searchResults = User::where('name', 'like', '%' . $value . '%')
+            ->whereNotIn('id', $excludeIds)
+            ->take(5) // Giới hạn 5 kết quả
+            ->get();
+
+        $this->showResults = $this->searchResults->isNotEmpty();
+    }
+
+    // Được gọi khi người dùng chọn một tên từ danh sách gợi ý
+    public function selectUser(string $name): void
+    {
+        $this->inviteName = $name;
+        $this->showResults = false;
+        $this->searchResults = collect();
+    }
+
+    public function hideSearchResults(): void
+    {
+        $this->showResults = false;
     }
     // Đuổi người trong nhóm
     public function kickMember(int $participantId)
