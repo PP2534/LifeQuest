@@ -9,8 +9,15 @@ class Notifications extends Component
 {
     public $notifications = [];
     public $unreadCount = 0; // khởi tạo mặc định
-
-    protected $listeners = ['notificationAdded' => 'refreshNotifications'];
+    
+    public function getListeners()
+    {
+        $userId = Auth::id();
+        return [
+            "echo-private:App.Models.User.{$userId},.Illuminate\\Notifications\\Events\\DatabaseNotificationCreated" => 'refreshNotifications',
+            'notificationAdded' => 'refreshNotifications',
+        ];
+    }
 
     public function refreshNotifications()
     {
@@ -61,7 +68,10 @@ class Notifications extends Component
             $this->refreshNotifications();
 
             // Xử lý chuyển hướng dựa trên loại thông báo
-            if (isset($notification->data['challenge_id'])) {
+            if (isset($notification->data['challenge_id']) && !isset($notification->data['comment_id'])) {
+                // Chuyển hướng đến trang chi tiết thử thách
+                return $this->redirect(route('challenges.show', $notification->data['challenge_id']), navigate: true);
+            } elseif (isset($notification->data['challenge_id']) && isset($notification->data['comment_id'])) {
                 // Chuyển hướng đến trang chi tiết thử thách và trỏ tới đúng bình luận
                 $url = route('challenges.show', ['challenge' => $notification->data['challenge_id']]);
                 return $this->redirect($url . '#comment-' . $notification->data['comment_id'], navigate: true);
