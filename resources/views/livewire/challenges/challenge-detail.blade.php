@@ -1,77 +1,93 @@
 <div> <main role="main" class="container mx-auto px-4 py-12 max-w-4xl">
     <article aria-label="Challenge detail" class="bg-white rounded-lg shadow p-8">
         @if($challenge->start_date)
-            <div x-data="countdown('{{ \Carbon\Carbon::parse($challenge->start_date)->format('Y-m-d H:i:s') }}')"
-                 x-init="init()"
-                 class="mb-6 p-4 rounded-xl text-center shadow-inner border border-teal-100 bg-gradient-to-r from-teal-50 to-white">
-                
-                @if($this->isChallengeDisplayLocked)
-                    {{-- Thử thách đã kết thúc hoặc đang diễn ra và bị khóa --}}
-                    <div class="flex flex-col items-center text-gray-700">
-                        <span class="text-2xl font-bold uppercase tracking-widest text-red-600">{{ $this->lockedMessage }}</span>
-                        @if ($this->isEnded)
-                            <div class="text-xs font-mono mt-2 text-gray-500 flex gap-4">
-                                <span>Bắt đầu: {{ \Carbon\Carbon::parse($challenge->start_date)->format('d/m/Y H:i') }}</span>
-                                <span>Kết thúc: {{ $this->endDate ? $this->endDate->format('d/m/Y H:i') : 'N/A' }}</span>
-                            </div>
-                        @else
-                            {{-- Đang diễn ra, đếm ngược đến lúc kết thúc (Fixed mode only) --}}
-                            <div x-data="countdown('{{ $this->endDate->format('Y-m-d H:i:s') }}')" x-init="init()">
-                                <p class="text-sm text-gray-500 uppercase tracking-wide font-bold mb-2">
-                                    Thời gian còn lại
-                                </p>
-                                <div class="flex justify-center gap-4 font-mono text-3xl md:text-4xl font-bold text-red-700">
-                                    <div class="flex flex-col items-center">
-                                        <span x-text="days">00</span>
-                                        <span class="text-xs font-sans text-gray-400 font-normal">Ngày</span>
-                                    </div>
-                                    <span>:</span>
-                                    <div class="flex flex-col items-center">
-                                        <span x-text="hours">00</span>
-                                        <span class="text-xs font-sans text-gray-400 font-normal">Giờ</span>
-                                    </div>
-                                    <span>:</span>
-                                    <div class="flex flex-col items-center">
-                                        <span x-text="minutes">00</span>
-                                        <span class="text-xs font-sans text-gray-400 font-normal">Phút</span>
-                                    </div>
-                                    <span>:</span>
-                                    <div class="flex flex-col items-center">
-                                        <span x-text="seconds">00</span>
-                                        <span class="text-xs font-sans text-gray-400 font-normal">Giây</span>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                @else
-                    {{-- Đếm ngược đến thời gian bắt đầu (Fixed) hoặc Thời gian dự kiến (Rolling) --}}
-                    <p class="text-sm text-gray-500 uppercase tracking-wide font-bold mb-2">
-                        {{ $challenge->time_mode == 'rolling' ? '⏳ Thời gian bắt đầu dự kiến' : '🔥 Đếm ngược Thời gian' }}
-                    </p>
-                    
-                    <div class="flex justify-center gap-4 font-mono text-3xl md:text-4xl font-bold text-teal-700">
-                        <div class="flex flex-col items-center">
-                            <span x-text="days">00</span>
-                            <span class="text-xs font-sans text-gray-400 font-normal">Ngày</span>
-                        </div>
-                        <span>:</span>
-                        <div class="flex flex-col items-center">
-                            <span x-text="hours">00</span>
-                            <span class="text-xs font-sans text-gray-400 font-normal">Giờ</span>
-                        </div>
-                        <span>:</span>
-                        <div class="flex flex-col items-center">
-                            <span x-text="minutes">00</span>
-                            <span class="text-xs font-sans text-gray-400 font-normal">Phút</span>
-                        </div>
-                        <span>:</span>
-                        <div class="flex flex-col items-center">
-                            <span x-text="seconds">00</span>
-                            <span class="text-xs font-sans text-gray-400 font-normal">Giây</span>
-                        </div>
-                    </div>
+            <div
+                @php
+                    $countdownTarget = null;
+                    $countdownMessage = '';
+                    $countdownColor = 'teal-700'; // Default for active countdown
+                    $displayDates = false; // Flag to show start/end dates
+
+                    if ($challenge->time_mode == 'fixed') {
+                        if (!$this->isLocked) {
+                            // Fixed challenge, not started yet. Countdown to start date.
+                            $countdownTarget = $challenge->start_date;
+                            $countdownMessage = '🔥 Đếm ngược Thời gian';
+                        } elseif (!$this->isEnded) {
+                            // Fixed challenge, started and not ended yet. Countdown to end date.
+                            $countdownTarget = $this->endDate;
+                            $countdownMessage = 'Thử thách đang diễn ra - Thời gian còn lại';
+                            $countdownColor = 'red-700';
+                            $displayDates = true; // Show dates when ongoing fixed
+                        } else {
+                            // Fixed challenge, ended.
+                            $countdownMessage = $this->lockedMessage; // "Thử thách đã kết thúc"
+                            $countdownColor = 'red-600';
+                            $displayDates = true; // Always show dates when ended
+                        }
+                    } elseif ($challenge->time_mode == 'rolling') {
+                        if (!$this->isEnded) {
+                            // Rolling challenge, not ended yet. Countdown to end date.
+                            $countdownTarget = $this->endDate;
+                            $countdownMessage = 'Thử thách đang diễn ra - Thời gian còn lại';
+                        } else {
+                            // Rolling challenge, ended.
+                            $countdownMessage = $this->lockedMessage; // "Thử thách đã kết thúc"
+                            $countdownColor = 'red-600';
+                            $displayDates = true; // Always show dates when ended
+                        }
+                    }
+                @endphp
+
+                @if($countdownTarget)
+                    x-data="countdown('{{ \Carbon\Carbon::parse($countdownTarget)->format('Y-m-d H:i:s') }}')"
+                    x-init="init()"
                 @endif
+                class="mb-6 p-4 rounded-xl text-center shadow-inner border border-teal-100 bg-gradient-to-r from-teal-50 to-white">
+
+                <div class="flex flex-col items-center text-gray-700">
+                    <span class="text-2xl font-bold uppercase tracking-widest {{ $countdownColor }}">
+                        {{ $countdownMessage }}
+                    </span>
+                    
+                    @if($displayDates)
+                        <div class="text-xs font-mono mt-2 text-gray-500 flex gap-4">
+                            <span>Bắt đầu: {{ \Carbon\Carbon::parse($challenge->start_date)->format('d/m/Y H:i') }}</span>
+                            <span>Kết thúc: {{ $this->endDate ? $this->endDate->format('d/m/Y H:i') : 'N/A' }}</span>
+                        </div>
+                    @endif
+
+                    @if ($countdownTarget)
+                        <div class="flex justify-center gap-4 font-mono text-3xl md:text-4xl font-bold text-{{ $countdownColor }}">
+                            <div class="flex flex-col items-center">
+                                <span x-text="days">00</span>
+                                <span class="text-xs font-sans text-gray-400 font-normal">Ngày</span>
+                            </div>
+                            <span>:</span>
+                            <div class="flex flex-col items-center">
+                                <span x-text="hours">00</span>
+                                <span class="text-xs font-sans text-gray-400 font-normal">Giờ</span>
+                            </div>
+                            <span>:</span>
+                            <div class="flex flex-col items-center">
+                                <span x-text="minutes">00</span>
+                                <span class="text-xs font-sans text-gray-400 font-normal">Phút</span>
+                            </div>
+                            <span>:</span>
+                            <div class="flex flex-col items-center">
+                                <span x-text="seconds">00</span>
+                                <span class="text-xs font-sans text-gray-400 font-normal">Giây</span>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if(!$countdownTarget && !$displayDates && $challenge->start_date)
+                        {{-- Fallback for scenarios like rolling not ended, but no end date (shouldn't happen with current logic) --}}
+                        <p class="text-sm text-gray-500 mt-2">Thử thách đang chờ hoặc không yêu cầu đếm ngược cụ thể.</p>
+                    @elseif(!$challenge->start_date)
+                        <p class="text-sm text-gray-500 mt-2">Thời gian bắt đầu chưa được thiết lập cho thử thách này.</p>
+                    @endif
+                </div>
             </div>
         @endif
         @if (session('success'))
