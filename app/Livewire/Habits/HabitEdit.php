@@ -23,6 +23,10 @@ class HabitEdit extends Component
 
     public function mount(Habit $habit)
     {
+        echo('<script> 
+            console.log("Debug Info - HabitEdit mount:", ' . json_encode($habit) . ');
+            console.log("Auth ID:", ' . json_encode(Auth::id()) . ');
+        </script>');
         // Đảm bảo người dùng là người tạo
         if ($habit->creator_id !== Auth::id()) {
             abort(403, 'Bạn không có quyền chỉnh sửa thói quen này.');

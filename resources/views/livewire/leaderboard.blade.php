@@ -16,7 +16,7 @@
         </div>
 
         {{-- Leaderboard List --}}
-        <div class="overflow-hidden relative min-h-[60dvh]">
+        <div class="overflow-y-scroll relative h-[65dvh]">
             {{-- Loading Overlay --}}
             <div wire:loading.flex wire:target="setPeriod" class="absolute inset-0 bg-white bg-opacity-75 items-center justify-center z-10 transition-opacity">
                 <div role="status">
