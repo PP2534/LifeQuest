@@ -26,13 +26,16 @@
                 <a href="{{ route('habits.show', $habit) }}" wire:navigate class="block">
                     <img src="{{ $habit->image ? asset('storage/' . $habit->image) : 'https://placehold.co/600x400/e2e8f0/4a5568?text=' . urlencode($habit->title) }}" alt="{{ $habit->title }}" class="w-full h-40 object-cover">
                     <div class="p-4">
-                        <div class="flex justify-between items-start mb-2">
+                        <div class="flex justify-between items-center mb-2">
                             <div class="min-w-0 flex-1 pr-2">
                                 <h2 class="font-bold text-lg text-gray-800 line-clamp-2" title="{{ $habit->title }}">{{ $habit->title }}</h2>
                             </div>
-                            <span class="flex-shrink-0 text-xs font-semibold px-2 py-1 rounded-full {{ $habit->type === 'group' ? 'bg-indigo-100 text-indigo-800' : 'bg-green-100 text-green-800' }}">
-                                {{ $habit->type === 'group' ? 'Nhóm' : 'Cá nhân' }}
-                            </span>
+                            <div class="flex-shrink-0 flex items-center space-x-2">
+                                
+                                <span class="text-xs font-semibold px-2 py-1 rounded-full {{ $habit->type === 'group' ? 'bg-indigo-100 text-indigo-800' : 'bg-green-100 text-green-800' }}">
+                                    {{ $habit->type === 'group' ? 'Nhóm' : 'Cá nhân' }}
+                                </span>
+                            </div>
                         </div>
                         <div class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 mr-1 text-orange-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -46,7 +49,7 @@
             </div>
         @empty
             <div class="md:col-span-3 text-center py-12">
-                <p class="text-gray-500 text-lg">Bạn chưa tham gia thói quen nào.</p>
+                <p class="text-gray-500 text-lg">Không có thói quen hoặc lời mời nào.</p>
                 <p class="text-gray-400 mt-2">Hãy tạo một thói quen mới để bắt đầu hành trình của bạn!</p>
             </div>
         @endforelse
