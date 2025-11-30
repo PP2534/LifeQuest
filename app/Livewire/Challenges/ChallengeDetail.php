@@ -156,14 +156,14 @@ class ChallengeDetail extends Component
     public function kickMember($participantId)
     {
         // 1. Chỉ người tạo (Creator) mới được quyền kick
-        if ($this->challenge->creator_id !== Auth::id()) {
+        if ((int)$this->challenge->creator_id !== Auth::id()) {
             return;
         }
 
         $participant = ChallengeParticipant::find($participantId);
 
         // 2. Không thể kick chính mình
-        if ($participant && $participant->user_id !== Auth::id()) {
+        if ((int)$participant && $participant->user_id !== Auth::id()) {
             $participant->update(['status' => 'kicked']);
             
             // Tải lại danh sách để cập nhật giao diện
@@ -204,7 +204,7 @@ class ChallengeDetail extends Component
 
     {
         // 1. Chỉ người tạo mới được quyền mở
-        if ($this->challenge->creator_id !== Auth::id()) {
+        if ((int)$this->challenge->creator_id !== Auth::id()) {
             return;
         }
 
@@ -453,7 +453,7 @@ class ChallengeDetail extends Component
      */
     public function setStartDate()
     {
-        if ($this->challenge->creator_id !== Auth::id()) {
+        if ((int)$this->challenge->creator_id !== Auth::id()) {
             abort(403);
         }
 
@@ -538,7 +538,7 @@ class ChallengeDetail extends Component
         // Logic kiểm tra quyền hiển thị nút Mời.
         $canInvite = false;
         if (Auth::check()) {
-            $isCreator = $this->challenge->creator_id == Auth::id();
+            $isCreator = (int)$this->challenge->creator_id === Auth::id();
             // Điều kiện: Là người tạo HOẶC (Là thành viên VÀ thử thách cho phép thành viên mời)
             $canInvite = !$this->isChallengeDisplayLocked && ($isCreator || ($this->myParticipation && $this->challenge->allow_member_invite));
         }

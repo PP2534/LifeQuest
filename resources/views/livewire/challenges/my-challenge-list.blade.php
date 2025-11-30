@@ -38,7 +38,7 @@
                             </a>
                         </div>
             
-                        @if ($challenge->creator_id == Auth::id())
+                        @if ((int)$challenge->creator_id === Auth::id())
                             <div class="flex justify-center space-x-2">
                                 <a href="{{ route('challenges.edit', $challenge->id) }}" wire:navigate
                                     class="flex-1 bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 text-center text-sm">Sửa</a>

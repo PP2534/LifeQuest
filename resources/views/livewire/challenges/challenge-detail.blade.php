@@ -129,7 +129,7 @@
         @endif
 
         <header class="mb-6 border-b pb-6 relative">
-            @if($challenge->creator_id === Auth::id() && $challenge->start_date < now() && $challenge->time_mode === 'fixed')
+            @if((int)$challenge->creator_id === Auth::id() && $challenge->start_date < now() && $challenge->time_mode === 'fixed')
                 <button wire:click="$set('showDateModal', true)" 
                         class="absolute top-0 right-0 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-full border border-gray-300 flex items-center transition">
                     📅 {{ $challenge->start_date ? 'Đổi giờ' : 'Đặt thời gian' }}
@@ -239,7 +239,7 @@
                                 <th class="px-4 py-2">Tiến trình</th>
                                 <th class="px-4 py-2">Streak</th>
                                 
-                                @if($challenge->creator_id === Auth::id())
+                                @if((int)$challenge->creator_id === Auth::id())
                                     <th class="px-4 py-2 text-center">Quản lý</th>
                                 @endif
                             </tr>
@@ -247,7 +247,7 @@
                         <tbody>
                             @forelse ($leaderboard as $index => $participant)
                                 <tr class="border-t border-gray-200 hover:bg-teal-50 
-                                    {{ $participant->user_id == Auth::id() ? 'bg-teal-100' : '' }}">
+                                    {{(int) $participant->user_id == Auth::id() ? 'bg-teal-100' : '' }}">
                                     
                                     <td class="px-4 py-2 font-semibold">{{ $index + 1 }}</td>
                                     
@@ -284,9 +284,9 @@
                                     <td class="px-4 py-2">{{ $participant->progress_percent }}%</td>
                                     <td class="px-4 py-2">{{ $participant->streak }}</td> 
 
-                                    @if($challenge->creator_id === Auth::id())
+                                    @if((int)$challenge->creator_id === Auth::id())
                                         <td class="px-4 py-2 text-center">
-                                            @if($participant->user_id !== Auth::id())
+                                            @if((int)$participant->user_id !== Auth::id())
                                                 @if($participant->status === 'active')
                                                     <button wire:click="kickMember({{ $participant->id }})" 
                                                             wire:confirm="Bạn có chắc chắn muốn khóa thành viên này khỏi thử thách?"

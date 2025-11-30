@@ -44,12 +44,8 @@ class EditChallenge extends Component
      */
     public function mount(Challenge $challenge)
     {
-         echo('<script> 
-            console.log("Debug Info - HabitEdit mount:", ' . json_encode($habit) . ');
-            console.log("Auth ID:", ' . json_encode(Auth::id()) . ');
-        </script>');
         // Kiểm tra quyền (chỉ creator mới được sửa)
-        if ($challenge->creator_id !== Auth::id()) {
+        if ((int) $challenge->creator_id !== Auth::id()) {
             abort(403, 'Bạn không có quyền sửa thử thách này.');
         }
 

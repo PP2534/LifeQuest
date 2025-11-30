@@ -134,7 +134,7 @@ class HabitShow extends Component
         if ($this->isCreator) {
             // Người tạo có thể duyệt bất kỳ yêu cầu/lời mời nào
             $isAllowed = true;
-        } elseif (Auth::check() && Auth::id() === $invitation->invitee_id) {
+        } elseif (Auth::check() && Auth::id() === (int)$invitation->invitee_id) {
             // Người được mời chỉ có thể chấp nhận lời mời từ người khác
             // (không phải yêu cầu tự tham gia của chính họ)
             if ($invitation->inviter_id !== $invitation->invitee_id) {
@@ -171,7 +171,7 @@ class HabitShow extends Component
         }
 
         // Người tạo hoặc người được mời đều có thể từ chối/hủy
-        $isAllowed = $this->isCreator || (Auth::check() && Auth::id() === $invitation->invitee_id);
+        $isAllowed = $this->isCreator || (Auth::check() && Auth::id() === (int) $invitation->invitee_id);
 
         if (!$isAllowed) {
             session()->flash('error', 'Bạn không có quyền thực hiện hành động này.');
