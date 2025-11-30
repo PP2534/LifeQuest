@@ -12,7 +12,6 @@ use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Livewire\WithFileUploads;
 
-#[Layout('layouts.app')]
 class ChallengeCheckin extends Component
 {
     use WithFileUploads;
