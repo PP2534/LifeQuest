@@ -57,7 +57,7 @@
 
     <section aria-label="Challenges list">
       <div class="grid gap-8 md:grid-cols-3">
-        @foreach($challenges as $challenge)
+        @forelse($challenges as $challenge)
           <article class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col overflow-hidden">
             <div class="relative">
                 <a href="{{ route('challenges.show', $challenge->id) }}" wire:navigate>
