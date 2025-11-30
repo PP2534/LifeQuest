@@ -25,7 +25,6 @@
         document.addEventListener('livewire:navigated', checkCommentHash); // Kiểm tra sau khi điều hướng bằng wire:navigate
      }"
 >
-    <main role="main" class="container mx-auto px-4 py-12 max-w-4xl">
     <article aria-label="Challenge detail" class="bg-white rounded-lg shadow p-8">
         @if($challenge->start_date)
             <div
@@ -429,7 +428,6 @@
         @endif
 
     </article>
-    </main>
         <!-- Modal -->
         <div 
             x-show="confirmDelete"
@@ -618,7 +616,6 @@
         </div>
     @endif
 
-</div>
 <script>
     document.addEventListener('alpine:init', () => {
         Alpine.data('countdown', (endTime) => ({

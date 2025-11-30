@@ -18,11 +18,10 @@ class HabitList extends Component
     public function render()
     {
         $userId = Auth::id();
-
         if ($userId) {
             // Lấy các thói quen mà người dùng là thành viên và có status là 'active'
             // Đồng thời, load thông tin participant của chính user đó để lấy streak
-            $this->habits = Habit::where(function ($query) use ($userId) {
+            $habits = Habit::where(function ($query) use ($userId) {
                 // 1. Là thành viên đang hoạt động
                 $query->whereHas('participants', function ($subQuery) use ($userId) {
                     $subQuery->where('user_id', $userId)
@@ -46,7 +45,7 @@ class HabitList extends Component
             $habits = Habit::where('id', -1)->paginate(12);
         }
 
-        return view('livewire.habits.habit-list', ['habits' => $habits]);
+        return view('livewire.habits.habit-list', ['habits'=> $habits]);
     }
 
     public function updatedSearch()
