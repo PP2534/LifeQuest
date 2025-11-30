@@ -163,7 +163,7 @@ class ChallengeDetail extends Component
         $participant = ChallengeParticipant::find($participantId);
 
         // 2. Không thể kick chính mình
-        if ((int)$participant && $participant->user_id !== Auth::id()) {
+        if ($participant && (int) $participant->user_id !== Auth::id()) {
             $participant->update(['status' => 'kicked']);
             
             // Tải lại danh sách để cập nhật giao diện

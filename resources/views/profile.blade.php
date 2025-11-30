@@ -44,7 +44,15 @@
                     @foreach($participatedChallenges as $challenge)
                         <article class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
                             <a href="{{ route('challenges.show', $challenge->id) }}" class="block">
-                                <img src="{{ $challenge->image && file_exists( asset('storage/challenges/' . $challenge->image))?   asset('storage/challenges/' . $challenge->image) : asset('storage/root/no_image.png')  }}" alt="Ảnh thử thách" class="rounded-t-lg w-full object-cover h-48" />
+                                                                @php
+                                    $imageUrl = asset('no_image.png');
+                                    if ($challenge->image && file_exists(public_path('storage/' . $challenge->image))) {
+                                        $imageUrl = asset('storage/' . $challenge->image);
+                                    } elseif ($challenge->categories->isNotEmpty() && $challenge->categories->first()->icon && file_exists(public_path('storage/' . $challenge->categories->first()->icon))) {
+                                        $imageUrl = asset('storage/' . $challenge->categories->first()->icon);
+                                    }
+                                @endphp
+                                <img src="{{ $imageUrl }}" alt="Challenge Image" class="rounded-t w-full object-cover h-48">
                                 <div class="p-4">
                                     <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ $challenge->title }}</h3>
                                     <p class="text-sm text-gray-600">Thời gian: {{ $challenge->duration_days }} ngày</p>
@@ -68,7 +76,15 @@
                     @foreach($createdChallenges as $challenge)
                         <article class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
                             <a href="{{ route('challenges.show', $challenge->id) }}" class="block">
-                                <img src="{{ asset('storage/' . $challenge->image) }}" alt="Ảnh thử thách" class="rounded-t-lg w-full object-cover h-48" />
+                                @php
+                                    $imageUrl = asset('no_image.png');
+                                    if ($challenge->image && file_exists(public_path('storage/' . $challenge->image))) {
+                                        $imageUrl = asset('storage/' . $challenge->image);
+                                    } elseif ($challenge->categories->isNotEmpty() && $challenge->categories->first()->icon && file_exists(public_path('storage/' . $challenge->categories->first()->icon))) {
+                                        $imageUrl = asset('storage/' . $challenge->categories->first()->icon);
+                                    }
+                                @endphp
+                                <img src="{{ $imageUrl }}" alt="Challenge Image" class="w-full object-cover h-48">
                                 <div class="p-4">
                                     <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ $challenge->title }}</h3>
                                     <p class="text-sm text-gray-600">Thời gian: {{ $challenge->duration_days }} ngày</p>
