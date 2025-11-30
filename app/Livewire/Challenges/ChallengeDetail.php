@@ -341,7 +341,7 @@ class ChallengeDetail extends Component
         if (!$this->challenge->start_date || !$this->challenge->duration_days) {
             return null;
         }
-        return Carbon::parse($this->challenge->start_date)->addDays($this->challenge->duration_days);
+        return Carbon::parse($this->challenge->start_date)->addDays((int)$this->challenge->duration_days);
     }
 
     #[Computed]
