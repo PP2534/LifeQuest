@@ -43,6 +43,9 @@
                             } elseif ($dayObj['is_future']) {
                                 $bgColor = 'bg-gray-50 text-gray-400';
                                 $cursor = 'cursor-not-allowed';
+                            }elseif ($dayObj['is_future'] || $dayObj['is_before_start']) { 
+                                $bgColor = 'bg-gray-100 text-gray-400';
+                                $cursor = 'cursor-not-allowed';
                             }
                         @endphp
 

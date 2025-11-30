@@ -252,10 +252,13 @@
                                     <td class="px-4 py-2 font-semibold">{{ $index + 1 }}</td>
                                     
                                    <td class="px-4 py-2">
-                                        <div class="flex items-center">
-                                            <img src="{{ $participant->user->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($participant->user->name) }}" 
-                                                 alt="{{ $participant->user->name }}" 
-                                                 class="w-8 h-8 rounded-full mr-2" />
+                                        <div class="flex items-center">   
+                                           <a href="{{ route('profile') }}" wire:navigate>
+                                            <img class="h-10 w-10 rounded-full object-cover"
+                                            src="{{ $participant->user->avatar  ? asset('storage/users/' . $participant->user->avatar ) : 'https://ui-avatars.com/api/?name='.urlencode( $participantuser->name).'&color=0d9488&background=94ffd8'}}" 
+                                            alt="{{ $participant->user->avatar  }}" >
+                                    
+                                            </a>       
                                             
                                             <div class="flex flex-col">
                                                 <div class="flex items-center">
@@ -492,7 +495,11 @@
                                 <li class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
                                     
                                     <div class="flex items-center">
-                                        <img src="{{ $friend->avatar ? asset('storage/'.$friend->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($friend->name) }}" class="w-10 h-10 rounded-full mr-3 object-cover border border-gray-200">
+                                        <a href="{{ route('profile.show', ['id' => $friend->id]) }}" wire:navigate>
+                                            <img class="h-10 w-10 rounded-full object-cover" 
+                                                src="{{ $friend->avatar ? asset('storage/users/' . $friend->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($friend->name).'&color=0d9488&background=94ffd8' }}"
+                                                alt="{{ $friend->name }}" >
+                                        </a>
                                         <div>
                                             <p class="font-semibold text-gray-800 text-sm">{{ $friend->name }}</p>
                                             <p class="text-xs text-gray-500">{{ $friend->email }}</p>
