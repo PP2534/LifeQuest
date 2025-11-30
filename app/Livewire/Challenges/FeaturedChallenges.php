@@ -52,6 +52,6 @@ class FeaturedChallenges extends Component
             })
             ->latest() // Sắp xếp mới nhất
             ->paginate(3);
-        return view('livewire.challenge.featured-challenges');
+        return view('livewire.challenges.featured-challenges');
     }
 }

@@ -6,7 +6,7 @@
       <p class="text-lg md:text-xl max-w-3xl mx-auto mb-10 text-gray-700">
         Tham gia thử thách và theo dõi thói quen để tạo nên phiên bản tốt nhất của chính bạn mỗi ngày.
       </p>
-      <a href="challenges.html" role="button" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-semibold px-8 py-4 rounded-lg shadow-md focus:outline-none focus:ring-4 focus:ring-amber-300" aria-label="Tham gia thử thách">
+      <a href="{{ route('challenges.index') }}" wire:navigate role="button" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-semibold px-8 py-4 rounded-lg shadow-md focus:outline-none focus:ring-4 focus:ring-amber-300" aria-label="Tham gia thử thách">
         Tham gia thử thách
       </a>
     </section>

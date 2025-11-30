@@ -33,6 +33,7 @@ class ChallengeList extends Component
                     });
                 }
             })
+            ->withCount('participants')
             ->latest() // Sắp xếp mới nhất
             ->paginate(3);
 

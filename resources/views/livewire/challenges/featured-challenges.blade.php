@@ -1,26 +1,11 @@
-<div>
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-bold text-teal-600">Danh sách Thử Thách</h1>
-      <div class="space-x-3">      
-        @auth
-            <a href="{{ route('challenges.create') }}" wire:navigate
-               class="inline-block bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-lg shadow">
-                + Tạo Thử Thách
-            </a>          
-            <a href="{{route('my-challenges')}}" wire:navigate
-               class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md focus:outline-none focus:ring-4 focus:ring-amber-300">
-                Quản lý Thử Thách
-            </a>
-        @endauth
-        </div>
-    </div>
-    <section aria-label="Challenges list">
-      <div class="grid gap-8 md:grid-cols-3">
-        @foreach($challenges as $challenge)
-          <article class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col overflow-hidden">
+<section aria-label="Featured Challenges" class="mt-20 text-center">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Thử Thách Nổi Bật</h2>
+    <div class="grid gap-8 md:grid-cols-3">
+      @forelse ($challenges as $challenge)
+        <article class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col overflow-hidden">
             <div class="relative">
                 <a href="{{ route('challenges.show', $challenge->id) }}" wire:navigate>
-                    <img src="{{ asset('storage/' . $challenge->image) }}" alt="Challenge Image" class="w-full object-cover h-48">
+                    <img src="{{ $challenge->image ? asset('storage/' . $challenge->image) : 'https://source.unsplash.com/400x250/?' . data_get($challenge, 'categories.0.slug', 'challenge') }}" alt="Challenge Image" class="w-full object-cover h-48">
                 </a>
                 @if($challenge->categories->isNotEmpty())
                     <span class="absolute top-3 left-3 bg-teal-500 text-white text-xs font-semibold px-3 py-1 rounded-full">{{ $challenge->categories->first()->name }}</span>
@@ -57,17 +42,16 @@
                         <span>{{ $challenge->participants_count }} người</span>
                     </div>
                 </div>
+                 <div class="flex justify-center mt-4">
+                  <a href="{{ route('challenges.show', $challenge->id) }}" wire:navigate
+                    class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 rounded focus:outline-none focus:ring-2 focus:ring-teal-400 text-center">
+                      Xem Chi Tiết
+                  </a>
+                </div>
             </div>
-          </article>
-            <!-- <a href="{{ route('challenges.show', $challenge->id) }}" class="p-4 border rounded shadow hover:bg-gray-50">
-                <img src="{{ $challenge->image }}" class="w-full h-40 object-cover rounded">
-                <h2 class="font-semibold mt-2">{{ $challenge->title }}</h2>
-                <p class="text-sm text-gray-600">{{ Str::limit($challenge->description, 100) }}</p>
-            </a> -->
-        @endforeach
-      </div>
-    </section>
-
-    <!-- Pagination -->
-   {{ $challenges->links('components.pagination-teal') }}
-</div>
+        </article>
+      @empty
+        <p class="md:col-span-3 text-gray-500">Hiện tại chưa có thử thách nổi bật nào.</p>
+      @endforelse
+    </div>
+</section>

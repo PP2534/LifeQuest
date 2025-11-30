@@ -79,6 +79,12 @@ class ChallengeDetail extends Component
             return $this->redirect(route('login'), navigate: true);
         }
 
+        // Không cho phép tham gia nếu thử thách đã khóa hiển thị
+        if ($this->isChallengeDisplayLocked) {
+            session()->flash('info', 'Thử thách này đã kết thúc hoặc bị khóa, không thể tham gia.');
+            return;
+        }
+
         // Kiểm tra lại nếu chưa tham gia
         if (!$this->myParticipation) {
             ChallengeParticipant::create([
@@ -328,6 +334,52 @@ class ChallengeDetail extends Component
         // Nếu Hiện tại > Ngày bắt đầu -> KHÓA (Ẩn nút join, invite, checkin...)
         return now()->gt($this->challenge->start_date);
     }
+
+    #[Computed]
+    public function endDate()
+    {
+        if (!$this->challenge->start_date || !$this->challenge->duration_days) {
+            return null;
+        }
+        return Carbon::parse($this->challenge->start_date)->addDays($this->challenge->duration_days);
+    }
+
+    #[Computed]
+    public function isEnded()
+    {
+        if (!$this->endDate) {
+            return false;
+        }
+        return now()->gt($this->endDate);
+    }
+    
+    #[Computed]
+    public function lockedMessage()
+    {
+        if ($this->isEnded) {
+            return "Thử thách đã kết thúc";
+        }
+
+        // Chỉ các thử thách cố định mới có thể ở trạng thái "đang diễn ra" và bị khóa trước khi kết thúc
+        if ($this->challenge->time_mode === 'fixed' && $this->isLocked) {
+            return "Thử thách đang diễn ra";
+        }
+
+        return ''; // Không có thông báo nếu chưa kết thúc và không phải thử thách cố định đã bị khóa
+    }
+
+    #[Computed]
+    public function isChallengeDisplayLocked()
+    {
+        // Fixed challenges are locked based on their start date
+        if ($this->challenge->time_mode === 'fixed') {
+            return $this->isLocked;
+        }
+
+        // Rolling challenges are "locked" for display purposes if they have ended
+        return $this->isEnded;
+    }
+
     /**
      * Lưu thời gian bắt đầu (Chỉ Creator)
      */
@@ -363,7 +415,7 @@ class ChallengeDetail extends Component
         if (Auth::check()) {
             $isCreator = $this->challenge->creator_id == Auth::id();
             // Điều kiện: Là người tạo HOẶC (Là thành viên VÀ thử thách cho phép thành viên mời)
-            $canInvite = !$this->isLocked && ($isCreator || ($this->myParticipation && $this->challenge->allow_member_invite));
+            $canInvite = !$this->isChallengeDisplayLocked && ($isCreator || ($this->myParticipation && $this->challenge->allow_member_invite));
         }
 
         return view('livewire.challenges.challenge-detail', [
