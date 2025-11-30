@@ -73,7 +73,11 @@
 
         {{-- Cài đặt cho nhóm --}}
         @if ($type === 'group')
+<<<<<<< HEAD
+            <div class="space-y-4 border-t border-gray-200 pt-6 mt-6 bg-gray-50 p-4 rounded-lg">
+=======
             <div class="space-y-4 border-t pt-4">
+>>>>>>> main
                 <h3 class="text-lg font-medium text-gray-900">Cài đặt nhóm</h3>
                 <div class="flex items-start">
                     <div class="flex items-center h-5">

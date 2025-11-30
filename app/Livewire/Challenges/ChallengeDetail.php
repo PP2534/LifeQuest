@@ -6,6 +6,7 @@ use App\Models\Challenge;
 use App\Models\ChallengeParticipant;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use App\Services\XpService;
 use App\Models\ChallengeInvitation;
@@ -17,6 +18,9 @@ class ChallengeDetail extends Component
 {
     public Challenge $challenge;
     public string $newComment = '';
+    public int $commentsLimit = 10;
+    public int $commentsCount = 0;
+
     public $showInviteModal = false;
 
     /**
@@ -41,12 +45,13 @@ class ChallengeDetail extends Component
         $this->challenge = $challenge->load(
             'creator',                // Lấy người tạo (User)
             'categories',             // Lấy danh mục
-            'participants.user',      // Lấy TẤT CẢ người tham gia VÀ thông tin user của họ
-            'comments.user'           // Lấy TẤT CẢ bình luận VÀ thông tin user của họ
+            'participants.user'      // Lấy TẤT CẢ người tham gia VÀ thông tin user của họ
         );
         
         // Tải thông tin tham gia của riêng người dùng này
         $this->loadMyParticipation();
+        // Đếm tổng số bình luận
+        $this->commentsCount = $this->challenge->comments()->count();
         //Kiểm tra xem có lời mời nào đang chờ cho user này ở challenge này không
         $this->checkPendingInvitation();
 
@@ -61,6 +66,29 @@ class ChallengeDetail extends Component
      * Tải thông tin tham gia của người dùng hiện tại
      */
     public function loadMyParticipation()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     {
         if (Auth::check()) {
             // Lấy từ collection đã load ở mount() để tiết kiệm query
@@ -116,7 +144,7 @@ class ChallengeDetail extends Component
         if ($this->myParticipation) {
             $this->myParticipation->delete(); // Xóa record tham gia
             
-            $this->challenge->refresh()->load('participants.user', 'comments.user', 'creator', 'categories'); // Tải lại
+            $this->challenge->refresh()->load('participants.user', 'creator', 'categories'); // Tải lại, không cần comments
             $this->myParticipation = null; // Reset
             
             session()->flash('info', 'Bạn đã rời khỏi thử thách.');
@@ -147,6 +175,33 @@ class ChallengeDetail extends Component
      * Chức năng kick mấy người tham gia hết khó ưu
      */
     public function restoreMember($participantId)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     {
         // 1. Chỉ người tạo mới được quyền mở
         if ($this->challenge->creator_id !== Auth::id()) {
@@ -173,8 +228,19 @@ class ChallengeDetail extends Component
         }
 
         $this->validate([
-            'newComment' => 'required|string|min:3|max:1000',
+            'newComment' => 'string|min:1|max:1000',
         ]);
+
+        // Quy trình làm sạch và kiểm tra nội dung bình luận từ Trix Editor:
+        // 1. strip_tags: Loại bỏ các thẻ HTML (<div>, <br>, ...).
+        // 2. str_replace: Chuyển các ký tự space đặc biệt (&nbsp;) thành space thường.
+        // 3. trim: Loại bỏ khoảng trắng, tab, xuống dòng ở đầu và cuối.
+        $cleanedComment = trim(str_replace('&nbsp;', ' ', strip_tags($this->newComment)));
+
+        if (empty($cleanedComment)) {
+            $this->addError('newComment', 'Nội dung bình luận không được để trống.');
+            return; // Dừng thực thi nếu bình luận rỗng sau khi làm sạch
+        }
 
         Comment::create([
             'challenge_id' => $this->challenge->id,
@@ -183,8 +249,10 @@ class ChallengeDetail extends Component
         ]);
 
         $this->newComment = '';
-        $this->challenge->refresh()->load('comments.user', 'participants.user', 'creator', 'categories'); // Tải lại toàn bộ
-        
+        // Không cần refresh toàn bộ challenge, chỉ cần cập nhật số lượng bình luận
+        $this->commentsCount++;
+        $this->reset('newComment');
+        $this->dispatch('trix-clear');
         session()->flash('success', 'Đã đăng bình luận!');
     }
 #[Computed]
@@ -403,6 +471,63 @@ class ChallengeDetail extends Component
         session()->flash('success', 'Đã đặt lịch bắt đầu thử thách!');
     }
     /**
+     * Tải thêm bình luận
+     */
+    public function loadMoreComments()
+    {
+        $this->commentsLimit += 10;
+    }
+
+     public function completedUpload(string $uploadedFilename, $attachment)
+    {
+        // Lưu file và lấy URL
+        $url = Storage::url($this->newCommentAttachment->store('attachments', 'public'));
+
+        // Gửi sự kiện về client để chèn ảnh vào Trix
+        $this->dispatch('trix-attachment-upload-completed', [
+            'url' => $url,
+            'href' => $url,
+            'attachment' => $attachment
+        ]);
+    }
+
+    /**
+     * Xóa một bình luận.
+     */
+    public function deleteComment(Comment $comment)
+    {
+        // Sử dụng policy để kiểm tra quyền hạn
+        // Điều này sẽ tự động kiểm tra xem người dùng có phải là chủ sở hữu
+        // hoặc có vai trò admin hay không (dựa vào CommentPolicy).
+        $this->authorize('delete', $comment);
+
+        // Xóa bình luận
+        $comment->delete();
+
+        // Giảm số lượng bình luận
+        $this->commentsCount--;
+
+        // Gửi thông báo thành công (flash message)
+        session()->flash('success', 'Đã xóa bình luận thành công.');
+    }
+
+    /**
+     * Thuộc tính tính toán (computed property) để lấy danh sách bình luận.
+     * Nó sẽ tự động được gọi lại mỗi khi component render.
+     */
+    public function getCommentsProperty()
+    {
+        return $this->challenge
+            ->comments()
+            ->with('user') // Eager load thông tin người dùng
+            ->latest() // Sắp xếp theo thứ tự mới nhất
+            ->take($this->commentsLimit) // Giới hạn số lượng
+            ->get()
+            ;
+    }
+
+
+    /**
      * Hiển thị view
      */
     public function render()
@@ -421,6 +546,7 @@ class ChallengeDetail extends Component
         return view('livewire.challenges.challenge-detail', [
             'isParticipant' => !is_null($this->myParticipation),
             'leaderboard' => $leaderboard,
+            'comments' => $this->comments, // Sử dụng computed property
             'canInvite' => $canInvite,
         ])->layout('layouts.app');
     }

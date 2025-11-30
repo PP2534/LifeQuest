@@ -1,7 +1,23 @@
 <div class="container mx-auto p-4">
+    <!-- Dòng tiêu đề -->
+    <div class="mb-4">
+        <h1 class="text-3xl font-bold text-teal-600 inline-block">Danh Sách Thói Quen</h1>
+    </div>
+
+    <!-- Dòng tìm kiếm và nút hành động -->
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">Danh sách thói quen</h1>
-        <a href="{{ route('habits.create') }}" wire:navigate class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700">Tạo thói quen mới</a>
+        <!-- Ô tìm kiếm -->
+        <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none">
+                    <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </span>
+            <input wire:model.live.debounce.300ms="search" type="text" placeholder="Tìm kiếm thói quen..."
+                class="w-96 pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
+        </div>
+        <!-- Nút hành động -->
+        <a href="{{ route('habits.create') }}" wire:navigate class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 whitespace-nowrap"> + Tạo thói quen mới</a>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -38,4 +54,10 @@
             </div>
         @endforelse
     </div>
+
+    @if ($habits->hasPages())
+        <div class="mt-8">
+            {{ $habits->links('vendor.pagination.tailwind') }}
+        </div>
+    @endif
 </div>

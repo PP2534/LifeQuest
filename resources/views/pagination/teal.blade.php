@@ -3,10 +3,10 @@
 
         {{--nút trang trc--}}
         @if($paginator->onFirstPage())
-            <span class="px-3 py-1 rounded border border-teal-600 text-teal-600 cursor-not-allowed"><</span>
+            <span class="px-3 py-1 rounded border border-teal-600 text-teal-600 cursor-not-allowed">&laquo; Trước</span>
         @else
             <a href="{{ $paginator->previousPageUrl() }}" class="px-3 py-1 rounded border border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white">
-                <
+                &laquo; Trước
             </a>
         @endif
 
@@ -33,11 +33,11 @@
 
         {{--nút trang sau--}}
         @if($paginator->hasMorePages())
-            <a href="{{ $paginator->nextPageUrl() }}" class="px-3 py-1 rounded border border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white">
-                >
+            <a href="{{ $paginator->nextPageUrl() }}" class="px-3 py-1 rounded border border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white" aria-label="Trang tiếp theo">
+                Tiếp &raquo;
             </a>
         @else
-            <span class="px-3 py-1 rounded border border-teal-600 text-teal-600 cursor-not-allowed">></span>
+            <span class="px-3 py-1 rounded border border-teal-600 text-teal-600 cursor-not-allowed" aria-label="Trang tiếp theo">Tiếp &raquo;</span>
         @endif
     </nav>
 @endif

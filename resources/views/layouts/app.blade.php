@@ -97,6 +97,22 @@
             })
         </script>
         <script>
+            document.addEventListener('livewire:init', () => {
+                // Xóa nội dung Trix editor
+                Livewire.on('trix-clear', () => {
+                    document.querySelector('trix-editor').editor.loadHTML('');
+                });
+        
+                // Chèn file đính kèm đã tải lên vào Trix
+                Livewire.on('trix-attachment-upload-completed', (event) => {
+                    const { url, href, attachment } = event[0];
+                    const trixAttachment = document.querySelector(`trix-attachment[sgid='${attachment.sgid}']`);
+                    if (trixAttachment) {
+                        trixAttachment.setAttributes({ url, href });
+                    }
+                });
+            });
+        
             document.addEventListener('livewire:request-start', () => {
                 NProgress.start();
             });

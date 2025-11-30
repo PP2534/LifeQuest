@@ -2,8 +2,11 @@
 
 namespace App\Livewire\Challenges;
 
-use Livewire\Component;
 use App\Models\Challenge;
+use App\Models\Province;
+use App\Models\Ward;
+use Illuminate\Support\Collection;
+use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,6 +14,34 @@ use Illuminate\Support\Facades\Auth;
 class ChallengeList extends Component
 {
     use WithPagination;
+
+    public string $search = '';
+
+    // Thuộc tính cho bộ lọc địa điểm
+    public $selectedProvince = null;
+    public $selectedWard = null;
+
+    public Collection $provinces;
+    public Collection $wards;
+
+    public function mount()
+    {
+        $this->provinces = Province::orderBy('name')->get();
+        $this->wards = collect();
+    }
+
+    public function updatedSelectedProvince($provinceId)
+    {
+        $this->wards = !empty($provinceId) ? Ward::where('province_id', $provinceId)->orderBy('name')->get() : collect();
+        $this->selectedWard = null; // Reset phường/xã khi tỉnh thay đổi
+        $this->resetPage();
+    }
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         $challenges = Challenge::with('categories')
@@ -33,9 +64,18 @@ class ChallengeList extends Component
                     });
                 }
             })
+            ->where('title', 'like', '%' . $this->search . '%')
+            ->when($this->selectedProvince, function ($query) {
+                $query->whereHas('ward', function ($subQuery) {
+                    $subQuery->where('province_id', $this->selectedProvince);
+                });
+            })
+            ->when($this->selectedWard, function ($query) {
+                $query->where('ward_id', $this->selectedWard);
+            })
             ->withCount('participants')
-            ->latest() // Sắp xếp mới nhất
-            ->paginate(3);
+            ->latest()
+            ->paginate(12);
 
         return view('livewire.challenges.challenge-list', [
             'challenges' => $challenges,

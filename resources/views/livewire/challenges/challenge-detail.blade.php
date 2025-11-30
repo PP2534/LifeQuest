@@ -1,4 +1,31 @@
-<div> <main role="main" class="container mx-auto px-4 py-12 max-w-4xl">
+<div x-data="{ confirmDelete: false, deleteId: null, commentNotFoundModal: false }"
+     x-init="() => {
+        const checkCommentHash = () => {
+             const hash = window.location.hash;
+             if (hash && hash.startsWith('#comment-')) {
+                 const commentId = hash.substring('#comment-'.length);
+                 // Đợi DOM được cập nhật bởi Livewire/Alpine
+                 Alpine.nextTick(() => {
+                     const element = document.getElementById('comment-' + commentId);
+                     if (element) {
+                         // Nếu phần tử tồn tại, cuộn đến nó
+                         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                         element.classList.add('highlight');
+                         setTimeout(() => element.classList.remove('highlight'), 2000);
+                     } else if (/^\d+$/.test(commentId)) {
+                         // Nếu không tồn tại, hiển thị modal thông báo
+                         commentNotFoundModal = true;
+                     }
+                 });
+             }
+        };
+ 
+        checkCommentHash(); // Kiểm tra khi tải trang lần đầu
+        window.addEventListener('hashchange', checkCommentHash); // Kiểm tra khi hash thay đổi
+        document.addEventListener('livewire:navigated', checkCommentHash); // Kiểm tra sau khi điều hướng bằng wire:navigate
+     }"
+>
+    <main role="main" class="container mx-auto px-4 py-12 max-w-4xl">
     <article aria-label="Challenge detail" class="bg-white rounded-lg shadow p-8">
         @if($challenge->start_date)
             <div
@@ -286,8 +313,40 @@
                 <form wire:submit="addComment" class="flex items-start mb-6">
                     <img src="{{ Auth::user()->avatar ?? 'https://i.pravatar.cc/40?u=me' }}" alt="Avatar" class="w-10 h-10 rounded-full mr-3" />
                     <div class="flex-1">
-                        <textarea wire:model="newComment" placeholder="Viết bình luận..." rows="2"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-teal-500 focus:border-teal-500"></textarea>
+                        <div wire:ignore
+                            x-data
+                            x-init="
+                                () => {
+                                    const trixEditor = $refs.trix;
+
+                                    trixEditor.addEventListener('trix-change', (event) => {
+                                        $wire.set('newComment', event.target.value)
+                                    });
+
+                                    trixEditor.addEventListener('trix-attachment-add', (event) => {
+                                        if (event.attachment.file) {
+                                            $wire.upload(
+                                                'newCommentAttachment',
+                                                event.attachment.file,
+                                                (uploadedFilename) => {
+                                                    // Success callback.
+                                                    @this.call('completedUpload', uploadedFilename, event.attachment);
+                                                },
+                                                () => {
+                                                    // Error callback.
+                                                },
+                                                (event) => {
+                                                    // Progress callback.
+                                                    event.attachment.setUploadProgress(event.detail.progress);
+                                                }
+                                            )
+                                        }
+                                    });
+                                }
+                            ">
+                            <input id="trix-input-{{ $challenge->id }}" type="hidden" wire:model.defer="newComment">
+                            <trix-editor x-ref="trix" input="trix-input-{{ $challenge->id }}" class="prose max-w-none bg-white"></trix-editor>
+                        </div>
                         @error('newComment') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         <div class="text-right mt-2">
                             <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold px-4 py-2 rounded-lg">
@@ -304,16 +363,32 @@
             @endauth
 
             <ul wire:poll.5s class="space-y-4">
-                @forelse ($challenge->comments->sortByDesc('created_at') as $comment)
+                @forelse ($comments as $comment)
                     @if ($comment->user)
-                        <li class="flex items-start">
-                            <img src="{{ $comment->user->avatar ?? 'https://i.pravatar.cc/40?u='.$comment->user_id }}" alt="Avatar" class="w-10 h-10 rounded-full mr-3" />
-                            <div class="flex-1 bg-gray-100 rounded-lg px-4 py-3">
+                        <li id="comment-{{ $comment->id }}" class="flex items-star comment-item">
+                            <img src="{{ $comment->user->avatar ?? 'https://i.pravatar.cc/40?u='.$comment->user->id }}" alt="Avatar" class="w-10 h-10 rounded-full mr-3" />
+                            <div class="flex-1 bg-gray-100 rounded-lg px-4 py-3 comment-content">
                                 <div class="flex justify-between items-center mb-1">
-                                    <span class="font-semibold text-sm">{{ $comment->user->name }}</span>
-                                    <span class="text-xs text-gray-500">{{ $comment->created_at->diffForHumans() }}</span>
+                                    <div>
+                                        <span class="font-semibold text-sm">{{ $comment->user->name }}</span>
+                                        <span class="text-xs text-gray-500 ml-2">{{ $comment->created_at->diffForHumans() }}</span>
+                                    </div>
+                                    @can('delete', $comment)
+                                        <button 
+                                            @click="confirmDelete = true; deleteId = {{ $comment->id }}" 
+                                            class="text-gray-400 hover:text-red-600"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    @endcan
+
                                 </div>
-                                <p class="text-sm text-gray-700">{!! nl2br(e($comment->content)) !!}</p>
+                                <div class="prose prose-sm max-w-none text-gray-700">
+                                    {!! $comment->content !!}
+                                </div>
                             </div>
                         </li>
                     @endif
@@ -323,6 +398,15 @@
                     </li>
                 @endforelse
             </ul>
+
+            @if ($comments->count() < $commentsCount)
+                <div class="text-center mt-6">
+                    <button wire:click="loadMoreComments" wire:loading.attr="disabled"
+                            class="text-teal-600 font-semibold hover:underline disabled:text-gray-400 disabled:cursor-wait">
+                        Tải thêm bình luận...
+                    </button>
+                </div>
+            @endif
         </section>
         
         @if ($myParticipation && $myParticipation->status !== 'kicked')
@@ -339,7 +423,56 @@
         @endif
 
     </article>
-    </main>@if($showInviteModal)
+    </main>
+        <!-- Modal -->
+        <div 
+            x-show="confirmDelete"
+            x-cloak
+            class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+        >
+            <div class="bg-white p-6 rounded-lg shadow-lg w-100">
+                <h2 class="text-lg font-semibold mb-3">Xác nhận xóa</h2>
+                <p class="text-sm text-gray-600 mb-5">
+                    Bạn có chắc chắn muốn xóa bình luận này?
+                </p>
+
+                <div class="flex justify-end gap-3">
+                    <button 
+                        class="px-3 py-1 rounded bg-gray-200"
+                        @click="confirmDelete = false"
+                    >Hủy</button>
+
+                    <button 
+                        class="px-3 py-1 rounded bg-red-600 text-white"
+                        @click="$wire.deleteComment(deleteId); confirmDelete = false;"
+                    >Xóa</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- "Comment Not Found" Modal -->
+        <div 
+            x-show="commentNotFoundModal"
+            x-cloak
+            @keydown.escape.window="commentNotFoundModal = false"
+            class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+        >
+            <div @click.outside="commentNotFoundModal = false" class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm mx-4">
+                <h2 class="text-lg font-semibold mb-3">Thông báo</h2>
+                <p class="text-sm text-gray-600 mb-5">
+                    Bình luận không tồn tại hoặc đã bị xóa.
+                </p>
+
+                <div class="flex justify-end">
+                    <button 
+                        class="px-4 py-2 rounded bg-teal-600 hover:bg-teal-700 text-white font-semibold"
+                        @click="commentNotFoundModal = false"
+                    >Đã hiểu</button>
+                </div>
+            </div>
+        </div>
+</div>
+    @if($showInviteModal)
         <div class="fixed inset-0 bg-gray-900 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
             <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all">
                 
