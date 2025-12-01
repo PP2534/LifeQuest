@@ -12,6 +12,8 @@ use Carbon\Carbon;
 use App\Models\Province;
 use App\Models\Ward;
 use App\Models\ChallengeParticipant;
+use App\Notifications\NewChallengePosted;
+use Illuminate\Support\Facades\Notification;
 
 class CreateChallenge extends Component
 {
@@ -145,10 +147,21 @@ class CreateChallenge extends Component
         
         // Tạo Challenge (giờ đã có đủ ngày tháng)
         $challenge = Challenge::create($validatedData);
+        $challenge->load('creator'); // Eager load the creator
         
         // Đính kèm categories
         $challenge->categories()->attach($categories);
 
+        // Gửi thông báo cho followers nếu challenge là public
+        if ($challenge->type === 'public') {
+            $creator = Auth::user();
+            $followers = $creator->followersUsers; 
+            
+            if ($followers->isNotEmpty()) {
+                Notification::send($followers, new NewChallengePosted($challenge));
+            }
+        }
+        
         // Thêm người tạo vào danh sách tham gia với vai trò 'creator'
         ChallengeParticipant::create([
             'challenge_id' => $challenge->id,

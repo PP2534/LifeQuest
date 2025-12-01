@@ -16,6 +16,8 @@ class Notifications extends Component
         return [
             "echo-private:App.Models.User.{$userId},.Illuminate\\Notifications\\Events\\DatabaseNotificationCreated" => 'refreshNotifications',
             'notificationAdded' => 'refreshNotifications',
+            'challengeInvitationAdded' => 'refreshNotifications',
+            'habitInvitationAdded' => 'refreshNotifications',
         ];
     }
 
@@ -75,6 +77,12 @@ class Notifications extends Component
                 // Chuyển hướng đến trang chi tiết thử thách và trỏ tới đúng bình luận
                 $url = route('challenges.show', ['challenge' => $notification->data['challenge_id']]);
                 return $this->redirect($url . '#comment-' . $notification->data['comment_id'], navigate: true);
+            } elseif (isset($notification->data['challenge_invitation_id'])) {
+                // Chuyển hướng đến trang chi tiết thử thách từ lời mời
+                return $this->redirect(route('challenges.show', $notification->data['challenge_invitation_id']), navigate: true);
+            } elseif (isset($notification->data['habit_invitation_id'])) {
+                // Chuyển hướng đến trang chi tiết thói quen từ lời mời
+                return $this->redirect(route('habits.show', $notification->data['habit_invitation_id']), navigate: true);
             } elseif (isset($notification->data['follower_id'])) {
                 // Chuyển hướng đến trang cá nhân của người theo dõi
                 $url = route('profile.show', ['id' => $notification->data['follower_id']]);

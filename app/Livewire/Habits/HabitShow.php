@@ -13,6 +13,8 @@ use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\HabitInvitationNotification;
 
 class HabitShow extends Component
 {
@@ -214,6 +216,9 @@ class HabitShow extends Component
             'invitee_id' => $invitee->id,
             'status' => 'pending',
         ]);
+
+        // Gửi thông báo cho người được mời
+        Notification::send($invitee, new HabitInvitationNotification(Auth::user(), $this->habit));
 
         $this->habit->refresh()->load(['participants.user', 'invitations.invitee', 'invitations.inviter']);
         $this->inviteEmail = ''; // Clear input

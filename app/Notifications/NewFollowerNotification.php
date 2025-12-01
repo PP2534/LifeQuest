@@ -35,7 +35,23 @@ class NewFollowerNotification extends Notification
      */
     public function via($notifiable): array
     {
-        return ['database'];
+        return ['database', 'mail'];
+    }
+
+    /**
+     * Get the mail representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return \Illuminate\Notifications\Messages\MailMessage
+     */
+    public function toMail($notifiable): MailMessage
+    {
+        return (new MailMessage)
+                    ->subject('Bạn có người theo dõi mới!')
+                    ->greeting('Xin chào ' . $notifiable->name . ',')
+                    ->line($this->follower->name . ' đã bắt đầu theo dõi bạn trên LifeQuest.')
+                    ->action('Xem hồ sơ của ' . $this->follower->name, route('profile.show', $this->follower->id))
+                    ->line('Hãy kết nối với họ!');
     }
 
     /**

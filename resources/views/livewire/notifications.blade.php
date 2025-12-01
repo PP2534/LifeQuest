@@ -66,7 +66,13 @@
                             @endif
                             <div class="flex-grow">
                                 <p class="{{ $notification->read_at ? 'text-gray-600' : 'font-semibold text-gray-800' }}">
-                                    {{ $notification->data['message'] }}
+                                    @if (isset($notification->data['challenge_invitation_id']))
+                                        {{ $notification->data['message'] ?? 'Bạn có lời mời tham gia thử thách mới!' }}
+                                    @elseif (isset($notification->data['habit_invitation_id']))
+                                        {{ $notification->data['message'] ?? 'Bạn có lời mời tham gia thói quen mới!' }}
+                                    @else
+                                        {{ $notification->data['message'] }}
+                                    @endif
                                 </p>
                                 <div class="text-xs text-gray-400 mt-1">
                                     {{ $notification->created_at->diffForHumans() }}
