@@ -79,7 +79,11 @@
 
        
         <!-- Pagination -->
-        {{ $challenges->links('components.pagination-teal') }}
+        @if ($challenges->hasPages())
+            <div class="mt-12">
+                {{ $challenges->links('vendor.pagination.tailwind') }}
+            </div>
+        @endif
     
     </main>
 </div>
