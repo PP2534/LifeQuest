@@ -84,7 +84,7 @@
                                         $imageUrl = asset('storage/' . $challenge->categories->first()->icon);
                                     }
                                 @endphp
-                                <img src="{{ $imageUrl }}" alt="Challenge Image" class="w-full object-cover h-48">
+                                <img src="{{ $imageUrl }}" alt="Challenge Image" class=" rounded-t w-full object-cover h-48">
                                 <div class="p-4">
                                     <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ $challenge->title }}</h3>
                                     <p class="text-sm text-gray-600">Thời gian: {{ $challenge->duration_days }} ngày</p>
