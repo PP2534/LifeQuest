@@ -11,6 +11,8 @@
                             <span class="font-semibold text-teal-600">{{ $activity->user->name }}</span>
                             @if($activity->type == 'post')
                                 vừa đăng bài viết mới
+                            @elseif($activity->type == 'create_challenge')
+                                vừa tạo một thử thách mới
                             @elseif($activity->type == 'follow')
                                 vừa theo dõi 
                                 {{ \App\Models\User::find($activity->details)->name ?? 'ai đó' }}

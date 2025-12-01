@@ -64,7 +64,7 @@ class MyChallengeList extends Component
             // Tải kèm 'participants' (để tính status) và 'creator' (để kiểm tra quyền)
             ->with(['participants', 'creator']) 
             ->orderBy('created_at', 'desc')
-            ->paginate(4);
+            ->paginate(12);
 
         return view('livewire.challenges.my-challenge-list', [
             'challenges' => $challenges,

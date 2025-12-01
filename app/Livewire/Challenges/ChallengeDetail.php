@@ -12,6 +12,9 @@ use App\Services\XpService;
 use App\Models\ChallengeInvitation;
 use Livewire\Attributes\Computed;
 use Carbon\Carbon;
+use App\Notifications\ChallengeInvitationNotification;
+use Illuminate\Support\Facades\Notification;
+use App\Models\User;
 
 
 class ChallengeDetail extends Component
@@ -315,6 +318,12 @@ class ChallengeDetail extends Component
             'invitee_id' => $userId,
             'status' => 'pending'
         ]);
+
+        // Gửi thông báo cho người được mời
+        $invitee = User::find($userId);
+        if ($invitee) {
+            Notification::send($invitee, new ChallengeInvitationNotification(Auth::user(), $this->challenge));
+        }
 
         // [QUAN TRỌNG] Xóa cache của computed property
         // Để lần render tới, nó sẽ tự tính lại và thấy trạng thái mới là 'pending'
