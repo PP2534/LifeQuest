@@ -14,7 +14,7 @@
             <option value="thiền">Thiền</option>
         </select>
 
-        <select wire:model="province_id" class="border rounded p-2 w-full md:w-1/4 pr-8 focus:outline-none focus:ring-2 focus:ring-teal-500">
+        <select wire:model.live="province_id" class="border rounded p-2 w-full md:w-1/4 pr-8 focus:outline-none focus:ring-2 focus:ring-teal-500">
             <option value="">Chọn tỉnh/thành phố</option>
             @foreach($provinces as $p)
                 <option value="{{ $p->id }}">{{ $p->name }}</option>
@@ -30,7 +30,7 @@
 
         <button wire:click="searchAction" class="border rounded p-2 w-full md:w-32 bg-amber-500 hover:bg-amber-600
                        text-white font-semibold focus:outline-none focus:ring-2 focus:ring-amber-400">
-            Tìm kiếm
+                       Tìm kiếm
         </button>
     </div>
 
@@ -38,8 +38,7 @@
     <div class="mb-4 p-3 bg-yellow-100 text-yellow-700 rounded">
         {{ session('warning') }}
     </div>
-@endif
-
+    @endif
 
     {{-- Thông báo lỗi --}}
     @if($errorMessage)
@@ -50,8 +49,10 @@
     <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         @forelse($users as $user)
             <article class="bg-white shadow rounded-lg p-6 flex flex-col items-center text-center">
-                <img src="{{ $user->avatar_url ?? 'https://i.pravatar.cc/100?u=' . $user->id }}" 
-                     alt="Avatar {{ $user->name }}" class="rounded-full w-24 h-24 mb-4 object-cover">
+                <img class="h-10 w-10 rounded-full object-cover" src="{{ $user->avatar ? asset('storage/users/' . $user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=0d9488&background=94ffd8'}}" 
+                alt="{{ $user->name }}" >
+                {{--<img src="{{ $user->avatar_url ?? 'https://i.pravatar.cc/100?u=' . $user->id }}" 
+                     alt="Avatar {{ $user->name }}" class="rounded-full w-24 h-24 mb-4 object-cover">--}}
                 <h2 class="text-lg font-semibold text-teal-600 mb-1">{{ $user->name }}</h2>
                 <p class="text-sm text-gray-600 mb-1">Sở thích: {{ $user->interests ?? 'Chưa cập nhật' }}</p>
                 <p class="text-sm text-gray-500 mb-4">{{ $user->ward->province->name ?? 'Chưa rõ địa điểm' }}</p>
@@ -62,7 +63,7 @@
 
                 @if(auth()->id() !== $user->id)
                     <button wire:click="toggleFollow({{ $user->id }})" 
-                        class="{{ $isFollowing ? 'bg-teal-500 hover:bg-teal-600' : 'bg-teal-600 hover:bg-teal-700' }} 
+                    class="{{ $isFollowing ? 'bg-teal-500 hover:bg-teal-600' : 'bg-teal-600 hover:bg-teal-700' }} 
                                text-white rounded-md px-4 py-2 font-semibold focus:outline-none focus:ring-2 focus:ring-teal-400">
                         {{ $isFollowing ? 'Bỏ theo dõi' : 'Theo dõi' }}
                     </button>

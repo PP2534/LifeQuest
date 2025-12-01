@@ -54,6 +54,7 @@
                             {{-- User Info --}}
                             <div class="min-w-0 flex-1 flex items-center ml-3">
                                 <div class="flex-shrink-0">
+                                    <a href="{{ route('profile.show', ['id' => $user->id]) }}" wire:navigate>
                                     <img 
                                         class="h-10 w-10 rounded-full object-cover"
                                         src="{{ $user->avatar 
@@ -61,6 +62,7 @@
                                                 : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=0d9488&background=94ffd8' }}"
                                         alt="{{ $user->name }}"
                                     >
+                                    </a>
                                 </div>
                                 <div class="min-w-0 flex-1 ml-3">
                                     <p class="text-sm font-semibold text-gray-800truncate"><a href="{{ route('profile.show', ['id' => $user->id]) }}" wire:navigate>{{ $user->name }}</a></p>

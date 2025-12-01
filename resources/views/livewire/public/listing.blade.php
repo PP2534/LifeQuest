@@ -11,7 +11,7 @@
             <option value="habit">Thói quen</option>
         </select>
 
-        <select wire:model="province_id" class="border rounded p-2 w-full md:w-1/4 pr-8 focus:outline-none focus:ring-2 focus:ring-teal-500">
+        <select wire:model.live="province_id" class="border rounded p-2 w-full md:w-1/4 pr-8 focus:outline-none focus:ring-2 focus:ring-teal-500">
             <option value="">Chọn tỉnh/thành phố</option>
             @foreach($provinces as $p)
                 <option value="{{ $p->id }}">{{ $p->name }}</option>
@@ -36,14 +36,15 @@
     <div class="mb-4 p-3 bg-yellow-100 text-yellow-700 rounded">
         {{ session('error') }}
     </div>
-@endif
+    @endif
 
     @if ($items->count() === 0 && $searched)
-        <div class="text-center text-gray-600 text-lg py-10">
-            Không tìm thấy thử thách hoặc thói quen nào phù hợp với tìm kiếm.
-        </div>
+    <div class="text-center text-gray-600 text-lg py-10">
+        Không tìm thấy thử thách hoặc thói quen nào phù hợp với tìm kiếm.
+    </div>
     @endif 
-@if($items->where('type', 'challenge')->count() > 0)
+
+    @if($items->where('type', 'challenge')->count() > 0)
     <h2 class="text-2xl font-semibold mb-3">Thử thách</h2>
     <div class="grid gap-8 md:grid-cols-3">
         @foreach($items->where('type', 'challenge') as $item)
@@ -57,22 +58,24 @@
                     <p class="text-sm text-gray-600 mb-4">Thời gian: {{ $item->duration_days }} ngày</p>
                     
 
- @if(in_array($item->id, $joinedChallenges))
-        <p class="text-sm text-green-600 font-semibold mb-2">Bạn đã tham gia</p>
-    @endif
-    <button wire:click="toggleJoinItem('challenge', {{ $item->id }})" 
-            class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 rounded focus:outline-none focus:ring-2 focus:ring-teal-400">
-        {{ in_array($item->id, $joinedChallenges) ? 'Đã tham gia' : 'Tham gia' }}
-    </button>
+                    @if(in_array($item->id, $joinedChallenges))
+                    <p class="text-sm text-green-600 font-semibold mb-2">Bạn đã tham gia</p>
+                    @endif
+
+                    <button wire:click="toggleJoinItem('challenge', {{ $item->id }})" 
+                    class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 rounded focus:outline-none focus:ring-2 focus:ring-teal-400">
+                    {{ in_array($item->id, $joinedChallenges) ? 'Đã tham gia' : 'Tham gia' }}
+                    </button>
                 </div>
+
             </article>
         @endforeach
     </div>
-@endif
+    @endif
 <br>
 
 {{--thói quen--}}
-@if($items->where('type', 'habit')->count() > 0)
+    @if($items->where('type', 'habit')->count() > 0)
     <h2 class="text-2xl font-semibold mb-3">Thói quen</h2>
     <div class="grid gap-8 md:grid-cols-3">
         @foreach($items->where('type', 'habit') as $item)
@@ -84,25 +87,21 @@
                     <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ $item->title }}</h3>
                     <p class="text-sm text-teal-600 mb-2">Thói quen</p>
 
-                    
                     @if(in_array($item->id, $joinedHabits))
-        <p class="text-sm text-green-600 font-semibold mb-2">Bạn đã tham gia</p>
-        @endif
-        <button wire:click="toggleJoinItem('habit', {{ $item->id }})" 
-                class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 rounded focus:outline-none focus:ring-2 focus:ring-teal-400">
-            {{ in_array($item->id, $joinedHabits) ? 'Đã tham gia' : 'Tham gia' }}
-        </button>
-        </div>
-        </article>
+                    <p class="text-sm text-green-600 font-semibold mb-2">Bạn đã tham gia</p>
+                    @endif
+                    <button wire:click="toggleJoinItem('habit', {{ $item->id }})" 
+                            class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 rounded focus:outline-none focus:ring-2 focus:ring-teal-400">
+                        {{ in_array($item->id, $joinedHabits) ? 'Đã tham gia' : 'Tham gia' }}
+                    </button>
+                </div>
+            </article>
         @endforeach
     </div>
-@endif
+    @endif
 
 {{-- PHÂN TRANG CHUNG --}}
-<div class="mt-10 flex justify-center">
-    {{ $items->links('pagination.teal') }}
+    <div class="mt-10 flex justify-center">
+        {{ $items->links('pagination.teal') }}
+    </div>
 </div>
-
-
-</div>
-

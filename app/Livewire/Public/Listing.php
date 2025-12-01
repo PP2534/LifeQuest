@@ -16,14 +16,13 @@ class Listing extends Component
 
     public $search = '';
     public $category = 'all';
-    public $province_id = '';
-    public $ward_id = '';
+    public $province_id;
+    public $ward_id;
     public $provinces;
     public $wards = [];
     public $allWards;
     public $joinedChallenges = [];
     public $joinedHabits = [];
-
 
     public $perPage = 6;
     public $searched = false;
@@ -35,7 +34,7 @@ class Listing extends Component
         if ($user) {
         $this->joinedChallenges = $user->joinedChallenges()->pluck('challenge_id')->toArray();
         $this->joinedHabits = $user->joinedHabits()->pluck('habit_id')->toArray();
-    }
+        }
         $this->provinces = Province::orderBy('name')->get();
         $this->allWards  = Ward::orderBy('name')->get();
         $this->wards     = $this->allWards;
@@ -44,10 +43,8 @@ class Listing extends Component
     public function updatedProvinceId($value)
     {
         $this->ward_id = '';
-        //$this->wards = Ward::where('province_id', $this->province_id)->get();
         $this->wards = Ward::where('province_id', $value)->orderBy('name')->get();
         $this->resetPage();
-        $this->searched = true;
     }
 
     public function searchAction()
@@ -64,36 +61,35 @@ class Listing extends Component
     }
 
     public function toggleJoinItem($type, $id)
-{
-    $user = auth()->user();
-
-    if (!$user) {
-        session()->flash('message', 'Bạn cần đăng nhập để tham gia.');
-        return;
-    }
-
-    if ($type === 'challenge') {
-        if (in_array($id, $this->joinedChallenges)) {
-            // Nếu đã tham gia, bỏ tham gia
-            $user->joinedChallenges()->detach($id);
-            $this->joinedChallenges = array_diff($this->joinedChallenges, [$id]);
-        } else {
-            // Nếu chưa tham gia, tham gia
-            $user->joinedChallenges()->syncWithoutDetaching([$id]);
-            $this->joinedChallenges[] = $id;
+    {
+        $user = auth()->user();
+        if (!$user) {
+            session()->flash('message', 'Bạn cần đăng nhập để tham gia.');
+            return;
         }
-    }
 
-    if ($type === 'habit') {
-        if (in_array($id, $this->joinedHabits)) {
-            $user->joinedHabits()->detach($id);
-            $this->joinedHabits = array_diff($this->joinedHabits, [$id]);
-        } else {
+        if ($type === 'challenge') {
+            if (in_array($id, $this->joinedChallenges)) {
+            //nếu đã tgia, bỏ tgia
+                $user->joinedChallenges()->detach($id);
+                $this->joinedChallenges = array_diff($this->joinedChallenges, [$id]);
+            } else {
+            //nếu ch tgia, tgia
+                $user->joinedChallenges()->syncWithoutDetaching([$id]);
+                $this->joinedChallenges[] = $id;
+            }
+        }
+
+        if ($type === 'habit') {
+            if (in_array($id, $this->joinedHabits)) {
+                $user->joinedHabits()->detach($id);
+                $this->joinedHabits = array_diff($this->joinedHabits, [$id]);
+            } else {
             $user->joinedHabits()->syncWithoutDetaching([$id]);
             $this->joinedHabits[] = $id;
+            }
         }
     }
-}
 
 
     public function render()
@@ -111,17 +107,16 @@ class Listing extends Component
         //     $habits->where('province_id', $this->province_id);
         // }
         if ($this->province_id) {
-    $wardIds = Ward::where('province_id', $this->province_id)->pluck('id')->toArray();
-    $challenges->whereIn('ward_id', $wardIds);
-}
-
+            $wardIds = Ward::where('province_id', $this->province_id)->pluck('id')->toArray();
+            $challenges->whereIn('ward_id', $wardIds);
+        }
 
         if ($this->ward_id) {
             $challenges->where('ward_id', $this->ward_id);
-           // $habits->where('ward_id', $this->ward_id);
+           //$habits->where('ward_id', $this->ward_id);
         }
 
-        // Filter theo category
+        //lọc theo category
         if ($this->category === 'challenge') {
             $habits = collect([]);
             $challenges = $challenges->get();
@@ -133,9 +128,8 @@ class Listing extends Component
             $habits = $habits->get();
         }
 
-        // Gộp 2 loại vào collection chung
+        //gộp challenges,havit vào collection chung
         $items = collect([]);
-
         foreach ($challenges as $c) {
             $c->type = 'challenge';
             $items->push($c);
@@ -146,12 +140,11 @@ class Listing extends Component
             $items->push($h);
         }
 
-        // Sắp xếp theo id mới nhất
+        //sx theo id mới nhất
         $items = $items->sortByDesc('id')->values();
 
-        // Tự tạo phân trang
+        //tự tạo phân trang
         $currentPage = $this->page ?? 1;
-
 
         $paged = new LengthAwarePaginator(
             $items->forPage($currentPage, $this->perPage),

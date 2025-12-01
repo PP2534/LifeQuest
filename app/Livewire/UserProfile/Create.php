@@ -49,8 +49,8 @@ class Create extends Component
     }
 
     public function searchAction()
-{
-    // Nếu không nhập gì -> vẫn tìm nhưng hiện cảnh báo
+    {
+    //TH:không nhập gì,vẫn tìm nhưng hiện thông báo
     if (
         trim($this->search) === '' &&
         $this->interest === '' &&
@@ -62,30 +62,23 @@ class Create extends Component
 
     $this->searched = true;
     $this->resetPage();
-}
+    }
 
     public function toggleFollow($userId)
     {
         $user = Auth::user();
-        $existing = Follower::where([
-            'follower_id' => $user->id,
-            'following_id' => $userId
-        ])->first();
+        $existing = Follower::where(['follower_id' => $user->id,'following_id' => $userId])->first();
 
         if ($existing) {
             $existing->delete();
         } else {
-            Follower::create([
-                'follower_id' => $user->id,
-                'following_id' => $userId
-            ]);
+            Follower::create(['follower_id' => $user->id,'following_id' => $userId]);
         }
     }
 
     public function render()
     {
-        $query = User::with(['ward.province', 'followers'])
-            ->where('id', '!=', Auth::id());
+        $query = User::with(['ward.province', 'followers'])->where('id', '!=', Auth::id());
 
         if ($this->search) {
             $query->where('name', 'like', '%'.$this->search.'%');

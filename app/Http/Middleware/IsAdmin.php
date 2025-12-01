@@ -11,16 +11,16 @@ class IsAdmin
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * Kiểm tra user có phải là admin không
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && Auth::user()->role === 'admin') {
-            return $next($request);
+        // Middleware 'auth' đã chạy trước, nên chúng ta chắc chắn có Auth::user()
+        if (Auth::check() && Auth::user()->role !== 'admin') {
+            // Nếu không phải admin, redirect về trang chủ user
+            return redirect(env('APP_URL', 'http://localhost'));
         }
-
-        // Nếu không phải admin, chuyển hướng về trang chủ
-        return redirect('/');
+ 
+        return $next($request);
     }
 }

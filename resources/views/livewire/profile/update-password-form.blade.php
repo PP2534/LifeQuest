@@ -69,16 +69,13 @@ new class extends Component
         </div>
 
         <div class="flex items-center gap-4">
-            <x-primary-button class="bg-teal-600 hover:bg-teal-700 focus:ring-teal-400">
+            <x-primary-button wire:loading.attr="disabled" class="bg-teal-600 hover:bg-teal-700 focus:ring-teal-400">
                 <span wire:loading.remove>
                     Lưu
                 </span>
 
-                <span wire:loading.flex class="items-center justify-center">
-                    <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
-                        <path class="opacity-75" d="M4 12a8 8 0 018-8"></path>
-                    </svg>
+                <span wire:loading>
+                    Đang lưu...
                 </span>
             </x-primary-button>
 

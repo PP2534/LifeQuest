@@ -7,6 +7,7 @@ use App\Models\ChallengeParticipant;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use App\Services\XpService;
 
 class ChallengeDetail extends Component
 {
