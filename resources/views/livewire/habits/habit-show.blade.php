@@ -5,9 +5,9 @@
         </div>
     @endif
 
-    <div class="grid grid-cols-1 lg:gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 lg:gap-8">
         {{-- Cột nội dung chính --}}
-        <div class="lg:col-span-1">
+        <div class="lg:col-span-2">
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 @if($habit->image)
                     <img src="{{ asset('storage/' . $habit->image) }}" alt="{{ $habit->title }}" class="w-full h-64 object-cover">
@@ -16,13 +16,13 @@
                     <div class="flex justify-between items-start mb-4">
                         <div class="min-w-0 flex-1">
                             <h1 class="text-3xl font-bold text-gray-800 mb-2 break-words">{{ $habit->title }}</h1>
-                            <div class="text-gray-600">{!!$habit->description!!}</div>
+                            <p class="text-gray-600">{{ $habit->description }}</p>
                         </div>
 
                         <div class="flex-shrink-0 ml-4 flex items-center space-x-2">
                             @if($isCreator)
-                                <a href="{{ route('habits.edit', $habit) }}" wire:navigate class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700">Sửa</a>
-                                <button wire:click="deleteHabit" wire:confirm="Bạn có chắc chắn muốn xóa thói quen này? Hành động này không thể hoàn tác." class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">Xóa</button>
+                                <a href="{{ route('habits.edit', $habit) }}" wire:navigate class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Sửa</a>
+                                <button wire:click="deleteHabit" wire:confirm="Bạn có chắc chắn muốn xóa thói quen này? Hành động này không thể hoàn tác." class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Xóa</button>
                             @endif
 
                             @if ($habit->type === 'group')
@@ -89,11 +89,25 @@
                         @if($isParticipant && $habit->allow_member_invite)
                             <div class="mt-6 border-t pt-6">
                                 <h2 class="text-2xl font-semibold text-gray-800 mb-4">Mời thành viên mới</h2>
-                                <form wire:submit.prevent="inviteMember" class="flex items-center space-x-2">
-                                    <input wire:model="inviteEmail" type="email" placeholder="Nhập email để mời..." class="w-full border rounded-md px-3 py-2 focus:ring-teal-500 focus:border-teal-500">
-                                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex-shrink-0">Mời</button>
-                                </form>
-                                @error('inviteEmail') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
+                                <div class="relative" wire:click.away="hideSearchResults">
+                                    <form wire:submit.prevent="inviteMember" class="flex items-center space-x-2">
+                                        <input wire:model.live.debounce.300ms="inviteName" type="text" placeholder="Nhập tên người dùng để mời..." class="w-full border rounded-md px-3 py-2 focus:ring-teal-500 focus:border-teal-500" autocomplete="off">
+                                        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex-shrink-0">Mời</button>
+                                    </form>
+
+                                    @if($showResults && $searchResults->isNotEmpty())
+                                        <ul class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 shadow-lg max-h-60 overflow-y-auto">
+                                            @foreach($searchResults as $user)
+                                                <li wire:click.prevent="selectUser('{{ $user->name }}')" class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center">
+                                                    <img src="{{ $user->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($user->name) }}" alt="{{ $user->name }}" class="w-8 h-8 rounded-full mr-3">
+                                                    <span>{{ $user->name }}</span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </div>
+
+                                @error('inviteName') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
                                 @if(session('invite_error'))
                                     <div class="text-red-500 text-sm mt-1">{{ session('invite_error') }}</div>
                                 @endif
@@ -140,7 +154,7 @@
         {{-- Cột Lịch trình --}}
         <div class="lg:col-span-1 mt-6 lg:mt-0">
             <div class="bg-white rounded-lg shadow-md p-6 sticky top-6">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">Bảng theo dõi</h2>
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Lịch trình của bạn</h2>
 
                 @if($isParticipant)
                     {{-- Hiển thị Streak --}}

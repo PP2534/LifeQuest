@@ -26,9 +26,12 @@ class CreateChallenge extends Component
     public int $duration_days = 7; // Giá trị mặc định
     public string $type = 'public'; // Giá trị mặc định
     
-    // Các trường bổ sung dựa trên CSDL của bạn
+    // Các trường bổ sung dựa trên CSDL 
     public string $time_mode = 'fixed';
     public string $streak_mode = 'continuous';
+
+    // Thuộc tính cho ngày bắt đầu (chỉ dùng khi mode = fixed)
+    public $custom_start_date;
 
     // Dùng để lưu các danh mục được chọn
     public array $selectedCategories = [];
@@ -78,8 +81,10 @@ class CreateChallenge extends Component
             'selectedCategories' => 'required|array|min:1', // Yêu cầu ít nhất 1 danh mục
             'need_proof' => 'boolean',
             'allow_member_invite' => 'boolean',
-            'selectedProvinceId' => 'required', // Bắt buộc chọn tỉnh
-            'ward_id' => 'required|exists:wards,id', // Bắt buộc chọn xã và xã phải tồn tại
+           'selectedProvinceId' => 'nullable', 
+            'ward_id' => 'nullable|exists:wards,id',
+            // Validate custom_start_date nếu là fixed
+            'custom_start_date' => 'required_if:time_mode,fixed|nullable|date|after_or_equal:today',
         ];
     }
     protected function messages()
@@ -96,6 +101,8 @@ class CreateChallenge extends Component
             'ward_id.required' => 'Vui lòng chọn Phường/Xã.',
             'image.max' => 'Kích thước ảnh không được vượt quá 2MB.',
             'image.image' => 'File tải lên phải là định dạng ảnh.',
+            'custom_start_date.required_if' => 'Vui lòng chọn ngày bắt đầu cho chế độ Cố định.',
+            'custom_start_date.after_or_equal' => 'Ngày bắt đầu không được ở quá khứ.',
         ];
     }
 /**
@@ -134,8 +141,18 @@ class CreateChallenge extends Component
         // Loại bỏ selectedProvinceId vì không lưu vào bảng challenges
         unset($validatedData['selectedProvinceId']);
 
-        $startDate = Carbon::now(); // Lấy ngày giờ hiện tại
+        unset($validatedData['custom_start_date']);
+
         $duration = (int) $validatedData['duration_days']; // Lấy số ngày
+
+        
+        if ($this->time_mode === 'fixed') {
+            // Fixed: Lấy ngày người dùng chọn
+            $startDate = Carbon::parse($this->custom_start_date);
+        } else {
+            // Rolling: Lấy ngày hiện tại (ngay lúc tạo)
+            $startDate = Carbon::now();
+        }
         
         // Thêm start_date và end_date vào mảng data
         $validatedData['start_date'] = $startDate;
