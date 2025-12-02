@@ -63,10 +63,14 @@
                                 <ul class="space-y-3">
                                     @foreach ($this->pendingInvitations as $invitation)
                                         <li class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg shadow-sm">
-                                            <div class="flex items-center">
-                                                <img src="{{ $invitation->invitee->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($invitation->invitee->name) }}" alt="{{ $invitation->invitee->name }}" class="w-10 h-10 rounded-full mr-3">
+                                            <div class="flex items-center flex-grow">
+                                                <a href="{{ route('profile.show', ['id' => $invitation->invitee->id]) }}" wire:navigate>
+                                                    <img src="{{ $invitation->invitee->avatar ? asset('storage/users/' . $invitation->invitee->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($invitation->invitee->name).'&color=0d9488&background=94ffd8' }}" alt="{{ $invitation->invitee->name }}" class="w-10 h-10 rounded-full mr-3">
+                                                </a>
                                                 <div>
-                                                    <span class="font-medium text-gray-700">{{ $invitation->invitee->name }}</span>
+                                                    <a href="{{ route('profile.show', ['id' => $invitation->invitee->id]) }}" wire:navigate class="font-medium text-gray-700 hover:underline">
+                                                        {{ $invitation->invitee->name }}
+                                                    </a>
                                                     @if($invitation->inviter_id !== $invitation->invitee_id)
                                                         <p class="text-xs text-gray-500">Được mời bởi {{ $invitation->inviter->name }}</p>
                                                     @else
@@ -99,8 +103,10 @@
                                         <ul class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 shadow-lg max-h-60 overflow-y-auto">
                                             @foreach($searchResults as $user)
                                                 <li wire:click.prevent="selectUser('{{ $user->name }}')" class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center">
-                                                    <img src="{{ $user->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($user->name) }}" alt="{{ $user->name }}" class="w-8 h-8 rounded-full mr-3">
-                                                    <span>{{ $user->name }}</span>
+                                                    <a href="{{ route('profile.show', ['id' => $user->id]) }}" @click.stop wire:navigate class="flex items-center text-current no-underline">
+                                                        <img src="{{ $user->avatar ? asset('storage/users/' . $user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=0d9488&background=94ffd8' }}" alt="{{ $user->name }}" class="w-8 h-8 rounded-full mr-3">
+                                                        <span>{{ $user->name }}</span>
+                                                    </a>
                                                 </li>
                                             @endforeach
                                         </ul>
@@ -121,10 +127,14 @@
                                 <ul class="space-y-3">
                                     @forelse ($this->activeParticipants as $participant)
                                         <li class="flex items-center justify-between p-3 bg-gray-50 rounded-lg shadow-sm">
-                                            <div class="flex items-center">
-                                                <img src="{{ $participant->user->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($participant->user->name) }}" alt="{{ $participant->user->name }}" class="w-10 h-10 rounded-full mr-3">
+                                            <div class="flex items-center flex-grow">
+                                                <a href="{{ route('profile.show', ['id' => $participant->user->id]) }}" wire:navigate>
+                                                    <img src="{{ $participant->user->avatar ? asset('storage/users/' . $participant->user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($participant->user->name).'&color=0d9488&background=94ffd8' }}" alt="{{ $participant->user->name }}" class="w-10 h-10 rounded-full mr-3">
+                                                </a>
                                                 <div>
-                                                    <span class="font-medium text-gray-700">{{ $participant->user->name }}</span>
+                                                    <a href="{{ route('profile.show', ['id' => $participant->user->id]) }}" wire:navigate class="font-medium text-gray-700 hover:underline">
+                                                        {{ $participant->user->name }}
+                                                    </a>
                                                     <p class="text-xs text-gray-500">Streak: {{ $participant->streak }}</p>
                                                 </div>
                                             </div>
