@@ -17,6 +17,7 @@ class ChallengeProgress extends Model
      */
     protected $fillable = [
         'challenge_id',
+        'challenge_participant_id',
         'user_id',
         'status',
         'proof_image',

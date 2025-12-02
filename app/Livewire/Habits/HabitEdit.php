@@ -24,7 +24,7 @@ class HabitEdit extends Component
     public function mount(Habit $habit)
     {
         // Đảm bảo người dùng là người tạo
-        if ($habit->creator_id !== Auth::id()) {
+        if ((int) $habit->creator_id !== Auth::id()) {
             abort(403, 'Bạn không có quyền chỉnh sửa thói quen này.');
         }
 
@@ -71,7 +71,7 @@ class HabitEdit extends Component
         ]);
 
         session()->flash('status', 'Cập nhật thói quen thành công!');
-        return redirect()->route('habits.show', $this->habit);
+        return $this->redirect(route('habits.show', $this->habit), navigate: true);
     }
 
     public function render()

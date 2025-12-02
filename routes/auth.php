@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 // User authentication routes - chỉ dành cho user domain
-$appHost = parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST) ?: 'localhost';
+$appHost = parse_url(config('app.url', 'http://localhost'), PHP_URL_HOST) ?: 'localhost';
 Route::domain($appHost)
     ->middleware(['domain', 'web'])
     ->group(function () {

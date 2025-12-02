@@ -1,5 +1,5 @@
 <div class="container mx-auto p-8 bg-white rounded-2xl shadow-xl">
-<h2 class="text-2xl font-semibold mb-4 text-indigo-600">Chỉnh sửa thói quen</h2>
+<h2 class="text-2xl font-semibold mb-4 text-teal-600">Chỉnh sửa thói quen</h2>
 
     <form wire:submit.prevent="update" class="space-y-6">
         {{-- Tên thói quen --}}
@@ -73,7 +73,11 @@
 
         {{-- Cài đặt cho nhóm --}}
         @if ($type === 'group')
+<<<<<<< HEAD
+            <div class="space-y-4 border-t border-gray-200 pt-6 mt-6 bg-gray-50 p-4 rounded-lg">
+=======
             <div class="space-y-4 border-t pt-4">
+>>>>>>> main
                 <h3 class="text-lg font-medium text-gray-900">Cài đặt nhóm</h3>
                 <div class="flex items-start">
                     <div class="flex items-center h-5">
@@ -94,10 +98,14 @@
             </div>
         @endif
 
-        {{-- Nút Cập nhật --}}
-        <div class="text-right">
-            <button type="submit" class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
-                Cập nhật
+        {{-- Nút Cập nhật & Hủy --}}
+        <div class="flex justify-end items-center space-x-4">
+            <a href="{{ route('habits.show', $habit->id) }}" wire:navigate class="inline-flex justify-center py-2 px-6 border border-teal-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Hủy
+            </a>
+            <button type="submit" wire:loading.attr="disabled" wire:target="update" class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                <span wire:loading wire:target="update">Đang lưu...</span>
+                <span wire:loading.remove wire:target="update">Cập nhật</span>
             </button>
         </div>
     </form>

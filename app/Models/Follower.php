@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Notifications\NewFollowerNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Notification;
 
 class Follower extends Model
 {
@@ -19,6 +21,23 @@ class Follower extends Model
         'follower_id',
         'following_id',
     ];
+
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted()
+    {
+        static::created(function ($follower) {
+            /** @var \App\Models\User $userBeingFollowed */
+            $userBeingFollowed = $follower->following;
+            /** @var \App\Models\User $followerUser */
+            $followerUser = $follower->follower;
+
+            Notification::send($userBeingFollowed, new NewFollowerNotification($followerUser));
+        });
+    }
 
     public function follower()
     {
