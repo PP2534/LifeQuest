@@ -12,20 +12,20 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label for="province_id" class="block text-sm font-medium text-gray-700">Tỉnh/Thành phố</label>
-                    <select wire:model.live="province_id" id="province_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500">
+                    <select wire:model="province_id" id="province_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500">
                         <option value="">-- Chọn tỉnh --</option>
-                        @foreach($provinces as $province)
-                        <option value="{{ $province['id'] }}">{{ $province['full_name'] }}</option>
+                        @foreach($provinces as $p)
+                        <option value="{{ $p -> id }}">{{ $p ->name }}</option>
                         @endforeach
                     </select>
                 </div>
 
                 <div>
                     <label for="ward_id" class="block text-sm font-medium text-gray-700">Phường/Xã</label>
-                    <select wire:model.defer="ward_id" id="ward_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500" @if(empty($wards)) disabled @endif>
+                    <select wire:model="ward_id" id="ward_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500" >
                         <option value="">-- Chọn phường/xã --</option>
-                        @foreach($wards as $ward)
-                        <option value="{{ $ward['id'] }}">{{ $ward['name_with_type'] }}</option>
+                        @foreach($wards as $w) 
+                        <option value="{{ $w->id }}">{{ $w->name }}</option>
                         @endforeach
                     </select>
                     @error('ward_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror

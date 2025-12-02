@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Web\CommunityController;
 use App\Livewire\LeaderboardPage;
 use App\Http\Controllers\Web\UserController as WebUserController;
+use App\Livewire\Admin\Users\UserList;
 use App\Livewire\Habits\Habitcreate;
 use App\Livewire\Habits\HabitShow;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +18,8 @@ use App\Livewire\Challenges\ChallengesByLocation;
 use App\Livewire\Challenges\CreateChallenge;
 use App\Livewire\Challenges\MyChallengeList;
 use App\Livewire\Challenges\EditChallenge;
+use App\Livewire\Public\Listing;
+use App\Livewire\UserProfile\Create as UserProfileCreate;
 use App\Livewire\Challenges\ChallengeCheckin;
 
 // User routes - chỉ truy cập được từ user domain
@@ -66,17 +69,19 @@ Route::domain($appHost)
     });
 
     Route::middleware(['auth'])->group(function () {
-        //Route::get('/users', UserProfileCreate::class)->name('users.index');
-        Route::get('/users', [WebUserController::class, 'index'])->name('users.index');
+        Route::get('/users', UserProfileCreate::class)->name('users.index');
+        //Route::get('/users', [WebUserController::class, 'index'])->name('users.index');
         //Route::post('/users/{id}/follow', [WebUserController::class, 'follow'])->name('users.follow');
         //Route::post('/users/{id}/unfollow', [WebUserController::class, 'unfollow'])->name('users.unfollow');
         Route::post('/users/{id}/toggle-follow', [WebUserController::class, 'toggleFollow'])->name('users.toggleFollow');
+        Route::get('/admin/users', UserList::class)->name('admin.users');
     });
 
     Route::middleware(['auth'])->group(function () {
         Route::get('/community', [CommunityController::class, 'index'])->name('community');
     });
 
+    Route::get('/listing', Listing::class)->name('public.listing');
 
     // Các route công khai hoặc có logic kiểm tra quyền riêng
     Route::get('/habits', HabitList::class)->name('habits.index');
@@ -89,6 +94,6 @@ Route::domain($appHost)
         Route::get('/myprofile',  function () {
         return redirect('/profile?id=' . Auth::id());})->name('profile');
     });
-});
 
+});
 require __DIR__.'/auth.php';
