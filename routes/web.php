@@ -81,8 +81,6 @@ Route::domain($appHost)
         Route::get('/community', [CommunityController::class, 'index'])->name('community');
     });
 
-    Route::get('/listing', Listing::class)->name('public.listing');
-
     // Các route công khai hoặc có logic kiểm tra quyền riêng
     Route::get('/habits', HabitList::class)->name('habits.index');
     Route::get('/habits/{habit}', HabitShow::class)->name('habits.show');
