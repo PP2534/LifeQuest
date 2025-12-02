@@ -5,10 +5,6 @@
         <a href="{{ route('users.index') }}" class="px-4 py-2 rounded-md bg-teal-600 text-white font-semibold hover:bg-teal-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-400">
             Tìm bạn bè
         </a>
-
-        <a href="{{ route('public.listing') }}" class="px-4 py-2 rounded-md bg-teal-600 text-white font-semibold hover:bg-teal-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-400">
-            Danh sách thử thách & thói quen
-        </a>
         </div>
     </div>
 
