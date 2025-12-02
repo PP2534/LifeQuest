@@ -5,9 +5,9 @@
         </div>
     @endif
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 lg:gap-8">
+    <div>
         {{-- Cột nội dung chính --}}
-        <div class="lg:col-span-2">
+        <div>
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 @if($habit->image)
                     <img src="{{ asset('storage/' . $habit->image) }}" alt="{{ $habit->title }}" class="w-full h-64 object-cover">
@@ -162,8 +162,8 @@
         </div>
 
         {{-- Cột Lịch trình --}}
-        <div class="lg:col-span-1 mt-6 lg:mt-0">
-            <div class="bg-white rounded-lg shadow-md p-6 sticky top-6">
+        <div class="mt-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
                 <h2 class="text-xl font-bold text-gray-800 mb-4">Lịch trình của bạn</h2>
 
                 @if($isParticipant)
