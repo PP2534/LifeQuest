@@ -78,7 +78,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(\App\Models\Follower::class, 'following_id');
     }
 
-    public function following()
+    public function followings():HasMany
     {
         return $this->hasMany(\App\Models\Follower::class, 'follower_id');
     }
@@ -137,4 +137,19 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(UserXpLogs::class, 'user_id');
     }
+
+    // Thử thách đã tham gia
+public function joinedChallenges()
+{
+    return $this->belongsToMany(Challenge::class, 'challenge_participants', 'user_id', 'challenge_id')
+                ->withTimestamps();
+}
+
+// Thói quen đã tham gia
+public function joinedHabits()
+{
+    return $this->belongsToMany(Habit::class, 'habit_participants', 'user_id', 'habit_id')
+                ->withTimestamps();
+}
+
 }
