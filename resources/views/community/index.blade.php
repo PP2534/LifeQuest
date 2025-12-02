@@ -1,15 +1,10 @@
 <x-app-layout>
     <div class="flex justify-between items-center">
         <h2 class="text-3xl font-bold text-teal-600">Bạn bè & Hoạt động của bạn bè</h2>
-        <div class="flex gap-4">
+
         <a href="{{ route('users.index') }}" class="px-4 py-2 rounded-md bg-teal-600 text-white font-semibold hover:bg-teal-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-400">
             Tìm bạn bè
         </a>
-
-        <a href="{{ route('public.listing') }}" class="px-4 py-2 rounded-md bg-teal-600 text-white font-semibold hover:bg-teal-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-400">
-            Danh sách thử thách & thói quen
-        </a>
-        </div>
     </div>
 
     <div class="max-w-6xl mx-auto py-10 flex gap-8">

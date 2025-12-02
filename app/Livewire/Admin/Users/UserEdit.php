@@ -13,11 +13,10 @@ class UserEdit extends Component
 {
     public User $user;
     public string $name = '';
-    public $ward_id = null;
-    public $province_id = null;
-    public $provinces;
-    public $wards = [];
-    public $allWards;
+    public ?int $ward_id = null;
+    public ?int $province_id = null;
+    public array $provinces = [];
+    public array $wards = [];
 
     public function mount(User $user)
     {
@@ -25,29 +24,35 @@ class UserEdit extends Component
         $this->name = $user->name;
         $this->ward_id = $user->ward_id;
 
-        $this->provinces = Province::orderBy('name')->get();
-        $this->allWards = Ward::orderBy('name')->get();
+        $this->provinces = Province::select('id', 'full_name')->orderBy('full_name')->get()->toArray();
 
         if ($this->ward_id) {
             $ward = Ward::find($this->ward_id);
             if ($ward) {
                 $this->province_id = $ward->province_id;
-                $this->wards=Ward::where('province_id', $this->province_id)->orderBy('name')->get();
+                $this->loadWards();
             }
-        }else{
-            $this->wards=$this->allWards;
         }
     }
 
     public function updatedProvinceId($value)
     {
         $this->ward_id = null;
-        if($value){
-            $this->wards=Ward::where('province_id',$value)->orderBy('name')->get();
-        } else{
-        $this->wards=$this->allWards;
+        $this->loadWards();
     }
-}
+
+    private function loadWards()
+    {
+        if ($this->province_id) {
+            $this->wards = Ward::where('province_id', $this->province_id)
+                ->select('id', 'name_with_type')
+                ->orderBy('name_with_type')
+                ->get()
+                ->toArray();
+        } else {
+            $this->wards = [];
+        }
+    }
 
     public function save()
     {
