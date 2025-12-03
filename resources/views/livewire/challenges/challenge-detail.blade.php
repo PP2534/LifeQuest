@@ -329,7 +329,7 @@
                                         <div class="flex items-center">   
                                            <a href="{{ route('profile.show', ['id' => $participant->user->id]) }}" class="mr-2" wire:navigate>
                                             <img class="h-8 w-8 rounded-full object-cover"
-                                            src="{{ $participant->user->avatar  ? asset('storage/users/' . $participant->user->avatar ) : 'https://ui-avatars.com/api/?name='.urlencode( $participantuser->name).'&color=0d9488&background=94ffd8'}}" 
+                                            src="{{ $participant->user->avatar  ? asset('storage/users/' . $participant->user->avatar ) : 'https://ui-avatars.com/api/?name='.urlencode($participant->user->name).'&color=0d9488&background=94ffd8'}}" 
                                             alt="{{ $participant->user->avatar  }}" >
                                     
                                             </a>       
