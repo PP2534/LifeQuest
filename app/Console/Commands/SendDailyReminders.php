@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\User;
-use App\Models\Habit;
-use App\Models\Challenge;
+use App\Models\HabitParticipant;
+use App\Models\ChallengeParticipant;
 use App\Notifications\DailyReminderNotification;
 use Carbon\Carbon;
 
@@ -23,29 +23,31 @@ class SendDailyReminders extends Command
 
         foreach ($users as $user) {
             // Lấy các thói quen người dùng đang tham gia nhưng chưa hoàn thành hôm nay
-            $missingHabits = Habit::whereHas('participants', function ($query) use ($user) {
-                $query->where('user_id', $user->id)
-                      ->where('status', 'active');
-            })
-            ->whereDoesntHave('participants.logs', function ($query) use ($user, $today) {
-                $query->where('habit_participants.user_id', $user->id)
-                      ->where('status', 'done')
-                      ->whereDate('date', $today);
-            })
-            ->pluck('title')
-            ->toArray();
+            $missingHabits = HabitParticipant::with('habit')
+                ->where('user_id', $user->id)
+                ->where('status', 'active')
+                ->whereDoesntHave('logs', function ($query) use ($today) {
+                    $query->where('status', 'done')
+                          ->whereDate('date', $today);
+                })
+                ->get()
+                ->pluck('habit.title')
+                ->filter()
+                ->values()
+                ->toArray();
 
             // Lấy các thử thách người dùng đang tham gia nhưng chưa hoàn thành hôm nay
-            $missingChallenges = Challenge::whereHas('participants', function ($query) use ($user) {
-                $query->where('user_id', $user->id)
-                      ->where('status', 'active');
-            })
-            ->whereDoesntHave('participants.progress', function ($query) use ($user, $today) {
-                $query->where('challenge_participants.user_id', $user->id)
-                      ->where('status', 'done')
-                      ->whereDate('date', $today);
-            })
-            ->pluck('title')
+            $missingChallenges = ChallengeParticipant::with('challenge')
+                ->where('user_id', $user->id)
+                ->where('status', 'active')
+                ->whereDoesntHave('progressLogs', function ($query) use ($today) {
+                    $query->where('status', 'done')
+                          ->whereDate('date', $today);
+                })
+                ->get()
+                ->pluck('challenge.title')
+                ->filter()
+                ->values()
                 ->toArray();
 
             // Chỉ gửi thông báo nếu có ít nhất một mục chưa hoàn thành

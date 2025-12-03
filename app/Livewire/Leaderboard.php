@@ -15,7 +15,8 @@ class Leaderboard extends Component
     {
         $query = User::select('users.id', 'users.name', 'users.avatar', DB::raw('SUM(user_xp_logs.xp) as total_xp'))
             ->leftJoin('user_xp_logs', 'users.id', '=', 'user_xp_logs.user_id')
-            ->where('user_xp_logs.xp', '>', 0);
+            ->where('user_xp_logs.xp', '>', 0)
+            ->where('users.role', '!=', 'admin');
 
         // Lọc theo khoảng thời gian
         $this->applyPeriodFilter($query);
@@ -35,8 +36,10 @@ class Leaderboard extends Component
             if (!$currentUserInTop) {
                 // Nếu không, truy vấn riêng thông tin và thứ hạng của họ
                 $userXpQuery = DB::table('user_xp_logs')
-                    ->select(DB::raw('user_id, SUM(xp) as total_xp'))
-                    ->groupBy('user_id');
+                    ->join('users', 'users.id', '=', 'user_xp_logs.user_id')
+                    ->where('users.role', '!=', 'admin')
+                    ->select('user_xp_logs.user_id', DB::raw('SUM(user_xp_logs.xp) as total_xp'))
+                    ->groupBy('user_xp_logs.user_id');
 
                 $this->applyPeriodFilter($userXpQuery, 'user_xp_logs.created_at');
 
