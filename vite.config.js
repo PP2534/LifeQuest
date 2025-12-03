@@ -5,6 +5,7 @@ export default defineConfig({
     resolve: {
         alias: {
             'laravel-echo': 'laravel-echo/dist/echo.js',
+            'pusher-js': 'pusher-js/dist/web/pusher.js',
         },
     },
     plugins: [
