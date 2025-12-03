@@ -21,7 +21,7 @@
             @endforeach
         </select>
 
-        <select wire:model="ward_id" class="border rounded p-2 w-full md:w-1/4 focus:outline-none focus:ring-2 focus:ring-teal-500">
+        <select wire:model="ward_id" @disabled(!$province_id) class="border rounded p-2 w-full md:w-1/4 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100">
             <option value="">Chọn phường/xã</option>
             @foreach($wards as $w)
                 <option value="{{ $w->id }}">{{ $w->name }}</option>

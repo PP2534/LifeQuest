@@ -21,7 +21,6 @@ class Create extends Component
     public $ward_id = '';
     public $provinces;
     public $wards = [];
-    public $allWards;
     public $perPage = 12;
     public $searched = false;
     public $errorMessage = '';
@@ -36,16 +35,29 @@ class Create extends Component
             $this->followedUsers = $user->followings()->pluck('following_id')->toArray();
         }
         $this->provinces = Province::orderBy('name')->get();
-        $this->allWards = Ward::orderBy('name')->get();
-        $this->wards = $this->allWards;
+
+        if ($this->province_id) {
+            $this->loadWardsForProvince($this->province_id);
+        }
     }
 
     public function updatedProvinceId($value)
     {
         $this->ward_id = '';
-        $this->wards = $value ? Ward::where('province_id', $value)->orderBy('name')->get() : $this->allWards;
+        if ($value) {
+            $this->loadWardsForProvince($value);
+        } else {
+            $this->wards = collect();
+        }
         $this->resetPage();
         $this->searched = true;
+    }
+
+    protected function loadWardsForProvince($provinceId): void
+    {
+        $this->wards = Ward::where('province_id', $provinceId)
+            ->orderBy('name')
+            ->get();
     }
 
     public function searchAction()

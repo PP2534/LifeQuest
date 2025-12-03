@@ -4,7 +4,7 @@
     <form wire:submit.prevent="update" class="space-y-6">
         {{-- Tên thói quen --}}
         <div>
-            <label for="title" class="block text-sm font-medium text-gray-700">Tên thói quen</label>
+            <label for="title" class="block text-sm font-medium text-gray-700">Tên thói quen <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span></label>
             <input wire:model="title" id="title" type="text"
                    class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
                           focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500
@@ -49,7 +49,7 @@
 
         {{-- Loại thói quen --}}
         <div>
-            <label for="type" class="block text-sm font-medium text-gray-700">Loại</label>
+            <label for="type" class="block text-sm font-medium text-gray-700">Loại <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span></label>
             <select wire:model.live="type" id="type"
                     class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm
                            focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500
@@ -73,11 +73,7 @@
 
         {{-- Cài đặt cho nhóm --}}
         @if ($type === 'group')
-<<<<<<< HEAD
             <div class="space-y-4 border-t border-gray-200 pt-6 mt-6 bg-gray-50 p-4 rounded-lg">
-=======
-            <div class="space-y-4 border-t pt-4">
->>>>>>> main
                 <h3 class="text-lg font-medium text-gray-900">Cài đặt nhóm</h3>
                 <div class="flex items-start">
                     <div class="flex items-center h-5">

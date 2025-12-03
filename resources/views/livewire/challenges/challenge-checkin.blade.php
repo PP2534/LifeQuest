@@ -3,7 +3,7 @@
         <div class="flex justify-between items-center mb-6">
             <div>
                 <a href="{{ route('challenges.show', $challenge) }}" wire:navigate class="text-teal-600 hover:underline mb-2 block">&larr; Quay lại chi tiết</a>
-                <h1 class="text-3xl font-bold text-gray-900">Điểm Danh: {{ $challenge->title }}</h1>
+                <h1 class="text-3xl font-bold text-gray-900">Nhật ký tiến trình: {{ $challenge->title }}</h1>
             </div>
             <div class="text-right">
                 <div class="text-sm text-gray-500">Tiến độ hiện tại</div>

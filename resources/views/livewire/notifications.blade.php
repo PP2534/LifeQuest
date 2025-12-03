@@ -1,4 +1,4 @@
-<div x-data="{ open: false }" @click.away="open = false" class="relative" wire:poll.5s="refreshNotifications">
+<div x-data="{ open: false }" @click.away="open = false" class="relative" @auth wire:poll.5s="refreshNotifications" @endauth>
     <!-- Nút chuông -->
     <button 
         @click="open = !open" 
@@ -28,7 +28,7 @@
 
     <!-- Dropdown thông báo -->
     <div 
-        x-show="open" 
+        x-show="typeof open !== 'undefined' && open" 
         x-transition:enter="transition ease-out duration-200"
         x-transition:enter-start="opacity-0 translate-y-2"
         x-transition:enter-end="opacity-100 translate-y-0"
@@ -75,7 +75,7 @@
                                     @endif
                                 </p>
                                 <div class="text-xs text-gray-400 mt-1">
-                                    {{ $notification->created_at->diffForHumans() }}
+                                    {{ $notification->created_at->locale(app()->getLocale() ?? 'vi')->diffForHumans() }}
                                 </div>
                             </div>
                         </div>

@@ -31,7 +31,7 @@
                     @forelse($latestChallenges as $challenge)
                         <li class="border-b last:border-b-0 py-2">
                             <a href="#" class="text-teal-600 hover:underline">{{ $challenge->title }}</a>
-                            <p class="text-sm text-gray-500">Bởi: {{ $challenge->creator->name ?? 'N/A' }} - {{ $challenge->created_at->diffForHumans() }}</p>
+                            <p class="text-sm text-gray-500">Bởi: {{ $challenge->creator->name ?? 'N/A' }} - {{ $challenge->created_at->locale(app()->getLocale() ?? 'vi')->diffForHumans() }}</p>
                         </li>
                     @empty
                         <p class="text-gray-600">Không có thử thách nào.</p>

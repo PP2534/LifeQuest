@@ -150,7 +150,9 @@
                 
                 <li><a href="{{route('profile')}}" wire:navigate class="block px-4 py-2 text-gray-700 hover:bg-teal-100" role="menuitem" tabindex="-1">Hồ sơ của tôi <!-- My Profile --></a></li>
                 <li><a href="{{route('community')}}" wire:navigate class="block px-4 py-2 text-gray-700 hover:bg-teal-100" role="menuitem" tabindex="-1">Cộng đồng <!-- My Profile --></a></li>
-                <li><a wire:click="logout" class="block px-4 py-2 text-gray-700 hover:bg-teal-100 cursor-pointer" role="menuitem" tabindex="-1">Đăng xuất <!-- Logout --></a></li>
+                <li>
+                    <button wire:click.prevent="logout" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-teal-100">Đăng xuất <!-- Logout --></button>
+                </li>
                 @else
                 <li><a href="{{route('login')}}" wire:navigate class="block px-4 py-2 text-gray-700 hover:bg-teal-100" role="menuitem" tabindex="-1">Đăng nhập</a></li>
                 <li><a href="{{route('register')}}" wire:navigate class="block px-4 py-2 text-gray-700 hover:bg-teal-100" role="menuitem" tabindex="-1">Đăng ký</a></li>

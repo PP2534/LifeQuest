@@ -48,29 +48,32 @@ new class extends Component
             }
         }
 
-        if(!$this->province_id && count($this->provinces) > 0){
-        $this->province_id = $this->provinces[0]['id'];
+        if ($this->province_id) {
+            $this->loadWards($this->province_id);
+        } else {
+            $this->wards = [];
         }
-        // Load wards dựa theo province_id
-        $this->loadWards();
-        }
+    }
 
-        public function updatedProvinceId($value): void{
-            $this->ward_id = null; // reset ward
-            $this->loadWards();
-        }
+    public function updatedProvinceId($value): void
+    {
+        $this->province_id = $value ? (int) $value : null;
+        $this->ward_id = null; // reset ward selection
+        $this->loadWards($this->province_id);
+    }
 
-        private function loadWards(): void{
-            if($this->province_id){
-                $this->wards = \App\Models\Ward::where('province_id', $this->province_id)
+    private function loadWards(?int $provinceId = null): void
+    {
+        if ($provinceId) {
+            $this->wards = \App\Models\Ward::where('province_id', $provinceId)
                 ->select('id', 'name_with_type')
                 ->orderBy('name_with_type')
                 ->get()
                 ->toArray();
-            }else{
-                $this->wards = [];
+        } else {
+            $this->wards = [];
         }
-}
+    }
 
 
     /**
@@ -195,13 +198,17 @@ new class extends Component
         </div>
 
         <div>
-            <x-input-label for="name" value="Họ tên" />
+            <x-input-label for="name">
+                Họ tên <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span>
+            </x-input-label>
             <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full focus:ring-teal-500 focus:border-teal-500" required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
         <div>
-            <x-input-label for="email" value="Email" />
+            <x-input-label for="email">
+                Email <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span>
+            </x-input-label>
             <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full focus:ring-teal-500 focus:border-teal-500" required autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
@@ -245,7 +252,7 @@ new class extends Component
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
             <x-input-label value="Tỉnh/Thành phố" />
-            <select wire:model="province_id" class="mt-1 block border-gray-300 rounded p-2 w-full pr-8 focus:outline-none focus:ring-2 focus:ring-teal-500">
+            <select wire:model.live="province_id" class="mt-1 block border-gray-300 rounded p-2 w-full pr-8 focus:outline-none focus:ring-2 focus:ring-teal-500">
             <option value="">-- Chọn tỉnh --</option>
             @foreach($provinces as $province)
             <option value="{{ $province['id'] }}">{{ $province['full_name'] }}</option>
@@ -255,24 +262,27 @@ new class extends Component
 
         <div>
             <x-input-label value="Phường / Xã" />
-            <select wire:model="ward_id" class="mt-1 block w-full border-gray-300 rounded p-2 w-full pr-8 focus:outline-none focus:ring-2 focus:ring-teal-500">
+            <select wire:model="ward_id" @disabled(!$province_id) class="mt-1 block w-full border-gray-300 rounded p-2 w-full pr-8 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100">
             <option value="">-- Chọn phường / xã --</option>
             @foreach($wards as $ward)
             <option value="{{ $ward['id'] }}">{{ $ward['name_with_type'] }}</option>
             @endforeach
             </select>
+            @if(!$province_id)
+                <p class="text-sm text-gray-500 mt-1">Vui lòng chọn tỉnh/thành phố trước.</p>
+            @endif
         </div>
 
         {{-- TODO: Implement a location selector component for ward_id --}}
         {{-- For now, we'll just show the current ward_id if it exists --}}
 
         <div class="flex items-center gap-4">
-            <x-primary-button wire:loading.attr="disabled" class="bg-teal-600 hover:bg-teal-700 focus:ring-teal-400">
-                <span wire:loading.remove>
+            <x-primary-button wire:loading.attr="disabled" wire:target="updateProfileInformation" class="bg-teal-600 hover:bg-teal-700 focus:ring-teal-400">
+                <span wire:loading.remove wire:target="updateProfileInformation">
                     Lưu
                 </span>
 
-                <span wire:loading>
+                <span wire:loading wire:target="updateProfileInformation">
                     Đang lưu...
                 </span>
             </x-primary-button>

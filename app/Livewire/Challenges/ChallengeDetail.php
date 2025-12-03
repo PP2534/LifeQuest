@@ -391,6 +391,9 @@ class ChallengeDetail extends Component
             // Reset biến để tắt Popup
             $this->pendingInvitation = null;
 
+            // Nếu còn lời mời khác, tải lại
+            $this->checkPendingInvitation();
+
             session()->flash('info', 'Bạn đã từ chối lời mời.');
         }
     }
@@ -464,6 +467,15 @@ class ChallengeDetail extends Component
     {
         if ((int)$this->challenge->creator_id !== Auth::id()) {
             abort(403);
+        }
+
+        if (
+            $this->challenge->time_mode === 'fixed'
+            && ($this->isLocked || $this->isEnded)
+        ) {
+            $this->showDateModal = false;
+            session()->flash('info', 'Thử thách đã bắt đầu hoặc kết thúc, không thể đổi thời gian.');
+            return;
         }
 
         $this->validate([

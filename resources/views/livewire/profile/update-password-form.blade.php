@@ -51,19 +51,25 @@ new class extends Component
 
     <form wire:submit="updatePassword" class="mt-6 space-y-6">
         <div>
-            <x-input-label for="update_password_current_password" value="Mật khẩu hiện tại" />
+            <x-input-label for="update_password_current_password">
+                Mật khẩu hiện tại <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span>
+            </x-input-label>
             <x-text-input wire:model="current_password" id="update_password_current_password" name="current_password" type="password" class="mt-1 block w-full focus:ring-teal-500 focus:border-teal-500" autocomplete="current-password" />
             <x-input-error :messages="$errors->get('current_password')" class="mt-2" />
         </div>
 
         <div>
-            <x-input-label for="update_password_password" value="Mật khẩu mới" />
+            <x-input-label for="update_password_password">
+                Mật khẩu mới <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span>
+            </x-input-label>
             <x-text-input wire:model="password" id="update_password_password" name="password" type="password" class="mt-1 block w-full focus:ring-teal-500 focus:border-teal-500" autocomplete="new-password" />
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
         <div>
-            <x-input-label for="update_password_password_confirmation" value="Xác nhận mật khẩu" />
+            <x-input-label for="update_password_password_confirmation">
+                Xác nhận mật khẩu <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span>
+            </x-input-label>
             <x-text-input wire:model="password_confirmation" id="update_password_password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full focus:ring-teal-500 focus:border-teal-500" autocomplete="new-password" />
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>

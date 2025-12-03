@@ -9,7 +9,7 @@
 
     <form wire:submit.prevent="save" class="space-y-6">
         <div>
-            <label for="title" class="block text-sm font-medium text-gray-700">Tên thói quen</label>
+            <label for="title" class="block text-sm font-medium text-gray-700">Tên thói quen <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span></label>
             <input wire:model="title" id="title" type="text" placeholder="Ví dụ: Đọc sách 30 phút mỗi ngày"
                    class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
                           focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500
@@ -46,7 +46,7 @@
 
 
         <div>
-            <label for="type" class="block text-sm font-medium text-gray-700">Loại</label>
+            <label for="type" class="block text-sm font-medium text-gray-700">Loại <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span></label>
             <select wire:model.live="type" id="type"
                     class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm
                            focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500

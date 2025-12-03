@@ -3,10 +3,10 @@
         <!-- Profile Header -->
         <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
             <div class="p-6 sm:p-8">
-                <div class="flex items-center">
+                <div class="flex items-center gap-6">
                     {{-- Giả sử user có avatar, nếu không có bạn có thể thay bằng ảnh mặc định --}}
                     <img class="h-20 w-20 rounded-full object-cover mr-6" src="{{ $user->avatar ? asset('storage/users/' . $user->avatar): 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=0d9488&background=94ffd8' }}" alt="{{ $user->name }}">
-                    <div>
+                    <div class="flex-1">
                         <h1 class="text-3xl font-bold text-gray-900">{{ $user->name }}</h1>
                         @if($user->ward_id)
                             <p class="text-md text-gray-600 mt-1"><strong>Vị trí:</strong> {{ $user->ward->name }}, {{ $user->ward->province->name }}</p>
@@ -22,11 +22,9 @@
                             @endif
                         </p>
                     </div>
-                    @if(auth()->id() == $user->id)
-                        <div class="flex-1 text-end self-start">
-                            <a href="{{ route('profile.edit')}}" wire:navigate class="inline-flex" title="Chỉnh sửa thông tin cá nhân"><x-lucide-user-round-pen class="w-6 h-6 text-primary"/></a>
-                        </div>
-                     @endif
+                    <div class="ml-auto flex items-center gap-3 self-start">
+                        @livewire('user-profile.follow-toggle', ['profileUser' => $user], key('profile-follow-'.$user->id))
+                    </div>
                 </div>
                 <div class="mt-8">
                     @if($user->bio)

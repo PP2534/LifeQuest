@@ -12,6 +12,10 @@ class Notifications extends Component
     
     public function getListeners()
     {
+        if (!Auth::check()) {
+            return [];
+        }
+
         $userId = Auth::id();
         return [
             "echo-private:App.Models.User.{$userId},.Illuminate\\Notifications\\Events\\DatabaseNotificationCreated" => 'refreshNotifications',

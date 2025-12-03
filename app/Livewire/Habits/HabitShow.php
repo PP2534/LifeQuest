@@ -28,9 +28,7 @@ class HabitShow extends Component
     public ?HabitParticipant $currentUserParticipant = null;
     public ?HabitInvitation $currentUserInvitation = null;
 
-    public string $inviteName = '';
-    public Collection $searchResults;
-    public bool $showResults = false;
+    public bool $showInviteModal = false;
 // Lịch
     public $year;
     public $month;
@@ -51,8 +49,6 @@ class HabitShow extends Component
         $this->year = $now->year;
         $this->month = $now->month;
         $this->updateMonthName();
-
-        $this->searchResults = collect();
     }
     // Cho phép người dùng gửi yêu cầu tham gia một thói quen nhóm
     public function requestToJoin()
@@ -187,82 +183,60 @@ class HabitShow extends Component
         $this->loadParticipationData();
         session()->flash('status', 'Đã từ chối yêu cầu.');
     }
-    // Mời người khác 
-    public function inviteMember()
+    public function openInviteModal(): void
     {
-        // Cho phép mọi thành viên mời nếu cài đặt được bật
-        if (!$this->isParticipant || !$this->habit->allow_member_invite) {
+        if ($this->isParticipant && $this->habit->allow_member_invite) {
+            $this->showInviteModal = true;
+        }
+    }
+
+    public function inviteUser(int $userId): void
+    {
+        if (!$this->isParticipant || !$this->habit->allow_member_invite || !Auth::check()) {
             return;
         }
 
-        $this->validate([
-            'inviteName' => 'required|string|exists:users,name',
-        ], [
-            'inviteName.exists' => 'Không tìm thấy người dùng với tên này.',
-        ]);
-
-        $invitee = User::where('name', $this->inviteName)->first();
-
-        // Check if user is already a participant
-        if ($this->habit->participants()->where('user_id', $invitee->id)->exists()) {
-            session()->flash('invite_error', 'Người dùng này đã là thành viên.');
+        if ($userId === Auth::id()) {
+            session()->flash('status', 'Bạn đã tham gia thói quen này.');
             return;
         }
 
-        // Check if user already has a pending invitation
-        if ($this->habit->invitations()->where('invitee_id', $invitee->id)->where('status', 'pending')->exists()) {
-            session()->flash('invite_error', 'Người dùng này đã có lời mời đang chờ xử lý.');
+        $alreadyParticipant = HabitParticipant::where('habit_id', $this->habit->id)
+            ->where('user_id', $userId)
+            ->exists();
+
+        if ($alreadyParticipant) {
+            session()->flash('status', 'Người dùng này đã là thành viên.');
+            return;
+        }
+
+        $pendingInvite = HabitInvitation::where('habit_id', $this->habit->id)
+            ->where('invitee_id', $userId)
+            ->where('status', 'pending')
+            ->first();
+
+        if ($pendingInvite) {
+            session()->flash('status', 'Bạn đã gửi lời mời đến người này.');
             return;
         }
 
         HabitInvitation::create([
             'habit_id' => $this->habit->id,
             'inviter_id' => Auth::id(),
-            'invitee_id' => $invitee->id,
+            'invitee_id' => $userId,
             'status' => 'pending',
         ]);
 
-        // Gửi thông báo cho người được mời
-        Notification::send($invitee, new HabitInvitationNotification(Auth::user(), $this->habit));
-
-        $this->habit->refresh()->load(['participants.user', 'invitations.invitee', 'invitations.inviter']);
-        $this->inviteName = ''; // Clear input
-        session()->flash('status', 'Đã gửi lời mời thành công.');
-    }
-
-    // Lifecycle hook, chạy mỗi khi $inviteName được cập nhật từ frontend
-    public function updatedInviteName(string $value): void
-    {
-        if (strlen($value) < 2) {
-            $this->searchResults = collect();
-            $this->showResults = false;
-            return;
+        $invitee = User::find($userId);
+        if ($invitee) {
+            Notification::send($invitee, new HabitInvitationNotification(Auth::user(), $this->habit));
         }
 
-        // Lấy ID của những người đã là thành viên hoặc đã được mời
-        $currentParticipantIds = $this->habit->participants->pluck('user_id');
-        $pendingInviteIds = $this->habit->invitations()->where('status', 'pending')->pluck('invitee_id');
-        $excludeIds = $currentParticipantIds->merge($pendingInviteIds)->push(Auth::id())->unique();
+        $this->habit->refresh()->load(['participants.user', 'invitations.invitee', 'invitations.inviter']);
+        unset($this->followings);
 
-        $this->searchResults = User::where('name', 'like', '%' . $value . '%')
-            ->whereNotIn('id', $excludeIds)
-            ->take(5) // Giới hạn 5 kết quả
-            ->get();
-
-        $this->showResults = $this->searchResults->isNotEmpty();
-    }
-
-    // Được gọi khi người dùng chọn một tên từ danh sách gợi ý
-    public function selectUser(string $name): void
-    {
-        $this->inviteName = $name;
-        $this->showResults = false;
-        $this->searchResults = collect();
-    }
-
-    public function hideSearchResults(): void
-    {
-        $this->showResults = false;
+        $this->showInviteModal = true;
+        session()->flash('status', 'Đã gửi lời mời thành công.');
     }
     // Đuổi người trong nhóm
     public function kickMember(int $participantId)
@@ -459,6 +433,36 @@ class HabitShow extends Component
             // và không "hồi sinh" (rehydrate) chúng một cách chính xác, đặc biệt với caching.
             $date = $log->date instanceof Carbon ? $log->date : Carbon::parse($log->date);
             return $date->format('Y-m-d');
+        });
+    }
+
+    #[Computed]
+    public function followings(): Collection
+    {
+        if (!Auth::check()) {
+            return collect();
+        }
+
+        $habitId = $this->habit->id;
+
+        return Auth::user()->followingsUsers()->get()->map(function ($user) use ($habitId) {
+            $isParticipant = HabitParticipant::where('habit_id', $habitId)
+                ->where('user_id', $user->id)
+                ->exists();
+
+            if ($isParticipant) {
+                $user->invite_status = 'active';
+                return $user;
+            }
+
+            $invitation = HabitInvitation::where('habit_id', $habitId)
+                ->where('invitee_id', $user->id)
+                ->latest()
+                ->first();
+
+            $user->invite_status = $invitation->status ?? 'none';
+
+            return $user;
         });
     }
     // Lấy danh sách lời mời đang chờ (chỉ cho người tạo)

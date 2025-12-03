@@ -4,13 +4,13 @@
         <form wire:submit="save" class="bg-white shadow rounded-lg p-6 space-y-6">
             
             <div>
-                <label for="title" class="block text-sm font-medium">Tiêu đề</label>
+                <label for="title" class="block text-sm font-medium">Tiêu đề <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span></label>
                 <input type="text" id="title" wire:model="title" class="w-full border rounded px-3 py-2 mt-1" placeholder="Ví dụ: 30 ngày tập thể dục">
                 @error('title') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
 
             <div>
-                <label for="description" class="block text-sm font-medium">Mô tả</label>
+                <label for="description" class="block text-sm font-medium">Mô tả <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span></label>
                 <textarea id="description" rows="5" wire:model="description" class="w-full border rounded px-3 py-2 mt-1" placeholder="Mô tả chi tiết về thử thách..."></textarea>
                 @error('description') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
@@ -55,16 +55,16 @@
                             <option value="{{ $ward->id }}">{{ $ward->name }}</option>
                         @endforeach
                     </select>
-                    
+<!--                     
                     <div wire:loading wire:target="selectedProvinceId" class="text-xs text-teal-600 mt-1">
                         Đang tải danh sách xã...
-                    </div>
+                    </div> -->
                     
                     @error('ward_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
             </div>
             <div>
-                <label class="block text-sm font-medium">Danh mục (Chọn ít nhất 1)</label>
+                <label class="block text-sm font-medium">Danh mục <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span> <span class="text-xs font-normal text-gray-500">(Chọn ít nhất 1)</span></label>
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
                     @foreach($allCategories as $category)
                         <label class="flex items-center space-x-2 p-2 border rounded-lg hover:bg-gray-50">
@@ -78,32 +78,19 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                    <label for="duration_days" class="block text-sm font-medium">Thời lượng (ngày)</label>
+                    <label for="duration_days" class="block text-sm font-medium">Thời lượng (ngày) <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span></label>
                     <input type="number" id="duration_days" wire:model="duration_days" class="w-full border rounded px-3 py-2 mt-1" min="1">
                     @error('duration_days') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div>
-                    <label for="time_mode" class="block text-sm font-medium">Chế độ thời gian</label>
+                    <label for="time_mode" class="block text-sm font-medium">Chế độ thời gian <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span></label>
                     <select id="time_mode" wire:model.live="time_mode" class="w-full border rounded px-3 py-2 mt-1">
                         <option value="fixed">Cố định (Fixed)</option>
                         <option value="rolling">Linh hoạt (Rolling)</option>
                     </select>
-                    @if($time_mode == 'fixed')
-                    <div>
-                        <label for="custom_start_date" class="block text-sm font-medium">Ngày bắt đầu <span class="text-red-500">*</span></label>
-                        <input type="datetime-local" 
-                               id="custom_start_date" 
-                               wire:model="custom_start_date" 
-                               class="w-full border rounded px-3 py-2 mt-1"
-                               min="{{ now()->format('Y-m-d\TH:i') }}">
-                        @error('custom_start_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                    </div>
-                @endif
-
                 </div>
-                
                 <div>
-                    <label for="streak_mode" class="block text-sm font-medium">Chế độ chuỗi</label>
+                    <label for="streak_mode" class="block text-sm font-medium">Chế độ chuỗi <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span></label>
                     <select id="streak_mode" wire:model="streak_mode" class="w-full border rounded px-3 py-2 mt-1">
                         <option value="continuous">Liên tục (Continuous)</option>
                         <option value="cumulative">Tích lũy (Cumulative)</option>
@@ -111,8 +98,31 @@
                 </div>
             </div>
 
+            @if($time_mode === 'fixed')
+                <div class="p-4 border border-teal-100 rounded-xl bg-teal-50/60 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <p class="text-sm font-semibold text-teal-800 uppercase tracking-wide">Thời gian bắt đầu</p>
+                        <span class="text-xs text-teal-600 bg-white/80 px-2 py-0.5 rounded-full border border-teal-100">Bắt buộc</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm text-teal-800 font-medium">
+                        <label for="custom_start_date" class="flex items-center gap-1">
+                            Thời điểm khai mạc
+                            <span class="text-red-500" aria-hidden="true">*</span>
+                            <span class="sr-only">Bắt buộc</span>
+                        </label>
+                    </div>
+                    <p class="text-sm text-teal-700">Chọn thời điểm khai mạc cho thử thách cố định. Thành viên chỉ có thể tham gia trước thời điểm này.</p>
+                    <input type="datetime-local"
+                           id="custom_start_date"
+                           wire:model="custom_start_date"
+                           class="w-full border border-teal-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-400 focus:border-teal-500 bg-white"
+                           min="{{ now()->format('Y-m-d\\TH:i') }}">
+                    @error('custom_start_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                </div>
+            @endif
+
             <div>
-                <label for="type" class="block text-sm font-medium">Loại</label>
+                <label for="type" class="block text-sm font-medium">Loại <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span></label>
                 <select id="type" wire:model="type" class="w-full border rounded px-3 py-2 mt-1">
                     <option value="public">Công khai (Public)</option>
                     <option value="private">Riêng tư (Private)</option>

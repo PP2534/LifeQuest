@@ -17,7 +17,7 @@
                                 vừa theo dõi 
                                 {{ \App\Models\User::find($activity->details)->name ?? 'ai đó' }}
                             @endif
-                            <span class="text-gray-400 text-xs">({{ $activity->created_at->diffForHumans() }})</span>
+                            <span class="text-gray-400 text-xs">({{ $activity->created_at->locale(app()->getLocale() ?? 'vi')->diffForHumans() }})</span>
                         </p>
                     </div>
                 </div>

@@ -42,21 +42,27 @@ new #[Layout('layouts.app')] class extends Component
         <form wire:submit="register" class="space-y-6">
             <!-- Name -->
             <div>
-                <x-input-label for="name" value="Họ tên" class="mb-1 font-medium" />
+                <x-input-label for="name" class="mb-1 font-medium">
+                    Họ tên <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span>
+                </x-input-label>
                 <x-text-input wire:model="name" id="name" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400" type="text" name="name" required autofocus autocomplete="name" placeholder="Nguyễn Văn A" />
                 <x-input-error :messages="$errors->get('name')" class="mt-2" />
             </div>
 
             <!-- Email Address -->
             <div>
-                <x-input-label for="email" value="Email" class="mb-1 font-medium" />
+                <x-input-label for="email" class="mb-1 font-medium">
+                    Email <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span>
+                </x-input-label>
                 <x-text-input wire:model="email" id="email" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400" type="email" name="email" required autocomplete="username" placeholder="email@example.com" />
                 <x-input-error :messages="$errors->get('email')" class="mt-2" />
             </div>
 
             <!-- Password -->
             <div>
-                <x-input-label for="password" value="Mật khẩu" class="mb-1 font-medium" />
+                <x-input-label for="password" class="mb-1 font-medium">
+                    Mật khẩu <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span>
+                </x-input-label>
                 <x-text-input wire:model="password" id="password" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400"
                                 type="password"
                                 name="password"
@@ -66,7 +72,9 @@ new #[Layout('layouts.app')] class extends Component
 
             <!-- Confirm Password -->
             <div>
-                <x-input-label for="password_confirmation" value="Xác nhận mật khẩu" class="mb-1 font-medium" />
+                <x-input-label for="password_confirmation" class="mb-1 font-medium">
+                    Xác nhận mật khẩu <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span>
+                </x-input-label>
                 <x-text-input wire:model="password_confirmation" id="password_confirmation" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400"
                                 type="password"
                                 name="password_confirmation" required autocomplete="new-password" placeholder="••••••••" />

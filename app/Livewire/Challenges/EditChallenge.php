@@ -109,8 +109,8 @@ class EditChallenge extends Component
 
             'need_proof' => 'boolean',
             'allow_member_invite' => 'boolean',
-            'selectedProvinceId' => 'required',
-            'ward_id' => 'required|exists:wards,id',
+            'selectedProvinceId' => 'nullable|exists:provinces,id',
+            'ward_id' => 'nullable|exists:wards,id',
         ];
     }
     protected function messages()
@@ -123,8 +123,6 @@ class EditChallenge extends Component
             'duration_days.required' => 'Vui lòng nhập thời lượng.',
             'duration_days.min' => 'Thời lượng tối thiểu là 1 ngày.',
             'selectedCategories.required' => 'Bạn phải chọn ít nhất một danh mục.',
-            'selectedProvinceId.required' => 'Vui lòng chọn Tỉnh/Thành phố.',
-            'ward_id.required' => 'Vui lòng chọn Phường/Xã.',
             'image.max' => 'Kích thước ảnh không được vượt quá 2MB.',
             'image.image' => 'File tải lên phải là định dạng ảnh.',
         ];
@@ -135,6 +133,9 @@ class EditChallenge extends Component
     public function update()
     {
         $validatedData = $this->validate();
+
+        // Không cho phép cập nhật chế độ thời gian thông qua form
+        $validatedData['time_mode'] = $this->challenge->time_mode;
 
         //  Tách danh mục (categories) ra khỏi dữ liệu
         $categories = $validatedData['selectedCategories'];

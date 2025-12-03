@@ -14,7 +14,7 @@
                          setTimeout(() => element.classList.remove('highlight'), 2000);
                      } else if (/^\d+$/.test(commentId)) {
                          // Nếu không tồn tại, hiển thị modal thông báo
-                         commentNotFoundModal = true;
+                         this.commentNotFoundModal = true;
                      }
                  });
              }
@@ -65,10 +65,12 @@
                     }
                 @endphp
 
-                @if($countdownTarget)
-                    x-data="countdown('{{ \Carbon\Carbon::parse($countdownTarget)->format('Y-m-d H:i:s') }}')"
-                    x-init="init()"
-                @endif
+                @php
+                    $endAtIso = $countdownTarget ? \Carbon\Carbon::parse($countdownTarget)->timezone(config('app.timezone'))->toIso8601String() : null;
+                @endphp
+                x-data="countdownTimer({ endAt: @js($endAtIso) })"
+                x-init="init()"
+                x-cloak
                 class="mb-6 p-4 rounded-xl text-center shadow-inner border border-teal-100 bg-gradient-to-r from-teal-50 to-white">
 
                 <div class="flex flex-col items-center text-gray-700">
@@ -83,25 +85,25 @@
                         </div>
                     @endif
 
-                    @if ($countdownTarget)
+                    @if($countdownTarget)
                         <div class="flex justify-center gap-4 font-mono text-3xl md:text-4xl font-bold text-{{ $countdownColor }}">
                             <div class="flex flex-col items-center">
-                                <span x-text="days">00</span>
+                                <span x-text="pad(days)">00</span>
                                 <span class="text-xs font-sans text-gray-400 font-normal">Ngày</span>
                             </div>
                             <span>:</span>
                             <div class="flex flex-col items-center">
-                                <span x-text="hours">00</span>
+                                <span x-text="pad(hours)">00</span>
                                 <span class="text-xs font-sans text-gray-400 font-normal">Giờ</span>
                             </div>
                             <span>:</span>
                             <div class="flex flex-col items-center">
-                                <span x-text="minutes">00</span>
+                                <span x-text="pad(minutes)">00</span>
                                 <span class="text-xs font-sans text-gray-400 font-normal">Phút</span>
                             </div>
                             <span>:</span>
                             <div class="flex flex-col items-center">
-                                <span x-text="seconds">00</span>
+                                <span x-text="pad(seconds)">00</span>
                                 <span class="text-xs font-sans text-gray-400 font-normal">Giây</span>
                             </div>
                         </div>
@@ -128,15 +130,74 @@
             </div>
         @endif
 
-        <header class="mb-6 border-b pb-6 relative">
-            @if((int)$challenge->creator_id === Auth::id() && $challenge->start_date < now() && $challenge->time_mode === 'fixed')
-                <button wire:click="$set('showDateModal', true)" 
-                        class="absolute top-0 right-0 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-full border border-gray-300 flex items-center transition">
-                    📅 {{ $challenge->start_date ? 'Đổi giờ' : 'Đặt thời gian' }}
-                </button>
-            @endif
+        @if($pendingInvitation && !$myParticipation)
+            <section class="mb-6" aria-label="Lời mời tham gia">
+                <div class="border border-amber-200 bg-amber-50 rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-white text-amber-500 shadow">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h6" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-amber-700 uppercase tracking-wide">Lời mời</p>
+                            <h3 class="text-lg font-bold text-gray-900">{{ $pendingInvitation->inviter->name ?? 'Một người bạn' }} mời bạn tham gia thử thách này</h3>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">
+                        <span class="font-semibold text-gray-800">"{{ $challenge->title }}"</span>
+                        đang chờ bạn tham gia cùng họ. Bạn muốn phản hồi lời mời này chứ?
+                    </p>
+                    <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
+                        <button wire:click="rejectInvitation"
+                                wire:loading.attr="disabled"
+                                class="px-5 py-2.5  bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold  focus:ring-2 focus:ring-amber-200 transition">
+                            Từ chối
+                        </button>
+                        <button wire:click="acceptInvitation"
+                                wire:loading.attr="disabled"
+                                class="px-5 py-2.5 bg-teal-600 text-white rounded-lg font-semibold hover:bg-teal-700 focus:ring-4 focus:ring-teal-300 transition flex items-center justify-center">
+                            <span wire:loading.remove wire:target="acceptInvitation">Chấp nhận</span>
+                            <span wire:loading wire:target="acceptInvitation">Đang xử lý...</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        @endif
 
-            <h1 class="text-3xl font-bold text-teal-600 mb-2">{{ $challenge->title }}</h1>
+        <header class="mb-6 border-b pb-6">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-teal-600 mb-2">{{ $challenge->title }}</h1>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    @if((int)$challenge->creator_id === Auth::id())
+                        <a href="{{ route('challenges.edit', $challenge) }}"
+                           wire:navigate
+                           class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-teal-50 text-teal-600 border border-teal-100 hover:bg-teal-100 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                           title="Chỉnh sửa thử thách"
+                           aria-label="Chỉnh sửa thử thách">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 113.182 3.183L7.125 19.59a4.5 4.5 0 01-1.897 1.13l-2.533.723a.75.75 0 01-.927-.928l.723-2.533a4.5 4.5 0 011.13-1.897L16.862 3.487z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 6.75L13.5 1.5" />
+                            </svg>
+                        </a>
+                    @endif
+
+                    @if(
+                        (int)$challenge->creator_id === Auth::id()
+                        && $challenge->time_mode === 'fixed'
+                        && !$this->isLocked
+                    )
+                        <button wire:click="$set('showDateModal', true)" 
+                                class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-full border border-gray-300 flex items-center gap-1 transition">
+                            {{ $challenge->start_date ? 'Đổi giờ' : 'Đặt thời gian' }}
+                        </button>
+                    @endif
+                </div>
+            </div>
         </header>
 
         @if($challenge->image && file_exists(public_path('storage/' . $challenge->image)))
@@ -151,6 +212,19 @@
                 {!! $challenge->description !!}
             </div>
         </section>
+
+        @if($challenge->categories->isNotEmpty())
+            <section class="mb-10" aria-label="Danh mục thử thách">
+                <p class="text-sm uppercase tracking-wide text-gray-500 font-semibold">Danh mục</p>
+                <div class="mt-3 flex flex-wrap gap-2">
+                    @foreach($challenge->categories as $category)
+                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-teal-50 text-teal-700 border border-teal-100 text-sm font-medium shadow-sm">
+                            {{ $category->name }}
+                        </span>
+                    @endforeach
+                </div>
+            </section>
+        @endif
 
        <section aria-label="Join challenge" class="mb-8 flex gap-4 align-middle">
                 @auth
@@ -191,7 +265,7 @@
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                         </svg>
-                        Điểm danh & Xem Lịch
+                        Nhật ký tiến trình
                     </a>
                     @if($canInvite && !$this->isChallengeDisplayLocked)
                         <button wire:click="openInviteModal"
@@ -253,8 +327,8 @@
                                     
                                    <td class="px-4 py-2">
                                         <div class="flex items-center">   
-                                           <a href="{{ route('profile') }}" wire:navigate>
-                                            <img class="h-10 w-10 rounded-full object-cover"
+                                           <a href="{{ route('profile.show', ['id' => $participant->user->id]) }}" class="mr-2" wire:navigate>
+                                            <img class="h-8 w-8 rounded-full object-cover"
                                             src="{{ $participant->user->avatar  ? asset('storage/users/' . $participant->user->avatar ) : 'https://ui-avatars.com/api/?name='.urlencode( $participantuser->name).'&color=0d9488&background=94ffd8'}}" 
                                             alt="{{ $participant->user->avatar  }}" >
                                     
@@ -262,7 +336,7 @@
                                             
                                             <div class="flex flex-col">
                                                 <div class="flex items-center">
-                                                    <span class="font-medium text-gray-900">{{ $participant->user->name }}</span>
+                                                    <a href="{{ route('profile.show', ['id' => $participant->user->id]) }}" class="font-medium text-gray-900" wire:navigate>{{ $participant->user->name }}</a>
                                                     
                                                    @if($participant->role == 'creator')
                                                         <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800 border border-indigo-200">
@@ -319,7 +393,16 @@
 
             @auth
                 <form wire:submit="addComment" class="flex items-start mb-6">
-                    <img src="{{ Auth::user()->avatar ?? 'https://i.pravatar.cc/40?u=me' }}" alt="Avatar" class="w-10 h-10 rounded-full mr-3" />
+                    @php($currentUser = Auth::user())
+                    <a href="{{ route('profile.show', ['id' => $currentUser->id]) }}" wire:navigate>
+                        <img 
+                            class="h-10 w-10 rounded-full object-cover mr-3"
+                            src="{{ $currentUser->avatar 
+                                    ? asset('storage/users/' . $currentUser->avatar) 
+                                    : 'https://ui-avatars.com/api/?name='.urlencode($currentUser->name).'&color=0d9488&background=94ffd8' }}"
+                            alt="{{ $currentUser->name }}"
+                        >
+                    </a>
                     <div class="flex-1">
                         <div wire:ignore
                             x-data
@@ -374,12 +457,20 @@
                 @forelse ($comments as $comment)
                     @if ($comment->user)
                         <li id="comment-{{ $comment->id }}" class="flex items-star comment-item">
-                            <img src="{{ $comment->user->avatar ?? 'https://i.pravatar.cc/40?u='.$comment->user->id }}" alt="Avatar" class="w-10 h-10 rounded-full mr-3" />
+                            <a href="{{ route('profile.show', ['id' => $comment->user->id]) }}" wire:navigate>
+                                    <img 
+                                        class="h-10 w-10 rounded-full object-cover mr-3"
+                                        src="{{ $comment->user->avatar 
+                                                ? asset('storage/users/' . $comment->user->avatar) 
+                                                : 'https://ui-avatars.com/api/?name='.urlencode($comment->user->name).'&color=0d9488&background=94ffd8' }}"
+                                        alt="{{ $comment->user->name }}"
+                                    >
+                                    </a>
                             <div class="flex-1 bg-gray-100 rounded-lg px-4 py-3 comment-content">
                                 <div class="flex justify-between items-center mb-1">
                                     <div>
-                                        <span class="font-semibold text-sm">{{ $comment->user->name }}</span>
-                                        <span class="text-xs text-gray-500 ml-2">{{ $comment->created_at->diffForHumans() }}</span>
+                                        <a href="{{ route('profile.show', ['id' => $comment->user->id]) }}" wire:navigate><span class="font-semibold text-sm">{{ $comment->user->name }}</span></a>
+                                        <span class="text-xs text-gray-500 ml-2">{{ $comment->created_at->locale(app()->getLocale() ?? 'vi')->diffForHumans() }}</span>
                                     </div>
                                     @can('delete', $comment)
                                         <button 
@@ -433,7 +524,7 @@
     </article>
         <!-- Modal -->
         <div 
-            x-show="confirmDelete"
+            x-show="typeof confirmDelete !== 'undefined' && confirmDelete"
             x-cloak
             class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
         >
@@ -459,7 +550,7 @@
 
         <!-- "Comment Not Found" Modal -->
         <div 
-            x-show="commentNotFoundModal"
+            x-show="typeof commentNotFoundModal !== 'undefined' && commentNotFoundModal"
             x-cloak
             @keydown.escape.window="commentNotFoundModal = false"
             class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
@@ -553,47 +644,6 @@
             </div>
         </div>
     @endif
-    @if($pendingInvitation)
-        <div class="fixed inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full z-50 flex items-center justify-center backdrop-blur-sm">
-            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all scale-100">
-                
-                <div class="bg-gradient-to-r from-teal-500 to-teal-600 px-6 py-4 text-center">
-                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-white mb-2">
-                        <svg class="h-6 w-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-white">Bạn nhận được lời mời!</h3>
-                </div>
-
-                <div class="p-6 text-center">
-                    <p class="text-gray-600 mb-4">
-                        <span class="font-bold text-gray-800">{{ $pendingInvitation->inviter->name ?? 'Một người bạn' }}</span> 
-                        đã mời bạn tham gia thử thách này:
-                    </p>
-                    <div class="bg-gray-50 p-3 rounded-lg mb-6 border border-gray-200">
-                        <p class="font-bold text-teal-700 text-lg">"{{ $challenge->title }}"</p>
-                    </div>
-                    <p class="text-sm text-gray-500">Bạn có muốn chấp nhận tham gia cùng họ không?</p>
-                </div>
-
-                <div class="bg-gray-50 px-6 py-4 flex justify-center space-x-3 border-t border-gray-100">
-                    <button wire:click="rejectInvitation" 
-                            wire:loading.attr="disabled"
-                            class="px-5 py-2.5 bg-white text-gray-700 font-semibold rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-2 focus:ring-gray-200 transition shadow-sm">
-                        Từ chối
-                    </button>
-
-                    <button wire:click="acceptInvitation" 
-                            wire:loading.attr="disabled"
-                            class="px-5 py-2.5 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 focus:ring-4 focus:ring-teal-300 transition shadow-lg flex items-center">
-                        <span wire:loading.remove wire:target="acceptInvitation">Chấp nhận ngay</span>
-                        <span wire:loading wire:target="acceptInvitation">Đang xử lý...</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    @endif
     @if($showDateModal)
         <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
@@ -623,34 +673,4 @@
         </div>
     @endif
 
-<script>
-    document.addEventListener('alpine:init', () => {
-        Alpine.data('countdown', (endTime) => ({
-            days: '00', hours: '00', minutes: '00', seconds: '00',
-            endTime: new Date(endTime).getTime(),
-            timer: null,
-            init() {
-                this.updateTimer();
-                this.timer = setInterval(() => this.updateTimer(), 1000);
-            },
-            updateTimer() {
-                const now = new Date().getTime();
-                const distance = this.endTime - now;
-
-                if (distance < 0) {
-                    clearInterval(this.timer);
-                    this.days = this.hours = this.minutes = this.seconds = '00';
-                    // Tùy chọn: Refresh trang khi hết giờ để server cập nhật trạng thái Lock
-                    // window.location.reload(); 
-                    return;
-                }
-
-                this.days = String(Math.floor(distance / (1000 * 60 * 60 * 24))).padStart(2, '0');
-                this.hours = String(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
-                this.minutes = String(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
-                this.seconds = String(Math.floor((distance % (1000 * 60)) / 1000)).padStart(2, '0');
-            }
-        }));
-    });
-</script>
 </div>

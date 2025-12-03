@@ -5,12 +5,12 @@
         <form wire:submit="update" class="bg-white shadow rounded-lg p-6 space-y-6">
             
             <div>
-                <label for="title" class="block text-sm font-medium">Tiêu đề</label>
+                <label for="title" class="block text-sm font-medium">Tiêu đề <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span></label>
                 <input type="text" id="title" wire:model="title" class="w-full border rounded px-3 py-2 mt-1">
                 @error('title') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
              <div>
-                <label for="description" class="block text-sm font-medium">Mô tả</label>
+                <label for="description" class="block text-sm font-medium">Mô tả <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span></label>
                 <textarea id="description" rows="5" wire:model="description" class="w-full border rounded px-3 py-2 mt-1"></textarea>
                 @error('description') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
@@ -22,7 +22,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label for="province" class="block text-sm font-medium text-gray-700">Tỉnh / Thành phố</label>
+                    <label for="province" class="block text-sm font-medium text-gray-700">Tỉnh / Thành phố <span class="text-xs font-normal text-gray-500">(Không bắt buộc)</span></label>
                     <select id="province" wire:model.live="selectedProvinceId" class="w-full border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-teal-500 focus:border-teal-500">
                         <option value="">-- Chọn Tỉnh/Thành --</option>
                         @foreach($provinces as $province)
@@ -33,7 +33,7 @@
                 </div>
 
                 <div>
-                    <label for="ward" class="block text-sm font-medium text-gray-700">Phường / Xã</label>
+                    <label for="ward" class="block text-sm font-medium text-gray-700">Phường / Xã <span class="text-xs font-normal text-gray-500">(Không bắt buộc)</span></label>
                     <select id="ward" wire:model="ward_id" class="w-full border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-teal-500 focus:border-teal-500" @if($wards->isEmpty()) disabled @endif>
                         <option value="">-- Chọn Phường/Xã --</option>
                         @foreach($wards as $ward)
@@ -46,6 +46,7 @@
             </div>
 
             <div>
+                <label class="block text-sm font-medium">Danh mục <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span></label>
                  <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
                     @foreach($allCategories as $category)
                         <label class="flex items-center space-x-2 p-2 border rounded-lg hover:bg-gray-50">
@@ -58,27 +59,38 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                  <div>
-                    <label for="duration_days" class="block text-sm font-medium">Thời lượng (ngày)</label>
+                    <label for="duration_days" class="block text-sm font-medium">Thời lượng (ngày) <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span></label>
                     <input type="number" id="duration_days" wire:model="duration_days" class="w-full border rounded px-3 py-2 mt-1" min="1">
                 </div>
                 <div>
-                    <label for="time_mode" class="block text-sm font-medium">Chế độ thời gian</label>
-                    <select id="time_mode" wire:model="time_mode" class="w-full border rounded px-3 py-2 mt-1">
-                        <option value="fixed">Cố định (Fixed)</option>
-                        <option value="rolling">Linh hoạt (Rolling)</option>
-                    </select>
+                    <label class="block text-sm font-medium">Chế độ thời gian</label>
+                    <div class="w-full border rounded px-3 py-2 mt-1 bg-gray-50 text-sm text-gray-700">
+                        <div class="font-semibold text-gray-900">
+                            {{ $time_mode === 'fixed' ? 'Cố định (Fixed)' : 'Linh hoạt (Rolling)' }}
+                        </div>
+                        <!-- <p class="text-xs text-gray-500">Trường này đã khóa và không thể chỉnh sửa.</p> -->
+                    </div>
                 </div>
                 <div>
-                    <label for="streak_mode" class="block text-sm font-medium">Chế độ chuỗi</label>
+                    <label for="streak_mode" class="block text-sm font-medium">Chế độ chuỗi <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span></label>
                     <select id="streak_mode" wire:model="streak_mode" class="w-full border rounded px-3 py-2 mt-1">
                         <option value="continuous">Liên tục (Continuous)</option>
                         <option value="cumulative">Tích lũy (Cumulative)</option>
+                                @if($time_mode === 'fixed')
+                                    <div class="p-4 bg-teal-50 border border-teal-100 rounded-lg space-y-1">
+                                        <p class="text-sm font-medium text-teal-700">Thời điểm bắt đầu</p>
+                                        <p class="text-base font-semibold text-gray-900">
+                                            {{ optional(optional($challenge->start_date)->timezone(config('app.timezone')))->format('d/m/Y H:i') ?? 'Chưa xác định' }}
+                                        </p>
+                                        <p class="text-xs text-teal-600">Đối với thử thách cố định, thời gian bắt đầu đã khóa và không thể chỉnh sửa.</p>
+                                    </div>
+                                @endif
                     </select>
                 </div>
             </div>
 
             <div>
-                <label for="type" class="block text-sm font-medium">Loại</label>
+                <label for="type" class="block text-sm font-medium">Loại <span class="text-red-500" aria-hidden="true">*</span><span class="sr-only">Bắt buộc</span></label>
                 <select id="type" wire:model="type" class="w-full border rounded px-3 py-2 mt-1">
                     <option value="public">Công khai (Public)</option>
                     <option value="private">Riêng tư (Private)</option>
