@@ -2,7 +2,7 @@
     <section class="space-y-2 mb-10">
         <p class="text-sm uppercase tracking-wide text-teal-600 font-semibold">Bảng xếp hạng</p>
         <h1 class="text-3xl font-bold text-gray-900">Quy tắc tính điểm & xếp hạng LifeQuest</h1>
-        <p class="text-gray-500">Cập nhật ngày 15/02/2025</p>
+        <p class="text-gray-500">Cập nhật ngày 01/12/2025</p>
     </section>
 
     <section class="space-y-10">

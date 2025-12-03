@@ -2,7 +2,7 @@
     <section class="space-y-2 mb-10">
         <p class="text-sm uppercase tracking-wide text-teal-600 font-semibold">Chính sách</p>
         <h1 class="text-3xl font-bold text-gray-900">Chính sách bảo mật & quyền riêng tư</h1>
-        <p class="text-gray-500">Có hiệu lực từ ngày 15/02/2025. Phiên bản 1.4.</p>
+        <p class="text-gray-500">Có hiệu lực từ ngày 01/12/2025. Phiên bản 1.4.</p>
     </section>
 
     <section class="space-y-8">
