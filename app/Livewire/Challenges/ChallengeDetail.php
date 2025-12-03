@@ -375,8 +375,9 @@ class ChallengeDetail extends Component
             $this->pendingInvitation = null;
 
             // Tải lại dữ liệu trang
-            $this->challenge->load('participants.user');
+            $this->challenge->refresh()->load('participants.user');
             $this->loadMyParticipation();
+            $this->checkPendingInvitation();
 
             session()->flash('success', 'Tuyệt vời! Bạn đã chấp nhận lời mời tham gia.');
         }
