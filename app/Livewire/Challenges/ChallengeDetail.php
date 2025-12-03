@@ -44,6 +44,9 @@ class ChallengeDetail extends Component
      */
     public function mount(Challenge $challenge)
     {
+        if ($challenge->status !== 'active') {
+            abort(404);
+        }
         // Tải thử thách cùng các mối quan hệ để tối ưu query
         $this->challenge = $challenge->load(
             'creator',                // Lấy người tạo (User)
@@ -320,7 +323,7 @@ class ChallengeDetail extends Component
         ]);
 
         // Gửi thông báo cho người được mời
-        $invitee = User::find($userId);
+        $invitee = User::active()->find($userId);
         if ($invitee) {
             Notification::send($invitee, new ChallengeInvitationNotification(Auth::user(), $this->challenge));
         }

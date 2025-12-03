@@ -19,7 +19,7 @@ class ProfileController extends Controller
     public function show(Request $request)
     {
         $userId = $request->query('id', Auth::id());
-        $user = User::findOrFail($userId);
+        $user = User::active()->where('id', $userId)->firstOrFail();
 
         // Lấy các thử thách công khai, đang hoạt động mà người dùng tham gia.
         // Lưu ý: Bảng 'challenges' của bạn không có cột 'visibility'.

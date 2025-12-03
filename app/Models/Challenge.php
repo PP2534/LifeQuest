@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 
 class Challenge extends Model
 {
@@ -67,22 +67,27 @@ class Challenge extends Model
     {
         return $this->hasMany(Comment::class);
     }
-    /** 
-    * Tự động tính toán trạng thái dựa trên ngày kết thúc.
-     */
-    public function getStatusAttribute(): string
-    {
-        if ($this->end_date && Carbon::parse($this->end_date)->isPast()) {
-            return 'Hoàn thành';
-        }
-        
-        // (có thể thêm logic cho 'Sắp diễn ra' nếu $this->start_date > now())
-
-        return 'Đang diễn ra';
-    }
-
    public function ward()
     {
         return $this->belongsTo(Ward::class, 'ward_id');
+    }
+
+    /**
+     * Scope: chỉ lấy các thử thách đang hoạt động ở phía người dùng.
+     */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('status', 'active');
+    }
+
+    /**
+     * Nhãn hiển thị thân thiện cho trạng thái hiện tại.
+     */
+    public function getStatusLabelAttribute(): string
+    {
+        return match ($this->attributes['status'] ?? 'active') {
+            'block' => 'Đã khóa',
+            default => 'Hoạt động',
+        };
     }
 }

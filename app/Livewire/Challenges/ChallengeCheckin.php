@@ -38,6 +38,9 @@ class ChallengeCheckin extends Component
      */
     public function mount(Challenge $challenge)
     {
+        if ($challenge->status !== 'active') {
+            abort(404);
+        }
         $this->challenge = $challenge;
         
         // Lấy thông tin tham gia của user hiện tại

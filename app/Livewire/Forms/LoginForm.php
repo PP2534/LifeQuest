@@ -38,6 +38,13 @@ class LoginForm extends Form
             ]);
         }
 
+        if (Auth::user()?->status !== 'active') {
+            Auth::logout();
+            throw ValidationException::withMessages([
+                'form.email' => 'Tài khoản của bạn đã bị khóa.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

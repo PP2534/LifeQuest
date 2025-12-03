@@ -28,7 +28,7 @@
                     @endif
             
                     <p class="text-sm text-gray-600 mb-2">Thời gian: {{$challenge->duration_days}} ngày</p>
-                    <p class="text-sm text-gray-600 mb-4">Trạng thái: {{ $challenge->status }}</p>
+                    <p class="text-sm text-gray-600 mb-4">Trạng thái: {{ $challenge->status_label }}</p>
             
                     <div class="mt-auto">
                         <div class="flex justify-center mb-2">

@@ -21,7 +21,8 @@ class LeaderboardPage extends Component
         $query = User::select('users.id', 'users.name', 'users.avatar', DB::raw('SUM(user_xp_logs.xp) as total_xp'))
             ->leftJoin('user_xp_logs', 'users.id', '=', 'user_xp_logs.user_id')
             ->where('user_xp_logs.xp', '>', 0)
-            ->where('users.role', '!=', 'admin');
+            ->where('users.role', '!=', 'admin')
+            ->where('users.status', 'active');
 
         // Lọc theo khoảng thời gian
         $this->applyPeriodFilter($query);
@@ -42,6 +43,7 @@ class LeaderboardPage extends Component
                 $userXpQuery = DB::table('user_xp_logs')
                     ->join('users', 'users.id', '=', 'user_xp_logs.user_id')
                     ->where('users.role', '!=', 'admin')
+                    ->where('users.status', 'active')
                     ->select('user_xp_logs.user_id', DB::raw('SUM(user_xp_logs.xp) as total_xp'))
                     ->groupBy('user_xp_logs.user_id');
 
@@ -61,14 +63,16 @@ class LeaderboardPage extends Component
                     ->first();
 
                 if ($userRankData) {
-                    $user = User::find($currentUserId);
-                    $currentUserData = (object) [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'avatar' => $user->avatar,
-                        'total_xp' => $userRankData->total_xp,
-                        'rank' => $userRankData->rank,
-                    ];
+                    $user = User::active()->find($currentUserId);
+                    if ($user) {
+                        $currentUserData = (object) [
+                            'id' => $user->id,
+                            'name' => $user->name,
+                            'avatar' => $user->avatar,
+                            'total_xp' => $userRankData->total_xp,
+                            'rank' => $userRankData->rank,
+                        ];
+                    }
                 }
             }
         }

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class UserController extends Controller{
     
    public function index(Request $request){
-    $query=User::query()
+    $query=User::active()
     ->with(['ward.province','followers'])
     ->where('id', '!=', Auth::id());
     $hasSearchInput = $request->filled('search') || $request->filled('interest') || $request->filled('province_id');
@@ -49,7 +49,8 @@ class UserController extends Controller{
     return view('livewire.user-profile.create',compact('users', 'errorMessage'));
     }
 
-   public function toggleFollow($id){
+    public function toggleFollow($id){
+     User::active()->findOrFail($id);
     $existingFollow = Follower::where([
         'follower_id' => Auth::id(),
         'following_id' => $id

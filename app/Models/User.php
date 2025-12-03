@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -85,12 +86,14 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function followingsUsers()
     {
-        return $this->belongsToMany(User::class, 'followers', 'follower_id', 'following_id');
+        return $this->belongsToMany(User::class, 'followers', 'follower_id', 'following_id')
+            ->where('users.status', 'active');
     }
 
     public function followersUsers()
     {
-        return $this->belongsToMany(User::class, 'followers', 'following_id', 'follower_id');
+        return $this->belongsToMany(User::class, 'followers', 'following_id', 'follower_id')
+            ->where('users.status', 'active');
     }
 
     public function sendPasswordResetNotification($token)
@@ -151,5 +154,10 @@ public function joinedHabits()
     return $this->belongsToMany(Habit::class, 'habit_participants', 'user_id', 'habit_id')
                 ->withTimestamps();
 }
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('status', 'active');
+    }
 
 }

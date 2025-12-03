@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Challenges;
 
+use App\Models\Activity;
 use App\Models\Category;
 use App\Models\Challenge;
 use Illuminate\Support\Collection;
@@ -169,6 +170,12 @@ class CreateChallenge extends Component
         // Đính kèm categories
         $challenge->categories()->attach($categories);
 
+        Activity::create([
+            'user_id' => Auth::id(),
+            'type' => 'create_challenge',
+            'details' => (string) $challenge->id,
+        ]);
+
         // Gửi thông báo cho followers nếu challenge là public
         if ($challenge->type === 'public') {
             $creator = Auth::user();
@@ -190,7 +197,8 @@ class CreateChallenge extends Component
             'personal_start_date' => $startDate,
         ]);
 
-        session()->flash('success', 'Đã tạo thử thách thành công!');
+    $this->dispatch('activityAdded');
+    session()->flash('success', 'Đã tạo thử thách thành công!');
         return $this->redirect(route('challenges.show', $challenge), navigate: true);
     }
     public function render()

@@ -224,8 +224,7 @@
                 <p class="text-sm text-gray-500">Hành động quản lý</p>
                 <p class="text-base font-semibold text-gray-800">Bạn là người tạo thói quen này.</p>
             </div>
-            <button wire:click="deleteHabit"
-                    wire:confirm="Bạn có chắc chắn muốn xóa thói quen này? Hành động không thể hoàn tác."
+            <button wire:click="confirmDelete"
                     class="inline-flex items-center justify-center px-5 py-3 rounded-lg bg-red-600 text-white font-semibold shadow hover:bg-red-700 transition">
                 Xóa thói quen
             </button>
@@ -354,5 +353,32 @@
             </form>
         </div>
     </div>
+    @endif
+
+    @if($showDeleteModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-60" wire:click.self="cancelDelete">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6">
+                <div class="flex items-start gap-3">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Xóa thói quen?</h3>
+                        <p class="mt-1 text-sm text-gray-600">Hành động này không thể hoàn tác. Tất cả dữ liệu liên quan đến thói quen sẽ bị xóa.</p>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end gap-3">
+                    <button wire:click="cancelDelete" class="px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50">Hủy</button>
+                    <button wire:click="deleteHabit" class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700" wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="deleteHabit">Xóa ngay</span>
+                        <span wire:loading wire:target="deleteHabit" class="flex items-center gap-2">
+                            Đang xóa...
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
     @endif
 </div>

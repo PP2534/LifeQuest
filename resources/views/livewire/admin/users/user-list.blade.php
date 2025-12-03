@@ -15,13 +15,14 @@
                 <th class="border p-2">Email</th>
                 <th class="border p-2">Địa điểm</th>
                 <th class="border p-2">Trạng thái</th>
+                <th class="border p-2">Quyền</th>
                 <th class="border p-2">Hành động</th>
             </tr>
         </thead>
 
         <tbody>
             @forelse($users as $index => $user)
-            <tr>
+            <tr class="{{ auth()->id() === $user->id ? 'bg-teal-50' : '' }}">
                 <td class="border p-2">{{ $users->firstItem() + $index }}</td>
                 <td class="border p-2">{{ $user->name }}</td>
                 <td class="border p-2">{{ $user->email }}</td>
@@ -36,7 +37,16 @@
                     <select wire:change="updateUserStatus({{ $user->id }}, $event.target.value)"
                         class="border-gray-300 rounded focus:border-teal-500 focus:ring-teal-500 {{ $user->status === 'banned' ? 'bg-red-200 text-red-800' : 'bg-green-200 text-green-800' }}">
                         <option value="active" @if($user->status == 'active') selected @endif>Hoạt động</option>
-                        <option value="banned" @if($user->status == 'banned') selected @endif>Cấm</option>
+                        <option value="banned" @if($user->status == 'banned') selected @endif>Khóa</option>
+                    </select>
+                </td>
+                <td class="border p-2">
+                    <select wire:change="updateUserRole({{ $user->id }}, $event.target.value)"
+                        class="border-gray-300 rounded focus:border-indigo-500 focus:ring-indigo-500 {{ $user->role === 'admin' ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100 text-gray-800' }}"
+                        @disabled(auth()->id() === $user->id)
+                    >
+                        <option value="user" @selected($user->role === 'user')>Người dùng</option>
+                        <option value="admin" @selected($user->role === 'admin')>Quản trị</option>
                     </select>
                 </td>
                 <td class="border p-2">

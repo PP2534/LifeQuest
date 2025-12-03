@@ -14,11 +14,14 @@
         <ul class="space-y-6">
             @forelse($followings as $user)
                 <li class="bg-white p-4 rounded-lg shadow flex items-center space-x-4">
-                    {{--<img src="{{ $user->avatar ?? 'https://i.pravatar.cc/60?u='.$user->id }}" alt="Avatar {{ $user->name }}" class="rounded-full w-16 h-16 object-cover">--}}
-                    <img class="h-10 w-10 rounded-full object-cover" src="{{ $user->avatar ? asset('storage/users/' . $user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=0d9488&background=94ffd8'}}" 
-                    alt="{{ $user->name }}" >
+                    <a href="{{ route('profile.show', ['id' => $user->id]) }}" wire:navigate class="flex-shrink-0"> 
+                        <img class="h-10 w-10 rounded-full object-cover" src="{{ $user->avatar ? asset('storage/users/' . $user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=0d9488&background=94ffd8'}}" 
+                        alt="{{ $user->name }}">
+                    </a>
                     <div class="flex-grow">
-                        <h2 class="text-lg font-semibold text-teal-600">{{ $user->name }}</h2>
+                        <a href="{{ route('profile.show', ['id' => $user->id]) }}" wire:navigate class="text-lg font-semibold text-teal-600 hover:underline">
+                            {{ $user->name }}
+                        </a>
                         <p class="text-gray-600 text-sm truncate max-w-xl">{{ $user->bio ?? 'Chưa có giới thiệu.' }}</p>
                     </div>
                     
@@ -37,11 +40,14 @@
         <ul class="space-y-6">
             @forelse($followers as $user)
                 <li class="bg-white p-4 rounded-lg shadow flex items-center space-x-4">
-                    {{--<img src="{{ $user->avatar ?? 'https://i.pravatar.cc/60?u='.$user->id }}" alt="Avatar {{ $user->name }}" class="rounded-full w-16 h-16 object-cover">--}}
-                    <img class="h-10 w-10 rounded-full object-cover" src="{{ $user->avatar ? asset('storage/users/' . $user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=0d9488&background=94ffd8'}}" 
-                    alt="{{ $user->name }}" >
+                    <a href="{{ route('profile.show', ['id' => $user->id]) }}" wire:navigate class="flex-shrink-0">
+                        <img class="h-10 w-10 rounded-full object-cover" src="{{ $user->avatar ? asset('storage/users/' . $user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=0d9488&background=94ffd8'}}" 
+                        alt="{{ $user->name }}">
+                    </a>
                     <div class="flex-grow">
-                        <h2 class="text-lg font-semibold text-teal-600">{{ $user->name }}</h2>
+                        <a href="{{ route('profile.show', ['id' => $user->id]) }}" wire:navigate class="text-lg font-semibold text-teal-600 hover:underline">
+                            {{ $user->name }}
+                        </a>
                         <p class="text-gray-600 text-sm truncate max-w-xl">{{ $user->bio ?? 'Chưa có giới thiệu.' }}</p>
                     </div>
 

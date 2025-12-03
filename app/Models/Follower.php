@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Activity;
 use App\Notifications\NewFollowerNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -36,6 +37,12 @@ class Follower extends Model
             $followerUser = $follower->follower;
 
             Notification::send($userBeingFollowed, new NewFollowerNotification($followerUser));
+
+            Activity::create([
+                'user_id' => $follower->follower_id,
+                'type' => 'follow',
+                'details' => (string) $follower->following_id,
+            ]);
         });
     }
 

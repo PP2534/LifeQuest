@@ -90,7 +90,8 @@ class Create extends Component
 
     public function render()
     {
-        $query = User::with(['ward.province', 'followers'])
+        $query = User::active()
+            ->with(['ward.province', 'followers'])
             ->where('id', '!=', Auth::id())
             ->where('role', '!=', 'admin');
 

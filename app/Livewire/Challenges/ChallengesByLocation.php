@@ -23,6 +23,7 @@ class ChallengesByLocation extends Component
     {
         if($this->selectedProvince){
             $this->challenges = Challenge::with('categories','ward')
+            ->active()
             ->whereHas('ward', function($q){
                 $q->where('province_id', $this->selectedProvince);
                 })

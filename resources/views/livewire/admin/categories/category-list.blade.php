@@ -1,9 +1,9 @@
 <div>
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-teal-600">Quản lý Danh mục</h1>
-        <a href="{{ route('admin.dashboard') }}" wire:navigate class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded-lg shadow">
+        <!-- <a href="{{ route('admin.dashboard') }}" wire:navigate class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded-lg shadow">
             Quay lại Dashboard
-        </a>
+        </a> -->
     </div>
 
     @if (session()->has('message'))

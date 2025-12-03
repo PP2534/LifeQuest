@@ -44,6 +44,9 @@ class EditChallenge extends Component
      */
     public function mount(Challenge $challenge)
     {
+        if ($challenge->status !== 'active') {
+            abort(404);
+        }
         // Kiểm tra quyền (chỉ creator mới được sửa)
         if ((int) $challenge->creator_id !== Auth::id()) {
             abort(403, 'Bạn không có quyền sửa thử thách này.');

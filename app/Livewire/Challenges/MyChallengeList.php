@@ -52,15 +52,13 @@ class MyChallengeList extends Component
         // Chỉ tải các thử thách mà người dùng này đã tạo (creator_id)
         //
        $challenges = Challenge::query()
-            // 1. Lấy các thử thách do tôi tạo
-            ->where('creator_id', $userId)->where('status', 'active')
-            
-            // 2. HOẶC (OR) lấy các thử thách tôi đang tham gia
-            // (sử dụng mối quan hệ 'participants' đã định nghĩa trong Model)
-            ->orWhereHas('participants', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
+            ->active()
+            ->where(function ($query) use ($userId) {
+                $query->where('creator_id', $userId)
+                      ->orWhereHas('participants', function ($participantQuery) use ($userId) {
+                          $participantQuery->where('user_id', $userId);
+                      });
             })
-            
             // Tải kèm 'participants' (để tính status) và 'creator' (để kiểm tra quyền)
             ->with(['participants', 'creator']) 
             ->orderBy('created_at', 'desc')

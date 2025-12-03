@@ -45,6 +45,7 @@ class ChallengeList extends Component
     public function render()
     {
         $challenges = Challenge::with('categories')
+            ->active()
             ->where(function($query) {
                 // Luôn hiển thị các thử thách PUBLIC với mọi người
                 $query->where('type', 'public');

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Habits;
 
+use App\Models\Activity;
 use App\Models\Habit;
 use App\Models\HabitParticipant;
 use Illuminate\Support\Facades\Auth;
@@ -56,8 +57,17 @@ class Habitcreate extends Component
             'role' => 'creator',
             'status' => 'active',
         ]);
+
+        Activity::create([
+            'user_id' => $habit->creator_id,
+            'type' => 'create_habit',
+            'details' => (string) $habit->id,
+        ]);
+
+        $this->dispatch('activityAdded');
         session()->flash('success', 'Tạo thói quen thành công!');
-        return redirect()->route('habits.index');
+
+        return $this->redirectRoute('habits.show', ['habit' => $habit->id], navigate: true);
     }
     #[Layout('layouts.app')]
     public function render()

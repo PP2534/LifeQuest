@@ -29,12 +29,17 @@ Route::domain($appHost)
     ->group(function () {
     Route::view('/', 'welcome')->name('homepage');
 
+    Route::view('/gioi-thieu', 'pages.introduction')->name('pages.introduction');
+    Route::view('/lien-he', 'pages.contact')->name('pages.contact');
+    Route::view('/chinh-sach-bao-mat', 'pages.privacy-policy')->name('pages.privacy-policy');
+    Route::view('/quy-tac-xep-hang', 'pages.ranking-rules')->name('pages.ranking-rules');
+
     // Public pages
     Route::get('/challenges', ChallengeList::class)->name('challenges.index');
 
     Route::get('/challenges/location', ChallengesByLocation::class)
         ->name('challenges.by-location')
-        ->middleware('auth');
+        ->middleware(['auth', 'active.user']);
 
     Route::get('/challenges/{challenge}', ChallengeDetail::class)->name('challenges.show');
 
@@ -48,27 +53,27 @@ Route::domain($appHost)
 
     //  route này để truy cập trang tạo
     Route::get('/challenge/create', CreateChallenge::class)
-        ->middleware('auth') // Chỉ người đã đăng nhập mới được tạo
+        ->middleware(['auth', 'active.user']) // Chỉ người đã đăng nhập mới được tạo
         ->name('challenges.create');
     
     // Route SỬA (Trỏ đến EditChallenge)
     Route::get('/challenges/{challenge}/edit', EditChallenge::class) 
-        ->middleware('auth')
+        ->middleware(['auth', 'active.user'])
         ->name('challenges.edit');  
 
     Route::get('/my-challenges', MyChallengeList::class)
-        ->middleware('auth')
+        ->middleware(['auth', 'active.user'])
         ->name('my-challenges');
     Route::get('/challenges/{challenge}/checkin', ChallengeCheckin::class)
-        ->middleware('auth')
+        ->middleware(['auth', 'active.user'])
         ->name('challenges.checkin');
     // Các route cần xác thực người dùng
-    Route::middleware('auth')->group(function () {
+    Route::middleware(['auth', 'active.user'])->group(function () {
         Route::get('/habits/create', Habitcreate::class)->name('habits.create');
         Route::get('/habits/{habit}/edit', \App\Livewire\Habits\HabitEdit::class)->name('habits.edit');
     });
 
-    Route::middleware(['auth'])->group(function () {
+    Route::middleware(['auth', 'active.user'])->group(function () {
         Route::get('/users', UserProfileCreate::class)->name('users.index');
         //Route::get('/users', [WebUserController::class, 'index'])->name('users.index');
         //Route::post('/users/{id}/follow', [WebUserController::class, 'follow'])->name('users.follow');
@@ -77,7 +82,7 @@ Route::domain($appHost)
         Route::get('/admin/users', UserList::class)->name('admin.users');
     });
 
-    Route::middleware(['auth'])->group(function () {
+    Route::middleware(['auth', 'active.user'])->group(function () {
         Route::get('/community', [CommunityController::class, 'index'])->name('community');
     });
 
@@ -86,7 +91,7 @@ Route::domain($appHost)
     Route::get('/habits/{habit}', HabitShow::class)->name('habits.show');
 
     // Profile routes
-    Route::middleware('auth')->group(function () {
+    Route::middleware(['auth', 'active.user'])->group(function () {
         Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
         Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::get('/myprofile',  function () {

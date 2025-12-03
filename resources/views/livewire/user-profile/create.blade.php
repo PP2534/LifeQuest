@@ -49,11 +49,15 @@
     <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         @forelse($users as $user)
             <article class="bg-white shadow rounded-lg p-6 flex flex-col items-center text-center">
-                <img class="h-10 w-10 rounded-full object-cover" src="{{ $user->avatar ? asset('storage/users/' . $user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=0d9488&background=94ffd8'}}" 
-                alt="{{ $user->name }}" >
+                <a href="{{ route('profile.show', ['id' => $user->id]) }}" wire:navigate class="block">
+                    <img class="h-20 w-20 rounded-full object-cover" src="{{ $user->avatar ? asset('storage/users/' . $user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=0d9488&background=94ffd8'}}" 
+                    alt="{{ $user->name }}">
+                </a>
                 {{--<img src="{{ $user->avatar_url ?? 'https://i.pravatar.cc/100?u=' . $user->id }}" 
                      alt="Avatar {{ $user->name }}" class="rounded-full w-24 h-24 mb-4 object-cover">--}}
-                <h2 class="text-lg font-semibold text-teal-600 mb-1">{{ $user->name }}</h2>
+                <a href="{{ route('profile.show', ['id' => $user->id]) }}" wire:navigate class="text-lg font-semibold text-teal-600 mb-1 hover:underline">
+                    {{ $user->name }}
+                </a>
                 <p class="text-sm text-gray-600 mb-1">Sở thích: {{ $user->interests ?? 'Chưa cập nhật' }}</p>
                 <p class="text-sm text-gray-500 mb-4">{{ $user->ward->province->name ?? 'Chưa rõ địa điểm' }}</p>
 

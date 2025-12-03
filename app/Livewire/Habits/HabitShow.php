@@ -30,6 +30,7 @@ class HabitShow extends Component
     public ?HabitInvitation $currentUserInvitation = null;
 
     public bool $showInviteModal = false;
+    public bool $showDeleteModal = false;
 // Lịch
     public $year;
     public $month;
@@ -112,9 +113,23 @@ class HabitShow extends Component
 
         $this->habit->delete();
 
+        $this->showDeleteModal = false;
+
         // Chuyển hướng về trang danh sách với thông báo
         session()->flash('status', 'Thói quen đã được xóa thành công.');
-        return redirect()->route('habits.index');
+        return $this->redirectRoute('habits.index', navigate: true);
+    }
+
+    public function confirmDelete(): void
+    {
+        if ($this->isCreator) {
+            $this->showDeleteModal = true;
+        }
+    }
+
+    public function cancelDelete(): void
+    {
+        $this->showDeleteModal = false;
     }
     // Duyệt một yêu cầu tham gia
     public function approveRequest(int $invitationId): bool
@@ -243,7 +258,7 @@ class HabitShow extends Component
             'status' => 'pending',
         ]);
 
-        $invitee = User::find($userId);
+        $invitee = User::active()->find($userId);
         if ($invitee) {
             Notification::send($invitee, new HabitInvitationNotification(Auth::user(), $this->habit));
         }

@@ -73,7 +73,7 @@
                                 <select wire:change="updateChallengeStatus({{ $challenge->id }}, $event.target.value)" class="rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500">
                                     <!-- <option value="pending" {{ $challenge->status == 'pending' ? 'selected' : '' }}>Đang chờ duyệt</option> -->
                                     <option value="active" {{ $challenge->status == 'active' ? 'selected' : '' }}>Hoạt động</option>
-                                    <option value="block" {{ $challenge->status == 'block' ? 'selected' : '' }}>Bị khóa</option>
+                                    <option value="block" {{ $challenge->status == 'block' ? 'selected' : '' }}>Khóa</option>
                                     <!-- <option value="completed" {{ $challenge->status == 'completed' ? 'selected' : '' }}>Hoàn thành</option> -->
                                 </select>
                             </td>

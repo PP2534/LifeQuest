@@ -43,9 +43,7 @@
                             {{-- Rank --}}
                             <div class="w-10 text-center flex-shrink-0">
                                 @if($rank <= 3)
-                                    <svg class="w-7 h-7 mx-auto {{ $medalColor }}" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" d="M10 2a.75.75 0 01.75.75v3.522l1.547-.86a.75.75 0 01.686.05l3.25 1.8a.75.75 0 010 1.328l-3.25 1.8a.75.75 0 01-.686.05l-1.547-.86V14.5a.75.75 0 01-1.5 0V9.478l-1.547.86a.75.75 0 01-.686-.05l-3.25-1.8a.75.75 0 010-1.328l3.25-1.8a.75.75 0 01.686-.05l1.547.86V2.75A.75.75 0 0110 2zM3.5 13.25a.75.75 0 01.75-.75h11.5a.75.75 0 010 1.5H4.25a.75.75 0 01-.75-.75zM3 16.25a.75.75 0 01.75-.75h12.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
-                                    </svg>
+                                    <x-lucide-award class="w-7 h-7 mx-auto {{ $medalColor }}" />
                                 @else
                                     <span class="text-base font-bold text-gray-500">#{{ $rank }}</span>
                                 @endif
