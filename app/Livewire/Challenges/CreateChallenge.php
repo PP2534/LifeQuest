@@ -160,7 +160,7 @@ class CreateChallenge extends Component
 
         // Thêm thông tin người tạo
         $validatedData['creator_id'] = Auth::id();
-        $validatedData['ward_id'] = Auth::user()->ward_id;
+        $validatedData['ward_id'] = $this->ward_id ?: Auth::user()->ward_id;
         
         // Tạo Challenge (giờ đã có đủ ngày tháng)
         $challenge = Challenge::create($validatedData);

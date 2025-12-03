@@ -20,12 +20,12 @@ class FollowingFollowersList extends Component
 
     public function loadFollowings()
     {
-        $this->followings = Auth::user()->followingsUsers;
+        $this->followings = Auth::user()->followingsUsers->where('role', '!=', 'admin');
     }
 
     public function loadFollowers()
     {
-        $this->followers = Auth::user()->followersUsers;
+        $this->followers = Auth::user()->followersUsers->where('role', '!=', 'admin');
     }
 
     public function switchTab($tab)

@@ -30,6 +30,9 @@
                     @if($user->bio)
                         <p class="text-md text-gray-600 mt-1 text-center">{{$user->bio}}</p>
                     @endif
+                    <div class="mt-4">
+                        @livewire('user-profile.follower-stats', ['profileUser' => $user], key('profile-follower-stats-'.$user->id))
+                    </div>
                 </div>
             </div>
         </div>

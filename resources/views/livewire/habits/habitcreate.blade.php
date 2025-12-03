@@ -1,5 +1,5 @@
 <div class="container mx-auto p-8 bg-white rounded-2xl shadow-xl">
-<h2 class="text-2xl font-semibold mb-4 text-indigo-600">Tạo thói quen mới</h2>
+<h2 class="text-2xl font-semibold mb-4 text-teal-600">Tạo thói quen mới</h2>
 
     @if (session()->has('success'))
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative mb-6" role="alert">

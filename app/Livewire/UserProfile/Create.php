@@ -90,7 +90,9 @@ class Create extends Component
 
     public function render()
     {
-        $query = User::with(['ward.province', 'followers'])->where('id', '!=', Auth::id());
+        $query = User::with(['ward.province', 'followers'])
+            ->where('id', '!=', Auth::id())
+            ->where('role', '!=', 'admin');
 
         if ($this->search) {
             $query->where('name', 'like', '%'.$this->search.'%');

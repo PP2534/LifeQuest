@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\DB;
 use App\Notifications\HabitInvitationNotification;
 
 class HabitShow extends Component
@@ -145,15 +146,18 @@ class HabitShow extends Component
             return;
         }
 
-        // 3. Nếu được phép, tiến hành thêm thành viên
-        HabitParticipant::create([
-            'habit_id' => $this->habit->id,
-            'user_id' => $invitation->invitee_id,
-            'role' => 'member',
-            'status' => 'active',
-        ]);
+        DB::transaction(function () use ($invitation) {
+            $participant = HabitParticipant::firstOrNew([
+                'habit_id' => $this->habit->id,
+                'user_id' => $invitation->invitee_id,
+            ]);
 
-        $invitation->delete();
+            $participant->role = $participant->role ?: 'member';
+            $participant->status = 'active';
+            $participant->save();
+
+            $invitation->delete();
+        });
 
         $this->habit->refresh()->load(['participants.user', 'invitations.invitee', 'invitations.inviter']);
         $this->loadParticipationData();
