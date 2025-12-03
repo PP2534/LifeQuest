@@ -24,7 +24,7 @@
                                 <a href="{{ route('habits.edit', $habit) }}" wire:navigate class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Sửa</a>
                             @endif
 
-                            @if ($habit->type === 'group')
+                            @if ($habit->type === 'group' && !$isParticipant && !$isCreator)
                                 @if ($participationStatus === 'pending_request')
                                     <button wire:click="cancelRequest" wire:confirm="Bạn có chắc chắn muốn hủy yêu cầu tham gia?" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">
                                         Hủy yêu cầu

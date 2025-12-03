@@ -66,8 +66,7 @@ class HabitShow extends Component
             'status' => 'pending',
         ]);
 
-        //  Nạp lại toàn bộ dữ liệu sau khi thay đổi
-        $this->habit->refresh()->load(['participants.user', 'invitations.invitee', 'invitations.inviter']);
+        $this->reloadHabit();
         $this->loadParticipationData();
 
         session()->flash('status', 'Yêu cầu tham gia của bạn đã được gửi đi và đang chờ duyệt.');
@@ -81,7 +80,7 @@ class HabitShow extends Component
 
         $this->currentUserInvitation->delete();
 
-        $this->habit->refresh()->load(['participants.user', 'invitations.invitee', 'invitations.inviter']);
+        $this->reloadHabit();
         $this->loadParticipationData();
 
         session()->flash('status', 'Bạn đã hủy yêu cầu tham gia.');
@@ -97,8 +96,7 @@ class HabitShow extends Component
             ->where('user_id', Auth::id())
             ->delete();
 
-        // Làm mới dữ liệu sau khi rời nhóm
-        $this->habit->refresh()->load(['participants.user']);
+        $this->reloadHabit();
         $this->loadParticipationData();
 
         session()->flash('status', 'Bạn đã rời khỏi thói quen.');
@@ -119,13 +117,13 @@ class HabitShow extends Component
         return redirect()->route('habits.index');
     }
     // Duyệt một yêu cầu tham gia
-    public function approveRequest(int $invitationId)
+    public function approveRequest(int $invitationId): bool
     {
         $invitation = HabitInvitation::find($invitationId);
 
         // 1. Kiểm tra xem lời mời có hợp lệ không
         if (!$invitation || $invitation->habit_id !== $this->habit->id || $invitation->status !== 'pending') {
-            return;
+            return false;
         }
 
         $isJoinRequest = (int) $invitation->inviter_id === (int) $invitation->invitee_id;
@@ -144,7 +142,7 @@ class HabitShow extends Component
 
         if (!$isAllowed) {
             session()->flash('error', 'Bạn không có quyền thực hiện hành động này.');
-            return;
+            return false;
         }
 
         DB::transaction(function () use ($invitation) {
@@ -162,17 +160,18 @@ class HabitShow extends Component
             $invitation->delete();
         });
 
-        $this->habit->refresh()->load(['participants.user', 'invitations.invitee', 'invitations.inviter']);
+        $this->reloadHabit();
         $this->loadParticipationData();
         session()->flash('status', $isJoinRequest ? 'Đã duyệt thành viên.' : 'Bạn đã tham gia thói quen!');
+        return true;
     }
     // Từ chối lời mời 
-    public function rejectRequest(int $invitationId)
+    public function rejectRequest(int $invitationId): bool
     {
         $invitation = HabitInvitation::find($invitationId);
 
         if (!$invitation || $invitation->habit_id !== $this->habit->id || $invitation->status !== 'pending') {
-            return;
+            return false;
         }
 
         $isJoinRequest = (int) $invitation->inviter_id === (int) $invitation->invitee_id;
@@ -189,15 +188,16 @@ class HabitShow extends Component
 
         if (!$isAllowed) {
             session()->flash('error', 'Bạn không có quyền thực hiện hành động này.');
-            return;
+            return false;
         }
 
         // Delete the invitation
         $invitation->delete();
 
-        $this->habit->refresh()->load(['participants.user', 'invitations.invitee', 'invitations.inviter']);
+        $this->reloadHabit();
         $this->loadParticipationData();
         session()->flash('status', $isJoinRequest ? 'Đã từ chối yêu cầu.' : 'Đã từ chối lời mời.');
+        return true;
     }
     public function openInviteModal(): void
     {
@@ -248,7 +248,7 @@ class HabitShow extends Component
             Notification::send($invitee, new HabitInvitationNotification(Auth::user(), $this->habit));
         }
 
-        $this->habit->refresh()->load(['participants.user', 'invitations.invitee', 'invitations.inviter']);
+        $this->reloadHabit();
         unset($this->followings);
 
         $this->showInviteModal = true;
@@ -267,7 +267,7 @@ class HabitShow extends Component
         // Đảm bảo không xóa chính người tạo
         if ($participant && $participant->habit_id === $this->habit->id && $participant->role !== 'creator') {
             $participant->delete();
-            $this->habit->refresh()->load(['participants.user', 'invitations.invitee', 'invitations.inviter']);
+            $this->reloadHabit();
             $this->loadParticipationData();
             session()->flash('status', 'Đã xóa thành viên khỏi nhóm.');
         }
@@ -280,7 +280,6 @@ class HabitShow extends Component
         }
 
         $this->approveRequest($this->currentUserInvitation->id);
-        session()->flash('status', 'Bạn đã tham gia thói quen!');
     }
     // Từ chối lời mời 
     public function rejectInvitation()
@@ -290,7 +289,6 @@ class HabitShow extends Component
         }
 
         $this->rejectRequest($this->currentUserInvitation->id);
-        session()->flash('status', 'Bạn đã từ chối lời mời.');
     }
     // Trạng thái Tham gia
     protected function loadParticipationData(): void
@@ -324,6 +322,17 @@ class HabitShow extends Component
             // Ngược lại -> đây là lời mời từ người khác
             $this->participationStatus = $this->currentUserInvitation->inviter_id === $userId ? 'pending_request' : 'invited';
         }
+    }
+
+    protected function reloadHabit(): void
+    {
+        $habitId = $this->habit->id ?? null;
+
+        if (!$habitId) {
+            return;
+        }
+
+        $this->habit = Habit::with(['participants.user', 'invitations.invitee', 'invitations.inviter'])->findOrFail($habitId);
     }
     // Cập nhật tên tháng và năm
     public function updateMonthName()

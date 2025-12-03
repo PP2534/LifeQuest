@@ -1,62 +1,110 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# LifeQuest
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> 📺 **Demo:** https://lifequest.ntu195.vpsttt.vn
 
-## About Laravel
+LifeQuest is a habit + challenge companion built with Laravel 12, Livewire 3, and Tailwind CSS. This README documents how to bootstrap the project locally, how to build for production, and what the repository structure looks like.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Tech Stack
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- PHP 8.2 + Laravel 12
+- Livewire 3 & Volt components
+- Tailwind CSS + Vite (ESBuild) for asset bundling
+- MySQL 8 (or compatible) as the primary datastore
+- Redis / Pusher-compatible broadcaster (optional, for realtime notifications)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Prerequisites
 
-## Learning Laravel
+- PHP 8.2 with required extensions (`bcmath`, `ctype`, `fileinfo`, `json`, `mbstring`, `openssl`, `pdo_mysql`, `tokenizer`)
+- Composer 2.6+
+- Node.js 18+ and npm 9+
+- MySQL 8+ (or MariaDB 10.6+) running locally
+- Redis (optional, only if you enable queues/broadcasting)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Quick Start
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```bash
+git clone https://github.com/PP2534/LifeQuest.git lifequest
+cd lifequest
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+cp .env.example .env                # configure DB, APP_URL, mail, Pusher...
+composer install
+npm install
 
-## Laravel Sponsors
+php artisan key:generate
+php artisan storage:link
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# configure database credentials in .env, then
+php artisan migrate --seed          # seeds are optional; drop --seed if not needed
+```
 
-### Premium Partners
+## Running Locally
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Backend API + Laravel
 
-## Contributing
+```bash
+php artisan serve                   # http://127.0.0.1:8000
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Optionally run queues / websockets in separate terminals:
 
-## Code of Conduct
+```bash
+php artisan queue:listen
+php artisan schedule:work
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Frontend Assets
 
-## Security Vulnerabilities
+```bash
+npm run dev                         # Vite dev server with HMR
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+You can also run everything at once via Composer (uses concurrently under the hood):
+
+```bash
+composer run dev
+```
+
+## Building for Production
+
+```bash
+npm run build                       # Compile and version assets
+php artisan optimize                # Cache config/routes/views
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+Deploy the generated `public/build` assets along with the optimized Laravel cache files. Remember to run database migrations on the target environment as part of your release (`php artisan migrate --force`).
+
+## Project Structure
+
+```
+app/                 # Domain logic, Livewire components, models, services
+bootstrap/           # Framework bootstrap files, cache bootstrapper
+config/              # Laravel + package configuration files
+database/            # Migrations, seeders, factories
+public/              # Web root (index.php, built assets, storage symlink)
+resources/           # Blade views, Livewire Volt views, JS, CSS, Tailwind
+routes/              # Route definitions (web, api, console, admin)
+storage/             # App/runtime storage (logs, cache, compiled views)
+tests/               # Feature & unit tests
+```
+
+Notable directories inside `app/`:
+
+- `App/Livewire/**` — Livewire components for challenges, habits, profile, notifications
+- `App/Models/**` — Eloquent models for habits, challenges, participants, logs
+- `App/Notifications/**` — Database/mail notifications (habits, challenges, reminders)
+- `App/Services/XpService.php` — Encapsulated XP reward rules
+
+## Troubleshooting
+
+- **Hot reload not updating:** delete `public/hot` and rerun `npm run dev`.
+- **Stale caches after deploy:** run `php artisan optimize:clear` to flush config/route/view caches.
+- **Storage permission issues:** ensure `storage/` and `bootstrap/cache/` are writable by the web server user.
+- **Broadcasting failures:** verify Pusher (or Laravel WebSockets) credentials in `.env` and queue workers are running.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project inherits the default Laravel MIT license. Use, modify, and distribute under the terms of the MIT license.
 
