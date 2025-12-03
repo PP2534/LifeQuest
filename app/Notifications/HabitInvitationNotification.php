@@ -43,8 +43,8 @@ class HabitInvitationNotification extends Notification
         return (new MailMessage)
                     ->subject('Lời mời tham gia thói quen mới!')
                     ->greeting('Xin chào ' . $notifiable->name . ',')
-                    ->line($this->inviter->name . ' đã mời bạn tham gia thói quen: "' . $this->habit->name . '".')
-                    ->action('Xem thói quen', url('/habits/' . $this->habit->id))
+                    ->line($this->inviter->name . ' đã mời bạn tham gia thói quen: "' . $this->habit->title . '".')
+                    ->action('Xem thói quen', route('habits.show', $this->habit))
                     ->line('Hãy tham gia ngay để cùng nhau phát triển nhé!');
     }
 
@@ -59,8 +59,9 @@ class HabitInvitationNotification extends Notification
             'inviter_id' => $this->inviter->id,
             'inviter_name' => $this->inviter->name,
             'habit_id' => $this->habit->id,
-            'habit_name' => $this->habit->name,
-            'message' => $this->inviter->name . ' đã mời bạn tham gia thói quen: ' . $this->habit->name,
+            'habit_name' => $this->habit->title,
+            'message' => $this->inviter->name . ' đã mời bạn tham gia thói quen: ' . $this->habit->title,
+            'link' => route('habits.show', $this->habit),
         ];
     }
 }

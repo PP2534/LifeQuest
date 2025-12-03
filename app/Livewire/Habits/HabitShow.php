@@ -128,17 +128,16 @@ class HabitShow extends Component
             return;
         }
 
+        $isJoinRequest = (int) $invitation->inviter_id === (int) $invitation->invitee_id;
+
         // 2. Kiểm tra quyền
         $isAllowed = false;
-        if ($this->isCreator) {
-            // Người tạo có thể duyệt bất kỳ yêu cầu/lời mời nào
+        if ($isJoinRequest && $this->isCreator) {
+            // Người tạo duyệt yêu cầu tham gia
             $isAllowed = true;
-        } elseif (Auth::check() && Auth::id() === (int)$invitation->invitee_id) {
-            // Người được mời chỉ có thể chấp nhận lời mời từ người khác
-            // (không phải yêu cầu tự tham gia của chính họ)
-            if ($invitation->inviter_id !== $invitation->invitee_id) {
-                $isAllowed = true;
-            }
+        } elseif (!$isJoinRequest && Auth::check() && Auth::id() === (int) $invitation->invitee_id) {
+            // Người được mời tự chấp nhận lời mời
+            $isAllowed = true;
         }
 
         if (!$isAllowed) {
@@ -147,21 +146,23 @@ class HabitShow extends Component
         }
 
         DB::transaction(function () use ($invitation) {
-            $participant = HabitParticipant::firstOrNew([
-                'habit_id' => $this->habit->id,
-                'user_id' => $invitation->invitee_id,
-            ]);
-
-            $participant->role = $participant->role ?: 'member';
-            $participant->status = 'active';
-            $participant->save();
+            HabitParticipant::updateOrCreate(
+                [
+                    'habit_id' => $invitation->habit_id,
+                    'user_id' => $invitation->invitee_id,
+                ],
+                [
+                    'role' => 'member',
+                    'status' => 'active',
+                ]
+            );
 
             $invitation->delete();
         });
 
         $this->habit->refresh()->load(['participants.user', 'invitations.invitee', 'invitations.inviter']);
         $this->loadParticipationData();
-        session()->flash('status', 'Đã duyệt thành viên.');
+        session()->flash('status', $isJoinRequest ? 'Đã duyệt thành viên.' : 'Bạn đã tham gia thói quen!');
     }
     // Từ chối lời mời 
     public function rejectRequest(int $invitationId)
@@ -172,8 +173,15 @@ class HabitShow extends Component
             return;
         }
 
-        // Người tạo hoặc người được mời đều có thể từ chối/hủy
-        $isAllowed = $this->isCreator || (Auth::check() && Auth::id() === (int) $invitation->invitee_id);
+        $isJoinRequest = (int) $invitation->inviter_id === (int) $invitation->invitee_id;
+
+        // Người tạo chỉ quản lý yêu cầu tham gia; người được mời có thể từ chối lời mời
+        $isAllowed = false;
+        if ($isJoinRequest) {
+            $isAllowed = $this->isCreator;
+        } else {
+            $isAllowed = Auth::check() && Auth::id() === (int) $invitation->invitee_id;
+        }
 
         if (!$isAllowed) {
             session()->flash('error', 'Bạn không có quyền thực hiện hành động này.');
@@ -185,7 +193,7 @@ class HabitShow extends Component
 
         $this->habit->refresh()->load(['participants.user', 'invitations.invitee', 'invitations.inviter']);
         $this->loadParticipationData();
-        session()->flash('status', 'Đã từ chối yêu cầu.');
+        session()->flash('status', $isJoinRequest ? 'Đã từ chối yêu cầu.' : 'Đã từ chối lời mời.');
     }
     public function openInviteModal(): void
     {
@@ -471,12 +479,15 @@ class HabitShow extends Component
     }
     // Lấy danh sách lời mời đang chờ (chỉ cho người tạo)
     #[Computed]
-    public function pendingInvitations(): Collection
+    public function pendingJoinRequests(): Collection
     {
         if (!$this->isCreator) {
             return collect();
         }
-        return $this->habit->invitations->where('status', 'pending');
+
+        return $this->habit->invitations
+            ->where('status', 'pending')
+            ->filter(fn ($invitation) => (int) $invitation->inviter_id === (int) $invitation->invitee_id);
     }
 
     //  Lấy danh sách thành viên đang hoạt động

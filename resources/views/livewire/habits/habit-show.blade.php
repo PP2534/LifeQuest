@@ -132,11 +132,11 @@
                     @if ($habit->type === 'group')
                         {{-- Các section của nhóm (lời mời, thành viên,...) --}}
                         {{-- Pending Requests Section (for creator only) --}}
-                        @if($this->pendingInvitations->isNotEmpty())
+                        @if($this->pendingJoinRequests->isNotEmpty())
                             <div class="mt-6 border-t pt-6">
-                                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Yêu cầu & Lời mời đang chờ</h2>
+                                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Yêu cầu tham gia đang chờ</h2>
                                 <ul class="space-y-3">
-                                    @foreach ($this->pendingInvitations as $invitation)
+                                    @foreach ($this->pendingJoinRequests as $invitation)
                                         <li class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg shadow-sm">
                                             <div class="flex items-center flex-grow">
                                                 <a href="{{ route('profile.show', ['id' => $invitation->invitee->id]) }}" wire:navigate>
@@ -146,11 +146,7 @@
                                                     <a href="{{ route('profile.show', ['id' => $invitation->invitee->id]) }}" wire:navigate class="font-medium text-gray-700 hover:underline">
                                                         {{ $invitation->invitee->name }}
                                                     </a>
-                                                    @if($invitation->inviter_id !== $invitation->invitee_id)
-                                                        <p class="text-xs text-gray-500">Được mời bởi {{ $invitation->inviter->name }}</p>
-                                                    @else
-                                                        <p class="text-xs text-gray-500">Yêu cầu tham gia</p>
-                                                    @endif
+                                                    <p class="text-xs text-gray-500">Đã gửi yêu cầu tham gia</p>
                                                 </div>
                                             </div>
                                             <div class="flex items-center space-x-2">
@@ -220,6 +216,30 @@
             </div>
         </div>
 
+    </div>
+
+    <div class="mt-10 border-t pt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        @if($isCreator)
+            <div>
+                <p class="text-sm text-gray-500">Hành động quản lý</p>
+                <p class="text-base font-semibold text-gray-800">Bạn là người tạo thói quen này.</p>
+            </div>
+            <button wire:click="deleteHabit"
+                    wire:confirm="Bạn có chắc chắn muốn xóa thói quen này? Hành động không thể hoàn tác."
+                    class="inline-flex items-center justify-center px-5 py-3 rounded-lg bg-red-600 text-white font-semibold shadow hover:bg-red-700 transition">
+                Xóa thói quen
+            </button>
+        @elseif($isParticipant)
+            <div>
+                <p class="text-sm text-gray-500">Bạn đang tham gia thói quen này</p>
+                <p class="text-base font-semibold text-gray-800">Có thể rời khỏi bất kỳ lúc nào.</p>
+            </div>
+            <button wire:click="leaveHabit"
+                    wire:confirm="Bạn có chắc chắn muốn rời khỏi thói quen này?"
+                    class="inline-flex items-center justify-center px-5 py-3 rounded-lg bg-white border border-red-200 text-red-600 font-semibold hover:bg-red-50 transition">
+                Rời khỏi thói quen
+            </button>
+        @endif
     </div>
 
     @if($showInviteModal)
