@@ -132,10 +132,12 @@ class HabitShow extends Component
 
         // 2. Kiểm tra quyền
         $isAllowed = false;
+        $authId = Auth::id();
+
         if ($isJoinRequest && $this->isCreator) {
             // Người tạo duyệt yêu cầu tham gia
             $isAllowed = true;
-        } elseif (!$isJoinRequest && Auth::check() && Auth::id() === (int) $invitation->invitee_id) {
+        } elseif (!$isJoinRequest && Auth::check() && (int) $authId === (int) $invitation->invitee_id) {
             // Người được mời tự chấp nhận lời mời
             $isAllowed = true;
         }
@@ -177,10 +179,12 @@ class HabitShow extends Component
 
         // Người tạo chỉ quản lý yêu cầu tham gia; người được mời có thể từ chối lời mời
         $isAllowed = false;
+        $authId = Auth::id();
+
         if ($isJoinRequest) {
             $isAllowed = $this->isCreator;
         } else {
-            $isAllowed = Auth::check() && Auth::id() === (int) $invitation->invitee_id;
+            $isAllowed = Auth::check() && (int) $authId === (int) $invitation->invitee_id;
         }
 
         if (!$isAllowed) {
@@ -197,14 +201,14 @@ class HabitShow extends Component
     }
     public function openInviteModal(): void
     {
-        if ($this->isParticipant && $this->habit->allow_member_invite) {
+        if (($this->isParticipant || $this->isCreator) && $this->habit->allow_member_invite) {
             $this->showInviteModal = true;
         }
     }
 
     public function inviteUser(int $userId): void
     {
-        if (!$this->isParticipant || !$this->habit->allow_member_invite || !Auth::check()) {
+        if ((!$this->isParticipant && !$this->isCreator) || !$this->habit->allow_member_invite || !Auth::check()) {
             return;
         }
 
@@ -405,6 +409,10 @@ class HabitShow extends Component
             'status' => 'done',
             'proof_image' => $proofImagePath,
         ]);
+
+        if ($this->currentUserParticipant && $this->currentUserParticipant->user) {
+            app(XpService::class)->awardDailyActivityXp($this->currentUserParticipant->user);
+        }
     }
     // Đóng modal tải bằng chứng
     public function closeProofModal()

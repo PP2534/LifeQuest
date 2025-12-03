@@ -84,8 +84,11 @@ class Notifications extends Component
             } elseif (isset($notification->data['challenge_invitation_id'])) {
                 // Chuyển hướng đến trang chi tiết thử thách từ lời mời
                 return $this->redirect(route('challenges.show', $notification->data['challenge_invitation_id']), navigate: true);
+            } elseif (isset($notification->data['habit_id'])) {
+                // Chuyển hướng đến trang chi tiết thói quen từ lời mời hoặc các thông báo khác
+                return $this->redirect(route('habits.show', $notification->data['habit_id']), navigate: true);
             } elseif (isset($notification->data['habit_invitation_id'])) {
-                // Chuyển hướng đến trang chi tiết thói quen từ lời mời
+                // Hỗ trợ dữ liệu cũ nếu còn dùng khóa habit_invitation_id
                 return $this->redirect(route('habits.show', $notification->data['habit_invitation_id']), navigate: true);
             } elseif (isset($notification->data['follower_id'])) {
                 // Chuyển hướng đến trang cá nhân của người theo dõi

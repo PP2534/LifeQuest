@@ -68,7 +68,7 @@
                                 <p class="{{ $notification->read_at ? 'text-gray-600' : 'font-semibold text-gray-800' }}">
                                     @if (isset($notification->data['challenge_invitation_id']))
                                         {{ $notification->data['message'] ?? 'Bạn có lời mời tham gia thử thách mới!' }}
-                                    @elseif (isset($notification->data['habit_invitation_id']))
+                                    @elseif (isset($notification->data['habit_id']) || isset($notification->data['habit_invitation_id']))
                                         {{ $notification->data['message'] ?? 'Bạn có lời mời tham gia thói quen mới!' }}
                                     @else
                                         {{ $notification->data['message'] }}

@@ -5,6 +5,7 @@ namespace App\Livewire\Challenges;
 use App\Models\Challenge;
 use App\Models\ChallengeParticipant;
 use App\Models\ChallengeProgress;
+use App\Services\XpService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -42,6 +43,7 @@ class ChallengeCheckin extends Component
         // Lấy thông tin tham gia của user hiện tại
         $this->participant = $challenge->participants()
             ->where('user_id', Auth::id())
+            ->with('user')
             ->firstOrFail();
 
         // Mặc định hiển thị tháng và năm hiện tại
@@ -153,7 +155,7 @@ class ChallengeCheckin extends Component
      * Hàm xử lý nút "Xác nhận Hoàn thành" (submitCheckin)
      
      */
-    public function markAsDone()
+    public function markAsDone(XpService $xpService)
     {
         // Gọi validate() để kiểm tra dữ liệu theo rules()
         $this->validate();
@@ -182,7 +184,7 @@ class ChallengeCheckin extends Component
             ]
         );
 
-        $this->finishAction('Đã đánh dấu hoàn thành!');
+        $this->finishAction('Đã đánh dấu hoàn thành!', $xpService);
     }
 
     /**
@@ -208,9 +210,28 @@ class ChallengeCheckin extends Component
     /**
      * Hàm phụ trợ: Xử lý các công việc chung sau khi Lưu/Cập nhật
      */
-    private function finishAction($message)
+    private function finishAction($message, ?XpService $xpService = null)
     {
         $this->participant->recalculateStats(); // Tính lại % và Streak
+        $this->participant->refresh();
+
+        if ($xpService) {
+            $participantUser = $this->participant->user ?? $this->participant->loadMissing('user')->user;
+            if ($participantUser) {
+                $xpService->awardDailyActivityXp($participantUser);
+
+                if ($this->participant->progress_percent >= 100) {
+                    $xpService->awardChallengeCompletionXp(
+                        $participantUser,
+                        $this->challenge,
+                        $this->participant->streak
+                    );
+
+                    $xpService->awardCreatorChallengeMilestoneXp($this->challenge);
+                }
+            }
+        }
+
         $this->showModal = false;               // Đóng modal
         $this->proofImage = null;               // Reset ảnh
         $this->generateCalendar();              // Vẽ lại lịch để cập nhật màu sắc mới

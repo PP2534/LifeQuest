@@ -161,7 +161,7 @@
 
                         {{-- Invite Member Section --}}
                         {{-- Hiển thị nếu người dùng là thành viên và thói quen cho phép mời --}}
-                        @if($isParticipant && $habit->allow_member_invite)
+                        @if(($isParticipant || $isCreator) && $habit->allow_member_invite)
                             <div class="mt-6 border-t pt-6">
                                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                                     <div>

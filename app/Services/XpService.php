@@ -99,10 +99,21 @@ class XpService
      */
     public function awardChallengeCompletionXp(User $user, Challenge $challenge, int $streak): void
     {
-        if ($challenge->duration_days >= 3) {
-            $xp = ceil(($challenge->duration_days / 3) * 1.5 + ($streak / 7) * 2);
-            $this->awardXp($user, $xp, 'challenge_completion', $challenge->id, get_class($challenge));
+        if ($challenge->duration_days < 3) {
+            return;
         }
+
+        $alreadyAwarded = UserXpLogs::where('user_id', $user->id)
+            ->where('action', 'challenge_completion')
+            ->where('related_id', $challenge->id)
+            ->exists();
+
+        if ($alreadyAwarded) {
+            return;
+        }
+
+        $xp = ceil(($challenge->duration_days / 3) * 1.5 + ($streak / 7) * 2);
+        $this->awardXp($user, $xp, 'challenge_completion', $challenge->id, get_class($challenge));
     }
 
     /**
@@ -114,7 +125,7 @@ class XpService
         if (!$creator) return;
 
         $participantCount = $challenge->participants()->count();
-        $completedCount = $challenge->participants()->where('status', 'completed')->count();
+        $completedCount = $challenge->participants()->where('progress_percent', '>=', 100)->count();
 
         // Mốc 1: 20 người tham gia
         if ($participantCount >= 20) {

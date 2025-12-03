@@ -4,9 +4,14 @@ namespace App\Observers;
 
 use App\Notifications\NewCommentNotification;
 use App\Models\Comment;
+use App\Services\XpService;
 
 class CommentObserver
 {
+    public function __construct(private readonly XpService $xpService)
+    {
+    }
+
     /**
      * Handle the Comment "created" event.
      */
@@ -23,6 +28,10 @@ class CommentObserver
         if ($challengeCreator && $commenter && $challengeCreator->id !== $commenter->id) {
             // Gửi thông báo cho người tạo thử thách
             $challengeCreator->notify(new NewCommentNotification($comment));
+        }
+
+        if ($commenter) {
+            $this->xpService->awardDailyCommentXp($commenter);
         }
     }
 }
