@@ -78,6 +78,8 @@ class ChallengeList extends Component
             ->latest()
             ->paginate(12);
 
+        $challenges->withPath(route('challenges.index'));
+
         return view('livewire.challenges.challenge-list', [
             'challenges' => $challenges,
         ])->layout('layouts.app');

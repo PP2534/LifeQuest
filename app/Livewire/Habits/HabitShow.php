@@ -117,7 +117,7 @@ class HabitShow extends Component
 
         // Chuyển hướng về trang danh sách với thông báo
         session()->flash('status', 'Thói quen đã được xóa thành công.');
-        return $this->redirectRoute('habits.index', navigate: true);
+        return $this->redirectRoute('habits.index');
     }
 
     public function confirmDelete(): void
